@@ -93,7 +93,9 @@ export interface ITableVirtualColumn<TDataSource> {
   columnIndex: number;
   style: CSSProperties;
   activeRowIndex?: number;
+  activeCellIndex?: { rowIndex: number; columnIndex: number };
   onClickRow?: (data: TDataSource, rowIndex: number) => void;
+  onClickCell?: (value: string | number, rowIndex: number, columnIndex: number) => void;
 }
 
 export interface ITableVirtualFilterCard extends HTMLAttributes<HTMLDivElement> {
