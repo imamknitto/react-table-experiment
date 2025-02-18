@@ -24,7 +24,9 @@ export default function useSearchTable<TData>({ data }: ISearchTable<TData>) {
     Object.entries(activeSearch).forEach(([dataKey, searchValue]) => {
       if ((searchValue as string).length > 0) {
         cpData = cpData?.filter((row) =>
-          (row[dataKey as keyof TData] as string).toLowerCase().includes((searchValue as string).toLowerCase())
+          (row[dataKey as keyof TData]?.toString() as string)
+            ?.toLowerCase()
+            ?.includes((searchValue as string).toLowerCase())
         );
       }
     });
