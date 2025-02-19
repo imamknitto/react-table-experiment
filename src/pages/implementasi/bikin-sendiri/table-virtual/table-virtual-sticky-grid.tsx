@@ -55,6 +55,8 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     data: filteredData || [],
   });
 
+  const finalDataSource = searchedData;
+
   const contextValue = useMemo(
     () => ({
       stickyHeight,
@@ -62,7 +64,7 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       columnWidth,
       rowHeight,
       headers,
-      finalDataSource: searchedData,
+      finalDataSource,
       sort: {
         sortKey,
         sortBy,
@@ -110,7 +112,7 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       updateSearch,
       resetSearch,
       activeSearch,
-      searchedData,
+      finalDataSource,
     ]
   );
 

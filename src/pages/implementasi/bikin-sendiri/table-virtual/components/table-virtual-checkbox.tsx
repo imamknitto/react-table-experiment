@@ -8,7 +8,7 @@ interface CheckboxProps extends React.ComponentPropsWithoutRef<'input'> {
   classNameLabel?: string;
 }
 
-export default function Checkbox({ checked, onChecked, label, classNameLabel, ...props }: CheckboxProps) {
+export default function TableVirtualCheckbox({ checked, onChecked, label, classNameLabel, ...props }: CheckboxProps) {
   return (
     <label className="flex cursor-pointer">
       <div className={clsx('w-4 h-4 relative', label && 'mr-2')}>
@@ -20,7 +20,7 @@ export default function Checkbox({ checked, onChecked, label, classNameLabel, ..
           {...props}
         />
         <div
-          className={clsx('w-4 h-4 flex justify-center items-center border border-black-40 absolute', {
+          className={clsx('w-4 h-4 flex justify-center items-center border border-gray-400 rounded-xs absolute', {
             'bg-blue-950': checked,
             'bg-white': !checked,
           })}

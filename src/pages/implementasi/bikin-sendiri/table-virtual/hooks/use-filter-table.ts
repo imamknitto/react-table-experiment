@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import useOnClickOutside from '../../../../../hooks/use-click-outside';
 import { getFixedCardPosition } from '../utils';
+import useOnClickOutside from './use-click-outside';
 
 interface IFilterTable<TDataSource> {
   data: TDataSource[];
@@ -29,8 +29,6 @@ export default function useFilterTable<TDataSource>({
   useOnClickOutside(filterCardRef, () => setIsFilterCardOpen({ show: false, key: '' }));
 
   useEffect(() => {
-    if (Object.keys(activeFilters).length === 0) return;
-
     if (useServerFilter) {
       onChangeFilter?.(activeFilters);
       return;
@@ -70,7 +68,6 @@ export default function useFilterTable<TDataSource>({
       delete newFilters[dataKey];
       return newFilters;
     });
-    setFilteredData(data);
     setIsFilterCardOpen({ show: false, key: '' });
   };
 

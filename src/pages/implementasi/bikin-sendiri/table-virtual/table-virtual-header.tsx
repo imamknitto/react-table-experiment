@@ -6,6 +6,7 @@ import IcFilter from './icons/ic-filter';
 import IcSearch from './icons/ic-search';
 import IcSort from './icons/ic-sort';
 import { useTableVirtual } from './table-virtual-context';
+import IcFilterMultiple from './icons/ic-filter-multiple';
 
 const TableVirtualHeader = () => {
   const { headers, sort, filter, search } = useTableVirtual();
@@ -34,7 +35,7 @@ const TableVirtualHeader = () => {
     <>
       <div className="sticky top-0 left-0 flex flex-row z-[3]">
         <div className="absolute">
-          {headers?.map(({ key, caption, useFilter, useSort, useSearch, ...style }, colIndex) => (
+          {headers?.map(({ key, caption, useFilter, useSort, useSearch, useSingleFilter, ...style }, colIndex) => (
             <div
               key={'table-header' + key + colIndex}
               style={style}
@@ -49,7 +50,11 @@ const TableVirtualHeader = () => {
               <div className="flex flex-row space-x-1.5 shrink-0 ml-auto">
                 {useFilter && (
                   <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenFilter?.(e, key)}>
-                    <IcFilter className="!size-2.5" />
+                    {!useSingleFilter ? (
+                      <IcFilterMultiple className="!size-3 text-black" />
+                    ) : (
+                      <IcFilter className="!size-2.5 text-gray-800" />
+                    )}
                   </button>
                 )}
                 {useSearch && (

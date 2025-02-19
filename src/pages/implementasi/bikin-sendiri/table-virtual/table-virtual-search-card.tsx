@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import Portal from '../../../../components/portal';
+import Portal from './components/portal';
 import { ITableVirtualSearchCard } from './types';
 import { useState } from 'react';
+import TableVirtualInput from './components/table-virtual-input';
 
 export default function TableVirtualSearchCard({
   searchDataKey,
@@ -36,21 +37,14 @@ export default function TableVirtualSearchCard({
         {...props}
       >
         <div className="p-2.5">
-          <input
-            type="text"
-            placeholder="Cari..."
-            className=" outline-none border border-gray-200 rounded h-8 px-1.5 w-44 text-xs"
+          <TableVirtualInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleClickApply();
-              }
-            }}
+            onClickEnter={handleClickApply}
           />
         </div>
 
-        <div className="flex justify-end space-x-2.5 border-t border-t-gray-300 p-2 text-xs">
+        <div className="flex justify-between space-x-2.5 border-t border-t-gray-300 p-2 text-xs">
           <button className="cursor-pointer" onClick={handleClickReset}>
             Reset
           </button>

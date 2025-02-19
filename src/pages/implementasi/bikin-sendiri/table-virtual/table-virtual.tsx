@@ -33,7 +33,7 @@ const TableVirtual = <TDataSource,>({
       {({ width, height }) => {
         return (
           <TableVirtualStickyGrid
-            className="border border-gray-300"
+            className="border border-gray-300 parent-grid"
             height={height}
             width={width}
             columnCount={headers?.length || 0}

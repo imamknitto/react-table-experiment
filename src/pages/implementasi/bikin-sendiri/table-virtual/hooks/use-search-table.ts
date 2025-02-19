@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import useOnClickOutside from '../../../../../hooks/use-click-outside';
 import { getFixedCardPosition } from '../utils';
+import useOnClickOutside from './use-click-outside';
 
 interface ISearchTable<TData> {
   data?: TData[];

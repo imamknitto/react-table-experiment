@@ -14,6 +14,9 @@ const randomNumber = (min: number, max: number): number => {
 };
 
 interface IDummyData {
+  nama_produk: string;
+  kategori: string;
+  harga: number;
   [key: string]: string | number;
 }
 
@@ -43,7 +46,7 @@ const dummyHeaders = [
   { key: 'maksimal_pemesanan6', caption: 'Maksimal Pemesanan 6' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(100)
+const dataSourceV2: IDummyData[] = Array(15)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
