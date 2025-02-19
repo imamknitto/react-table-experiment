@@ -40,24 +40,25 @@ export interface ITableVirtual<TDataSource> {
   rowHeaderHeight?: number;
   dataSource?: TDataSource[];
   headers?: IDataHeader<TDataSource>[];
-  onChangeFilter?: (data: Record<string, string[]>) => void;
-  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   useServerFilter?: boolean;
   useServerSort?: boolean;
   activeRowIndex?: number;
+  onChangeFilter?: (data: Record<string, string[]>) => void;
+  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onClickRow?: (data: TDataSource, rowIndex: number) => void;
 }
 
 export interface IDataHeader<TDataSource> {
-  key: keyof TDataSource | 'action' | 'unknown';
+  key: keyof TDataSource;
   caption: string;
   className?: string;
   useFilter?: boolean;
   useSort?: boolean;
   useSearch?: boolean;
-  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
-  filterOptions?: string[];
   useSingleFilter?: boolean;
+  freezed?: boolean;
+  filterOptions?: string[];
+  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
 }
 
 export interface ITableVirtualStickyGrid

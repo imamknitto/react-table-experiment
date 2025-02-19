@@ -46,7 +46,7 @@ const dummyHeaders = [
   { key: 'maksimal_pemesanan6', caption: 'Maksimal Pemesanan 6' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(15)
+const dataSourceV2: IDummyData[] = Array(50)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -54,7 +54,7 @@ const dataSourceV2: IDummyData[] = Array(15)
         ? 'Laptop Lenovo Thinkpad'
         : idx > 5 && idx <= 10
         ? 'Laptop HP'
-        : idx > 10 && idx <= 60
+        : idx > 10 && idx <= 40
         ? `Laptop Macbook Pro M3`
         : `${randomString(5)} ${randomString(20)} ${randomString(5)}`,
     kategori: `Kategori ${randomString(5)}`,
@@ -93,6 +93,7 @@ export default function BikinSendiri() {
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
     useSingleFilter: idx === 0 ? true : false,
+    freezed: key === 'nama_produk',
   }));
 
   return (

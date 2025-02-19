@@ -55,16 +55,14 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     data: filteredData || [],
   });
 
-  const finalDataSource = searchedData;
-
-  const contextValue = useMemo(
-    () => ({
+  const contextValue = useMemo(() => {
+    return {
       stickyHeight,
       stickyWidth,
       columnWidth,
       rowHeight,
       headers,
-      finalDataSource,
+      finalDataSource: searchedData,
       sort: {
         sortKey,
         sortBy,
@@ -88,33 +86,32 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
         resetSearch,
         activeSearch,
       },
-    }),
-    [
-      stickyHeight,
-      stickyWidth,
-      columnWidth,
-      rowHeight,
-      headers,
-      sortKey,
-      sortBy,
-      handleSort,
-      isFilterCardOpen,
-      handleOpenFilter,
-      filterCardRef,
-      filterCardPosition,
-      updateFilter,
-      resetFilter,
-      activeFilters,
-      isSearchCardOpen,
-      handleOpenSearch,
-      searchCardRef,
-      searchCardPosition,
-      updateSearch,
-      resetSearch,
-      activeSearch,
-      finalDataSource,
-    ]
-  );
+    };
+  }, [
+    stickyHeight,
+    stickyWidth,
+    columnWidth,
+    rowHeight,
+    headers,
+    sortKey,
+    sortBy,
+    handleSort,
+    isFilterCardOpen,
+    handleOpenFilter,
+    filterCardRef,
+    filterCardPosition,
+    updateFilter,
+    resetFilter,
+    activeFilters,
+    isSearchCardOpen,
+    handleOpenSearch,
+    searchCardRef,
+    searchCardPosition,
+    updateSearch,
+    resetSearch,
+    activeSearch,
+    searchedData,
+  ]);
 
   return (
     <TableVirtualContext.Provider value={contextValue}>

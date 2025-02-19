@@ -8,7 +8,7 @@ import IcSort from './icons/ic-sort';
 import { useTableVirtual } from './table-virtual-context';
 import IcFilterMultiple from './icons/ic-filter-multiple';
 
-const TableVirtualHeader = () => {
+const TableVirtualStickyHeader = ({ className }: { className?: string }) => {
   const { headers, sort, filter, search } = useTableVirtual();
 
   const { sortBy, sortKey, handleSort } = sort || {};
@@ -33,7 +33,14 @@ const TableVirtualHeader = () => {
 
   return (
     <>
-      <div className="sticky top-0 left-0 flex flex-row z-[3]">
+      <div className={clsx('sticky top-0 left-0 flex flex-row z-[3]', className)}>
+        {/* <div
+          className="!z-[3] bg-gray-100 sticky flex flex-row items-center pl-2.5 border-r border-b border-gray-300 text-xs font-bold"
+          style={{ height: stickyHeight, width: stickyWidth, left: 0 }}
+        >
+          Nama Produk
+        </div> */}
+
         <div className="absolute">
           {headers?.map(({ key, caption, useFilter, useSort, useSearch, useSingleFilter, ...style }, colIndex) => (
             <div
@@ -100,4 +107,4 @@ const TableVirtualHeader = () => {
   );
 };
 
-export default memo(TableVirtualHeader);
+export default memo(TableVirtualStickyHeader);

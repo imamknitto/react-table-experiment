@@ -1,26 +1,29 @@
-import { Children, forwardRef, useEffect, useState } from 'react';
+import { Children, forwardRef } from 'react';
 import { useTableVirtual } from './table-virtual-context';
-import TableVirtualHeader from './table-virtual-header';
+import TableVirtualStickyHeader from './table-virtual-sticky-header';
 import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
+import TableVirtualStickyColumn from './table-virtual-sticky-column';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeight, stickyWidth } = useTableVirtual();
-  const [minRow, _maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
+  const { stickyHeight, stickyWidth, rowHeight, finalDataSource } = useTableVirtual();
+  const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
-  const [_parentHeight, setParentHeight] = useState<number>(0);
-  const [_scrollBarWidth, setScrollBarWidth] = useState<number>(0);
+  //   const [parentHeight, setParentHeight] = useState<number>(0);
+  //   const [scrollBarWidth, setScrollBarWidth] = useState<number>(0);
 
-  useEffect(() => {
-    const element = document.querySelector('.parent-grid') as HTMLElement | null;
-    if (element) {
-      const height = element.offsetHeight;
-      setParentHeight(height);
+  //   useEffect(() => {
+  //     const element = document.querySelector('.parent-grid') as HTMLElement | null;
+  //     if (element) {
+  //       const height = element.offsetHeight;
+  //       setParentHeight(height);
 
-      const scrollbarWidth = element.offsetWidth - element.clientWidth;
-      setScrollBarWidth(scrollbarWidth);
-    }
-  }, []);
+  //       const scrollbarWidth = element.offsetWidth - element.clientWidth;
+  //       setScrollBarWidth(scrollbarWidth);
+  //     }
+  //   }, [maxRow]);
+
+  //   const leftSideRows = columnsBuilder(minRow, maxRow, rowHeight, stickyWidth);
 
   return (
     <div
@@ -30,32 +33,35 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
         width: props.style.width || 0 + stickyWidth,
         height: props.style.height || 0 + stickyHeight,
       }}
+      className="relative bg-green-50"
     >
-      <TableVirtualHeader />
+      <TableVirtualStickyHeader />
 
-      {/* <div
-        style={{ position: 'sticky', top: parentHeight - 36 - scrollBarWidth, left: 0, height: 36 }}
-        className="bg-emerald-200 z-[4]"
-      >
-        FOOTER
-      </div> */}
+      {/* <TableVirtualFooter stickyHeight={stickyHeight} parentHeight={parentHeight} scrollBarWidth={scrollBarWidth} /> */}
 
-      {/* <div
-        className="sticky left-0 z-[2]"
-        style={{
-          top: stickyHeight,
-          width: stickyWidth,
-          height: `calc(100% - ${stickyHeight}px)`,
-        }}
-      >
-        {Array(finalDataSource.length)
-          .fill(true)
-          .map((_, idx) => {
-            return <div key={'col' + idx} className="h-[36px] bg-blue-50"></div>;
-          })}
-      </div> */}
+      <div className="h-full w-max sticky left-0 top-[50px] z-[2]">
+        <div className="size-full flex flex-row relative">
+          <TableVirtualStickyColumn
+            minRow={minRow}
+            maxRow={maxRow}
+            rowHeight={rowHeight}
+            stickyHeight={stickyHeight}
+            stickyWidth={stickyWidth}
+            dataSource={finalDataSource}
+          />
+          <TableVirtualStickyColumn
+            minRow={minRow}
+            maxRow={maxRow}
+            rowHeight={rowHeight}
+            stickyHeight={stickyHeight}
+            stickyWidth={stickyWidth}
+            dataSource={finalDataSource}
+            className="!left-[180px]"
+          />
+        </div>
+      </div>
 
-      <div className="absolute" style={{ top: minRow > 3 ? 0 : stickyHeight, left: 0 }}>
+      <div className="absolute" style={{ top: stickyHeight, left: 0 }}>
         {props.children}
       </div>
     </div>

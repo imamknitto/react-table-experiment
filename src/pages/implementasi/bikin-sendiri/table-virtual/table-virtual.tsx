@@ -8,7 +8,7 @@ const TableVirtual = <TDataSource,>({
   dataSource,
   headers,
   rowHeight = 36,
-  rowHeaderHeight = 50,
+  rowHeaderHeight = 36,
   columnWidth = 180,
   onChangeFilter,
   onChangeSort,
