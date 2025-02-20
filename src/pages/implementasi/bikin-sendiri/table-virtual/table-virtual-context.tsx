@@ -8,6 +8,7 @@ export const TableVirtualContext = createContext<ITableVirtualContext>({
   stickyWidth: 180,
   headers: [],
   finalDataSource: [],
+  isLoading: false,
 });
 
 export const useTableVirtual = () => useContext(TableVirtualContext);

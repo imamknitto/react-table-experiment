@@ -6,6 +6,7 @@ import { TableVirtualContext } from './table-virtual-context';
 import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
+import useGridScrolling from './hooks/use-grid-scrolling';
 
 export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   stickyHeight,
@@ -19,6 +20,8 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   onChangeSort,
   useServerFilter,
   useServerSort,
+  isLoading,
+  onScrollTouchBottom,
   ...rest
 }) => {
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
@@ -56,9 +59,9 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   });
 
   const finalDataSource = searchedData;
-
   const contextValue = useMemo(
     () => ({
+      isLoading,
       stickyHeight,
       stickyWidth,
       columnWidth,
@@ -90,6 +93,7 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       },
     }),
     [
+      isLoading,
       stickyHeight,
       stickyWidth,
       columnWidth,
@@ -116,14 +120,23 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     ]
   );
 
+  const { gridRef, handleScroll } = useGridScrolling({
+    rowHeight,
+    isLoading,
+    finalDataSource,
+    onScrollTouchBottom,
+  });
+
   return (
     <TableVirtualContext.Provider value={contextValue}>
       <Grid
+        {...rest}
         columnWidth={columnWidth}
         rowHeight={rowHeight}
         innerElementType={TableVirtualInnerElement}
-        {...rest}
-        rowCount={searchedData?.length || 0}
+        ref={gridRef}
+        rowCount={finalDataSource?.length || 0}
+        onScroll={handleScroll}
       >
         {children}
       </Grid>

@@ -3,6 +3,7 @@ import { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import { TSortOrder } from './hooks/use-sort-table';
 
 export interface ITableVirtualContext {
+  isLoading?: boolean;
   stickyHeight: number;
   stickyWidth: number;
   columnWidth: number;
@@ -40,16 +41,18 @@ export interface ITableVirtual<TDataSource> {
   rowHeaderHeight?: number;
   dataSource?: TDataSource[];
   headers?: IDataHeader<TDataSource>[];
-  onChangeFilter?: (data: Record<string, string[]>) => void;
-  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   useServerFilter?: boolean;
   useServerSort?: boolean;
   activeRowIndex?: number;
+  isLoading?: boolean;
+  onChangeFilter?: (data: Record<string, string[]>) => void;
+  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onClickRow?: (data: TDataSource, rowIndex: number) => void;
+  onScrollTouchBottom?: () => void;
 }
 
 export interface IDataHeader<TDataSource> {
-  key: keyof TDataSource | 'action' | 'unknown';
+  key: keyof TDataSource;
   caption: string;
   className?: string;
   useFilter?: boolean;
@@ -69,10 +72,12 @@ export interface ITableVirtualStickyGrid
   children: React.FC<GridChildComponentProps>;
   headers: ITableVirtualHeaderColumn[];
   dataSource: Record<string, string | number>[];
-  onChangeFilter?: (data: Record<string, string[]>) => void;
-  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   useServerFilter?: boolean;
   useServerSort?: boolean;
+  isLoading?: boolean;
+  onChangeFilter?: (data: Record<string, string[]>) => void;
+  onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
+  onScrollTouchBottom?: () => void;
 }
 
 export interface ITableVirtualInnerElement {

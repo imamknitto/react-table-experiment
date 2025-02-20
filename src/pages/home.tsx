@@ -11,7 +11,10 @@ const menu = [
   },
   {
     section: 'Implementasi',
-    data: [{ url: 'implementasi/bikin-sendiri', title: 'Bikin Sendiri' }],
+    data: [
+      { url: 'implementasi/bikin-sendiri', title: 'Bikin Sendiri' },
+      { url: 'implementasi/bikin-sendiri-api', title: 'Bikin Sendiri [API]' },
+    ],
   },
 ];
 
