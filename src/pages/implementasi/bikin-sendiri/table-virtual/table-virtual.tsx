@@ -16,6 +16,8 @@ const TableVirtual = <TDataSource,>({
   useServerSort,
   onClickRow,
   activeRowIndex,
+  isLoading,
+  onScrollTouchBottom,
 }: ITableVirtual<TDataSource>) => {
   const headerData = headers?.map((data, idx) => ({
     width: columnWidth,
@@ -48,6 +50,8 @@ const TableVirtual = <TDataSource,>({
             onChangeSort={onChangeSort}
             useServerFilter={useServerFilter}
             useServerSort={useServerSort}
+            isLoading={isLoading}
+            onScrollTouchBottom={onScrollTouchBottom}
           >
             {({ columnIndex, rowIndex, style }) => {
               return (

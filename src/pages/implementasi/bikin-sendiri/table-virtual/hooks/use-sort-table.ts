@@ -18,7 +18,10 @@ export default function useSortTable<TDataSource>({
   const [sortBy, setSortBy] = useState<TSortOrder>('unset');
 
   useEffect(() => {
-    if (!sortKey) return;
+    if (!sortKey) {
+      setSortedData(data);
+      return;
+    }
 
     if (useServerSort) {
       onChangeSort?.(sortKey, sortBy);

@@ -4,11 +4,11 @@ import TableVirtualStickyHeader from './table-virtual-sticky-header';
 import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
 import TableVirtualEmptyData from './table-virtual-empty-data';
-import TableVirtualStickyColumn from './table-virtual-sticky-column';
+import TableVirtualLoading from './table-virtual-loading';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeight, stickyWidth, finalDataSource, rowHeight } = useTableVirtual();
-  const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
+  const { stickyHeight, stickyWidth, finalDataSource, isLoading } = useTableVirtual();
+  const [_minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   const [gridBoxSize, setGridBoxSize] = useState<{ height: number; width: number }>({ height: 0, width: 0 });
   const [_scrollBarWidth, setScrollBarWidth] = useState<number>(0);
@@ -33,37 +33,15 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
         width: props.style.width || 0 + stickyWidth,
         height: props.style.height || 0 + stickyHeight,
       }}
-      className="relative bg-green-50"
+      className="relative"
     >
       <TableVirtualStickyHeader />
 
-      {/* <TableVirtualFooter stickyHeight={stickyHeight} parentHeight={parentHeight} scrollBarWidth={scrollBarWidth} /> */}
+      {isLoading && <TableVirtualLoading style={{ width: gridBoxSize.width, height: gridBoxSize.height - 10 }} />}
 
-      <div className="h-full w-max sticky left-0 top-[50px] z-[2]">
-        <div className="size-full flex flex-row relative">
-          <TableVirtualStickyColumn
-            minRow={minRow}
-            maxRow={maxRow}
-            rowHeight={rowHeight}
-            stickyHeight={stickyHeight}
-            stickyWidth={stickyWidth}
-            dataSource={finalDataSource}
-          />
-          <TableVirtualStickyColumn
-            minRow={minRow}
-            maxRow={maxRow}
-            rowHeight={rowHeight}
-            stickyHeight={stickyHeight}
-            stickyWidth={stickyWidth}
-            dataSource={finalDataSource}
-            className="!left-[180px]"
-          />
-        </div>
-      </div>
-      {!finalDataSource?.length && (
+      {!finalDataSource?.length && !isLoading && (
         <TableVirtualEmptyData style={{ width: gridBoxSize.width, height: gridBoxSize.height - 10 }} />
       )}
-
       <div className="absolute" style={{ top: stickyHeight, left: 0 }}>
         {props.children}
       </div>

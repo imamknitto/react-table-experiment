@@ -6,6 +6,7 @@ import { TableVirtualContext } from './table-virtual-context';
 import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
+import useGridScrolling from './hooks/use-grid-scrolling';
 
 export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   stickyHeight,
@@ -19,6 +20,8 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   onChangeSort,
   useServerFilter,
   useServerSort,
+  isLoading,
+  onScrollTouchBottom,
   ...rest
 }) => {
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
@@ -55,14 +58,16 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     data: filteredData || [],
   });
 
-  const contextValue = useMemo(() => {
-    return {
+  const finalDataSource = searchedData;
+  const contextValue = useMemo(
+    () => ({
+      isLoading,
       stickyHeight,
       stickyWidth,
       columnWidth,
       rowHeight,
       headers,
-      finalDataSource: searchedData,
+      finalDataSource,
       sort: {
         sortKey,
         sortBy,
@@ -86,41 +91,52 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
         resetSearch,
         activeSearch,
       },
-    };
-  }, [
-    stickyHeight,
-    stickyWidth,
-    columnWidth,
+    }),
+    [
+      isLoading,
+      stickyHeight,
+      stickyWidth,
+      columnWidth,
+      rowHeight,
+      headers,
+      sortKey,
+      sortBy,
+      handleSort,
+      isFilterCardOpen,
+      handleOpenFilter,
+      filterCardRef,
+      filterCardPosition,
+      updateFilter,
+      resetFilter,
+      activeFilters,
+      isSearchCardOpen,
+      handleOpenSearch,
+      searchCardRef,
+      searchCardPosition,
+      updateSearch,
+      resetSearch,
+      activeSearch,
+      finalDataSource,
+    ]
+  );
+
+  const { gridRef, handleScroll } = useGridScrolling({
     rowHeight,
-    headers,
-    sortKey,
-    sortBy,
-    handleSort,
-    isFilterCardOpen,
-    handleOpenFilter,
-    filterCardRef,
-    filterCardPosition,
-    updateFilter,
-    resetFilter,
-    activeFilters,
-    isSearchCardOpen,
-    handleOpenSearch,
-    searchCardRef,
-    searchCardPosition,
-    updateSearch,
-    resetSearch,
-    activeSearch,
-    searchedData,
-  ]);
+    isLoading,
+    finalDataSource,
+    onScrollTouchBottom,
+  });
 
   return (
     <TableVirtualContext.Provider value={contextValue}>
       <Grid
+        {...rest}
         columnWidth={columnWidth}
         rowHeight={rowHeight}
         innerElementType={TableVirtualInnerElement}
-        {...rest}
-        rowCount={searchedData?.length || 0}
+        ref={gridRef}
+        rowCount={finalDataSource?.length || 0}
+        onScroll={handleScroll}
       >
         {children}
       </Grid>
