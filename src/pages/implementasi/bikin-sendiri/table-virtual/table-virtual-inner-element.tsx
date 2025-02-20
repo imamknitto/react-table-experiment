@@ -3,24 +3,26 @@ import { useTableVirtual } from './table-virtual-context';
 import TableVirtualHeader from './table-virtual-header';
 import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
+import TableVirtualEmptyData from './table-virtual-empty-data';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeight, stickyWidth } = useTableVirtual();
-  const [minRow, _maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
+  const { stickyHeight, stickyWidth, finalDataSource } = useTableVirtual();
+  const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
-  const [_parentHeight, setParentHeight] = useState<number>(0);
+  const [gridBoxSize, setGridBoxSize] = useState<{ height: number; width: number }>({ height: 0, width: 0 });
   const [_scrollBarWidth, setScrollBarWidth] = useState<number>(0);
 
   useEffect(() => {
     const element = document.querySelector('.parent-grid') as HTMLElement | null;
     if (element) {
       const height = element.offsetHeight;
-      setParentHeight(height);
+      const width = element.offsetWidth;
+      setGridBoxSize({ height, width });
 
       const scrollbarWidth = element.offsetWidth - element.clientWidth;
       setScrollBarWidth(scrollbarWidth);
     }
-  }, []);
+  }, [maxRow]);
 
   return (
     <div
@@ -33,27 +35,9 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
     >
       <TableVirtualHeader />
 
-      {/* <div
-        style={{ position: 'sticky', top: parentHeight - 36 - scrollBarWidth, left: 0, height: 36 }}
-        className="bg-emerald-200 z-[4]"
-      >
-        FOOTER
-      </div> */}
-
-      {/* <div
-        className="sticky left-0 z-[2]"
-        style={{
-          top: stickyHeight,
-          width: stickyWidth,
-          height: `calc(100% - ${stickyHeight}px)`,
-        }}
-      >
-        {Array(finalDataSource.length)
-          .fill(true)
-          .map((_, idx) => {
-            return <div key={'col' + idx} className="h-[36px] bg-blue-50"></div>;
-          })}
-      </div> */}
+      {!finalDataSource?.length && (
+        <TableVirtualEmptyData style={{ width: gridBoxSize.width, height: gridBoxSize.height - 10 }} />
+      )}
 
       <div className="absolute" style={{ top: minRow > 3 ? 0 : stickyHeight, left: 0 }}>
         {props.children}

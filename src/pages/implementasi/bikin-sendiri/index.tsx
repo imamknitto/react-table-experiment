@@ -46,7 +46,7 @@ const dummyHeaders = [
   { key: 'maksimal_pemesanan6', caption: 'Maksimal Pemesanan 6' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(15)
+const dataSourceV2: IDummyData[] = Array(5000)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -92,7 +92,7 @@ export default function BikinSendiri() {
     caption,
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
-    useSingleFilter: idx === 0 ? true : false,
+    useSingleFilter: idx === 0 || idx === 3 ? true : false,
   }));
 
   return (
