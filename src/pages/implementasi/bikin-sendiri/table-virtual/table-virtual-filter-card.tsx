@@ -1,4 +1,7 @@
-import { memo, useState } from 'react';
+import { CSSProperties, memo, useState } from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList as List } from 'react-window';
+
 import clsx from 'clsx';
 import Portal from './components/portal';
 import { ITableVirtualFilterCard } from './types';
@@ -55,40 +58,40 @@ const TableVirtualFilterCard = ({
         )}
         {...props}
       >
-        <div className={clsx(!useSingleFilter && 'p-2 flex flex-col space-y-2.5')}>
+        <div className={clsx(!useSingleFilter && 'p-1.5 flex flex-col space-y-2.5')}>
           <TableVirtualInput
-            className={clsx(useSingleFilter && 'm-2')}
+            className={clsx(useSingleFilter && 'm-1.5')}
             value={searchValue}
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
 
-          <div
-            className={clsx(
-              'max-h-44 overflow-auto flex flex-col space-y-1 w-full',
-              useSingleFilter && '!p-0 !space-y-0'
-            )}
-          >
-            {filteredOptions?.map((filter, idx) =>
-              !useSingleFilter ? (
-                <TableVirtualCheckbox
-                  key={'checkbox-filter-multiple' + filterDataKey + idx}
-                  label={<p className="text-xs">{filter}</p>}
-                  checked={!!activeFilter.includes(filter)}
-                  onChecked={() => handleChangeActiveFilter(filter)}
-                />
-              ) : (
-                <div
-                  key={'checkbox-filter-single' + filterDataKey + idx}
-                  className={clsx(
-                    'text-xs px-2 py-1 hover:bg-blue-950 hover:text-white cursor-pointer',
-                    !!activeFilter.includes(filter) && 'bg-blue-950 text-white'
-                  )}
-                  onClick={() => handleSelectSingleOption(filter)}
-                >
-                  {filter}
-                </div>
-              )
-            )}
+          <div className="h-40">
+            <AutoSizer>
+              {({ width, height }) => {
+                return !filteredOptions?.length ? (
+                  <EmptyFilter searchVal={searchValue} height={height} width={width} />
+                ) : (
+                  <List height={height} itemCount={filteredOptions?.length || 0} itemSize={23} width={width}>
+                    {({ style, index }) => {
+                      const filterValue = filteredOptions?.[index] || '';
+
+                      return (
+                        <ItemFilter
+                          style={style}
+                          isSingle={useSingleFilter || false}
+                          value={filterValue}
+                          isSelected={!!activeFilter.includes(filterValue)}
+                          onSelect={(value, type) => {
+                            if (type === 'single') handleSelectSingleOption(value);
+                            handleChangeActiveFilter(value);
+                          }}
+                        />
+                      );
+                    }}
+                  </List>
+                );
+              }}
+            </AutoSizer>
           </div>
         </div>
 
@@ -98,13 +101,60 @@ const TableVirtualFilterCard = ({
           </button>
 
           {!useSingleFilter && (
-            <button className="cursor-pointer px-2 py-1 bg-blue-950 text-white rounded" onClick={handleClickApply}>
+            <button className="cursor-pointer px-1.5 py-1 bg-blue-950 text-white rounded" onClick={handleClickApply}>
               Filter
             </button>
           )}
         </div>
       </div>
     </Portal>
+  );
+};
+
+interface IEmptyFilter {
+  searchVal: string;
+  height: number;
+  width: number;
+}
+
+// Empty filter jika tidak ada data yang ditemukan.
+const EmptyFilter = ({ searchVal, height, width }: IEmptyFilter) => (
+  <div style={{ height, width }} className="flex justify-center items-center px-5">
+    <p className="text-center text-xs text-gray-800">
+      Pencarian <b>{searchVal ?? ''}</b> tidak ditemukan
+    </p>
+  </div>
+);
+
+interface IItemFilter {
+  isSingle: boolean;
+  style: CSSProperties;
+  value: string;
+  isSelected: boolean;
+  onSelect: (value: string, type: 'single' | 'multiple') => void;
+}
+
+// Item filter dengan 2 tipe yang berbeda yaitu single dan multiple.
+const ItemFilter = ({ isSingle, onSelect, style, value, isSelected }: IItemFilter) => {
+  return isSingle ? (
+    <div
+      style={style}
+      className={clsx(
+        'text-xs px-1.5 py-1 hover:bg-blue-950 hover:text-white cursor-pointer truncate',
+        isSelected && 'bg-blue-950 text-white'
+      )}
+      onClick={() => onSelect(value, 'single')}
+    >
+      {value}
+    </div>
+  ) : (
+    <div style={style}>
+      <TableVirtualCheckbox
+        label={<p className="text-xs truncate">{value}</p>}
+        checked={isSelected}
+        onChecked={() => onSelect(value, 'multiple')}
+      />
+    </div>
   );
 };
 

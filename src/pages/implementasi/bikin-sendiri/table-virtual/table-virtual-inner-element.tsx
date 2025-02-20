@@ -1,29 +1,29 @@
-import { Children, forwardRef } from 'react';
+import { Children, forwardRef, useEffect, useState } from 'react';
 import { useTableVirtual } from './table-virtual-context';
 import TableVirtualStickyHeader from './table-virtual-sticky-header';
 import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
+import TableVirtualEmptyData from './table-virtual-empty-data';
 import TableVirtualStickyColumn from './table-virtual-sticky-column';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeight, stickyWidth, rowHeight, finalDataSource } = useTableVirtual();
+  const { stickyHeight, stickyWidth, finalDataSource, rowHeight } = useTableVirtual();
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
-  //   const [parentHeight, setParentHeight] = useState<number>(0);
-  //   const [scrollBarWidth, setScrollBarWidth] = useState<number>(0);
+  const [gridBoxSize, setGridBoxSize] = useState<{ height: number; width: number }>({ height: 0, width: 0 });
+  const [_scrollBarWidth, setScrollBarWidth] = useState<number>(0);
 
-  //   useEffect(() => {
-  //     const element = document.querySelector('.parent-grid') as HTMLElement | null;
-  //     if (element) {
-  //       const height = element.offsetHeight;
-  //       setParentHeight(height);
+  useEffect(() => {
+    const element = document.querySelector('.parent-grid') as HTMLElement | null;
+    if (element) {
+      const height = element.offsetHeight;
+      const width = element.offsetWidth;
+      setGridBoxSize({ height, width });
 
-  //       const scrollbarWidth = element.offsetWidth - element.clientWidth;
-  //       setScrollBarWidth(scrollbarWidth);
-  //     }
-  //   }, [maxRow]);
-
-  //   const leftSideRows = columnsBuilder(minRow, maxRow, rowHeight, stickyWidth);
+      const scrollbarWidth = element.offsetWidth - element.clientWidth;
+      setScrollBarWidth(scrollbarWidth);
+    }
+  }, [maxRow]);
 
   return (
     <div
@@ -60,6 +60,9 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
           />
         </div>
       </div>
+      {!finalDataSource?.length && (
+        <TableVirtualEmptyData style={{ width: gridBoxSize.width, height: gridBoxSize.height - 10 }} />
+      )}
 
       <div className="absolute" style={{ top: stickyHeight, left: 0 }}>
         {props.children}

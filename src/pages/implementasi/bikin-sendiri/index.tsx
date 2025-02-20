@@ -92,8 +92,7 @@ export default function BikinSendiri() {
     caption,
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
-    useSingleFilter: idx === 0 ? true : false,
-    freezed: key === 'nama_produk',
+    useSingleFilter: idx === 0 || idx === 3 ? true : false,
   }));
 
   return (
