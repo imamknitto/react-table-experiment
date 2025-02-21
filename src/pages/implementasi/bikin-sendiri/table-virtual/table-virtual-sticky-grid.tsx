@@ -7,6 +7,7 @@ import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
 import useGridScrolling from './hooks/use-grid-scrolling';
+import clsx from 'clsx';
 
 export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   stickyHeight,
@@ -24,6 +25,9 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   onScrollTouchBottom,
   ...rest
 }) => {
+  const freezedHeaders = headers?.filter(({ freezed }) => freezed);
+  const headersExpectFreezed = headers?.filter(({ freezed }) => !freezed);
+
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
     onChangeSort,
@@ -66,7 +70,8 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       stickyWidth,
       columnWidth,
       rowHeight,
-      headers,
+      headers: headersExpectFreezed,
+      freezedHeaders,
       finalDataSource,
       sort: {
         sortKey,
@@ -98,7 +103,6 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       stickyWidth,
       columnWidth,
       rowHeight,
-      headers,
       sortKey,
       sortBy,
       handleSort,
@@ -117,6 +121,8 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       resetSearch,
       activeSearch,
       finalDataSource,
+      freezedHeaders,
+      headersExpectFreezed,
     ]
   );
 
@@ -136,7 +142,9 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
         innerElementType={TableVirtualInnerElement}
         ref={gridRef}
         rowCount={finalDataSource?.length || 0}
+        columnCount={headersExpectFreezed?.length || 0}
         onScroll={handleScroll}
+        className={clsx('border border-gray-300 parent-grid', isLoading && 'pointer-events-none')}
       >
         {children}
       </Grid>

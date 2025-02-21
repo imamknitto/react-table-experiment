@@ -9,6 +9,7 @@ export interface ITableVirtualContext {
   columnWidth: number;
   rowHeight: number;
   headers: ITableVirtualHeaderColumn[];
+  freezedHeaders: ITableVirtualHeaderColumn[];
   finalDataSource: Record<string, string | number>[];
   sort?: {
     sortKey: string | null;
@@ -58,9 +59,10 @@ export interface IDataHeader<TDataSource> {
   useFilter?: boolean;
   useSort?: boolean;
   useSearch?: boolean;
-  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
-  filterOptions?: string[];
   useSingleFilter?: boolean;
+  freezed?: boolean;
+  filterOptions?: string[];
+  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
 }
 
 export interface ITableVirtualStickyGrid

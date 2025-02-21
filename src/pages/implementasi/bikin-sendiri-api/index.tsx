@@ -19,12 +19,14 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       key: 'pathUrl',
       caption: 'Path Url',
       filterOptions: generateTableFilterOptions(dataSource || [], 'pathUrl'),
+      freezed: true,
     },
     { key: 'request', caption: 'Request', useFilter: false },
     { key: 'response', caption: 'Response', useFilter: false },
     {
       key: 'status',
       caption: 'Status',
+      className: '!text-end',
       filterOptions: generateTableFilterOptions(dataSource || [], 'status'),
       useSingleFilter: true,
     },
@@ -66,7 +68,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 50000, page: page || 1 };
+    const params = { limit: 1000, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {

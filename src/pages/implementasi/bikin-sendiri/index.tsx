@@ -54,10 +54,10 @@ const dataSourceV2: IDummyData[] = Array(5000)
         ? 'Laptop Lenovo Thinkpad'
         : idx > 5 && idx <= 10
         ? 'Laptop HP'
-        : idx > 10 && idx <= 60
+        : idx > 10 && idx <= 40
         ? `Laptop Macbook Pro M3`
         : `${randomString(5)} ${randomString(20)} ${randomString(5)}`,
-    kategori: `Kategori ${randomString(5)}`,
+    kategori: `Kategori ${randomString(5)} ${idx}`,
     harga: Math.random() * 1000000,
     stok: randomNumber(1, 1000),
     terjual: randomNumber(1, 200),
@@ -93,6 +93,7 @@ export default function BikinSendiri() {
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
     useSingleFilter: idx === 0 || idx === 3 ? true : false,
+    freezed: key === 'harga' || key === 'rating',
   }));
 
   return (

@@ -7,18 +7,8 @@ type StickyGridContextType = {
   stickyWidth: number;
   columnWidth: number;
   rowHeight: number;
-  headerBuilder: (
-    minColumn: number,
-    maxColumn: number,
-    columnWidth: number,
-    stickyHeight: number
-  ) => HeaderColumn[];
-  columnsBuilder: (
-    minRow: number,
-    maxRow: number,
-    rowHeight: number,
-    stickyWidth: number
-  ) => StickyRow[];
+  headerBuilder: (minColumn: number, maxColumn: number, columnWidth: number, stickyHeight: number) => HeaderColumn[];
+  columnsBuilder: (minRow: number, maxRow: number, rowHeight: number, stickyWidth: number) => StickyRow[];
 };
 
 type HeaderColumn = {
@@ -35,13 +25,10 @@ type StickyRow = {
   label: string;
 };
 
-const getRenderedCursor = (
-  children: ReactNode[]
-): [number, number, number, number] => {
+const getRenderedCursor = (children: ReactNode[]): [number, number, number, number] => {
   return children.filter(React.isValidElement).reduce(
     ([minRow, maxRow, minColumn, maxColumn], child) => {
-      if (!React.isValidElement(child))
-        return [minRow, maxRow, minColumn, maxColumn];
+      if (!React.isValidElement(child)) return [minRow, maxRow, minColumn, maxColumn];
       const { columnIndex, rowIndex } = child.props as {
         columnIndex: number;
         rowIndex: number;
@@ -72,12 +59,7 @@ const headerBuilder = (
   }));
 };
 
-const columnsBuilder = (
-  minRow: number,
-  maxRow: number,
-  rowHeight: number,
-  stickyWidth: number
-): StickyRow[] => {
+const columnsBuilder = (minRow: number, maxRow: number, rowHeight: number, stickyWidth: number): StickyRow[] => {
   return Array.from({ length: maxRow - minRow + 1 }, (_, i) => ({
     height: rowHeight,
     width: stickyWidth,
@@ -86,11 +68,7 @@ const columnsBuilder = (
   }));
 };
 
-const GridColumn: React.FC<GridChildComponentProps> = ({
-  rowIndex,
-  columnIndex,
-  style,
-}) => (
+const GridColumn: React.FC<GridChildComponentProps> = ({ rowIndex, columnIndex, style }) => (
   <div
     className="flex flex-row items-center pl-2.5 border-r border-b border-r-gray-400 border-b-gray-400"
     style={style}
@@ -152,65 +130,37 @@ const StickyColumns: React.FC<{
   );
 };
 
-const StickyGridContext = createContext<StickyGridContextType | undefined>(
-  undefined
-);
+const StickyGridContext = createContext<StickyGridContextType | undefined>(undefined);
 StickyGridContext.displayName = 'StickyGridContext';
 
-const InnerGridElement = forwardRef<
-  HTMLDivElement,
-  { children: React.ReactNode; style: React.CSSProperties }
->((props, ref) => {
-  const context = React.useContext(StickyGridContext);
-  if (!context) return null;
-  const {
-    stickyHeight,
-    stickyWidth,
-    headerBuilder,
-    columnsBuilder,
-    columnWidth,
-    rowHeight,
-  } = context;
+const InnerGridElement = forwardRef<HTMLDivElement, { children: React.ReactNode; style: React.CSSProperties }>(
+  (props, ref) => {
+    const context = React.useContext(StickyGridContext);
+    if (!context) return null;
+    const { stickyHeight, stickyWidth, headerBuilder, columnsBuilder, columnWidth, rowHeight } = context;
 
-  const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(
-    React.Children.toArray(props.children)
-  );
-  const headerColumns = headerBuilder(
-    minColumn,
-    maxColumn,
-    columnWidth,
-    stickyHeight
-  );
-  const leftSideRows = columnsBuilder(minRow, maxRow, rowHeight, stickyWidth);
+    const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(React.Children.toArray(props.children));
+    const headerColumns = headerBuilder(minColumn, maxColumn, columnWidth, stickyHeight);
+    const leftSideRows = columnsBuilder(minRow, maxRow, rowHeight, stickyWidth);
 
-  return (
-    <div
-      ref={ref}
-      style={{
-        ...props.style,
-        width: props.style.width || 0 + stickyWidth,
-        height: props.style.height || 0 + stickyHeight,
-      }}
-    >
-      <StickyHeader
-        headerColumns={headerColumns}
-        stickyHeight={stickyHeight}
-        stickyWidth={stickyWidth}
-      />
-      <StickyColumns
-        rows={leftSideRows}
-        stickyHeight={stickyHeight}
-        stickyWidth={stickyWidth}
-      />
+    return (
       <div
-        className="absolute"
-        style={{ top: stickyHeight, left: stickyWidth }}
+        ref={ref}
+        style={{
+          ...props.style,
+          width: props.style.width || 0 + stickyWidth,
+          height: props.style.height || 0 + stickyHeight,
+        }}
       >
-        {props.children}
+        <StickyHeader headerColumns={headerColumns} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
+        <StickyColumns rows={leftSideRows} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
+        <div className="absolute" style={{ top: stickyHeight, left: stickyWidth }}>
+          {props.children}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 const StickyGrid: React.FC<
   {
@@ -219,18 +169,8 @@ const StickyGrid: React.FC<
     columnWidth: number;
     rowHeight: number;
     children: React.FC<GridChildComponentProps>;
-  } & Omit<
-    React.ComponentProps<typeof Grid>,
-    'columnWidth' | 'rowHeight' | 'children'
-  >
-> = ({
-  stickyHeight,
-  stickyWidth,
-  columnWidth,
-  rowHeight,
-  children,
-  ...rest
-}) => {
+  } & Omit<React.ComponentProps<typeof Grid>, 'columnWidth' | 'rowHeight' | 'children'>
+> = ({ stickyHeight, stickyWidth, columnWidth, rowHeight, children, ...rest }) => {
   return (
     <StickyGridContext.Provider
       value={{
@@ -242,12 +182,7 @@ const StickyGrid: React.FC<
         columnsBuilder,
       }}
     >
-      <Grid
-        columnWidth={columnWidth}
-        rowHeight={rowHeight}
-        innerElementType={InnerGridElement}
-        {...rest}
-      >
+      <Grid columnWidth={columnWidth} rowHeight={rowHeight} innerElementType={InnerGridElement} {...rest}>
         {children}
       </Grid>
     </StickyGridContext.Provider>

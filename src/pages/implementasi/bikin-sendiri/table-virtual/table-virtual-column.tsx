@@ -11,7 +11,7 @@ export default function TableVirtualColumn<TDataSource>({
   onClickRow,
 }: ITableVirtualColumn<TDataSource>) {
   const { ref, isOverflow } = useColumnOverflow();
-  const { finalDataSource, headers } = useTableVirtual();
+  const { headers, finalDataSource } = useTableVirtual();
 
   const headerKey = headers?.[columnIndex]?.key;
   const headerClassName = headers?.[columnIndex]?.className;
@@ -53,7 +53,7 @@ export default function TableVirtualColumn<TDataSource>({
         <div
           className={clsx(
             'min-w-[200px] max-w-[400px] overflow-auto py-3 bg-white shadow-lg shadow-gray-300 border border-gray-200',
-            'px-2 absolute bottom-full ml-2 hidden group-hover:block z-[999] rounded font-semibold'
+            'px-2 absolute bottom-full ml-2 hidden group-hover:block z-[999999] rounded font-semibold'
           )}
         >
           {finalValue as string | number}

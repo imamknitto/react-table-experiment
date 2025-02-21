@@ -1,5 +1,5 @@
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import TableVirtualColumn from './table-virtual-column';
 import { ITableVirtualHeaderColumn, ITableVirtual } from './types';
 import { TableVirtualStickyGrid } from './table-virtual-sticky-grid';
@@ -8,7 +8,7 @@ const TableVirtual = <TDataSource,>({
   dataSource,
   headers,
   rowHeight = 36,
-  rowHeaderHeight = 50,
+  rowHeaderHeight = 36,
   columnWidth = 180,
   onChangeFilter,
   onChangeSort,
@@ -19,7 +19,7 @@ const TableVirtual = <TDataSource,>({
   isLoading,
   onScrollTouchBottom,
 }: ITableVirtual<TDataSource>) => {
-  const headerData = headers?.map((data, idx) => ({
+  const reMapHeaders = headers?.map((data, idx) => ({
     width: columnWidth,
     height: rowHeaderHeight,
     left: idx * columnWidth,
@@ -30,21 +30,30 @@ const TableVirtual = <TDataSource,>({
     ...data,
   })) as ITableVirtualHeaderColumn[];
 
+  const dataSourceExceptFreezed = useMemo(() => {
+    const freezedHeaderKeys = headers?.filter((item) => item.freezed).map(({ key }) => key) as string[];
+
+    return dataSource?.map((item) => {
+      return Object.fromEntries(
+        Object.entries(item as Record<string, string | number>).filter(([key]) => !freezedHeaderKeys.includes(key))
+      );
+    });
+  }, [headers]);
+
   return (
     <AutoSizer>
       {({ width, height }) => {
         return (
           <TableVirtualStickyGrid
-            className="border border-gray-300 parent-grid"
             height={height}
             width={width}
-            columnCount={headers?.length || 0}
-            rowCount={dataSource?.length || 0}
+            columnCount={0}
+            rowCount={dataSourceExceptFreezed?.length || 0}
             rowHeight={rowHeight}
             columnWidth={columnWidth}
             stickyHeight={rowHeaderHeight}
             stickyWidth={columnWidth}
-            headers={headerData}
+            headers={reMapHeaders}
             dataSource={(dataSource || []) as Record<string, string | number>[]}
             onChangeFilter={onChangeFilter}
             onChangeSort={onChangeSort}
