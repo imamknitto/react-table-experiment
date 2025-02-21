@@ -9,6 +9,7 @@ export interface ITableVirtualContext {
   columnWidth: number;
   rowHeight: number;
   headers: ITableVirtualHeaderColumn[];
+  freezedHeaders: ITableVirtualHeaderColumn[];
   finalDataSource: Record<string, string | number>[];
   sort?: {
     sortKey: string | null;

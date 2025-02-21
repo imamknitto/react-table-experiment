@@ -11,7 +11,7 @@ export default function TableVirtualColumn<TDataSource>({
   onClickRow,
 }: ITableVirtualColumn<TDataSource>) {
   const { ref, isOverflow } = useColumnOverflow();
-  const { finalDataSource, headers } = useTableVirtual();
+  const { headers, finalDataSource } = useTableVirtual();
 
   const headerKey = headers?.[columnIndex]?.key;
   const headerClassName = headers?.[columnIndex]?.className;

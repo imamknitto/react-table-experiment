@@ -1,34 +1,36 @@
+import { CSSProperties } from 'react';
 import clsx from 'clsx';
 import useColumnOverflow from './hooks/use-column-overflow';
 
-interface ITableVirtualStickyColumn<TData> {
+interface ITableVirtualStickyColumn {
   stickyHeight: number;
   stickyWidth: number;
   rowHeight: number;
   minRow: number;
   maxRow: number;
-  dataSource: TData[];
-  className?: string;
+  style?: CSSProperties;
+  dataCols: (string | number)[];
 }
 
-export default function TableVirtualStickyColumn<TData>({
+export default function TableVirtualStickyColumn({
   stickyHeight,
   stickyWidth,
   rowHeight,
   minRow,
   maxRow,
-  dataSource,
-  className,
-}: ITableVirtualStickyColumn<TData>) {
+  style,
+  dataCols,
+}: ITableVirtualStickyColumn) {
   const { ref, isOverflow } = useColumnOverflow();
 
   return (
     <div
-      className={clsx('sticky left-0 z-[2] bg-white', className)}
+      className={clsx('sticky z-[2] bg-white')}
       style={{
         top: stickyHeight,
         width: stickyWidth,
         height: `calc(100% - ${stickyHeight}px)`,
+        ...style,
       }}
     >
       {Array.from({ length: maxRow - minRow + 1 }).map((_, idx) => {
@@ -36,7 +38,7 @@ export default function TableVirtualStickyColumn<TData>({
 
         return (
           <div
-            key={'sticky-column-row-item' + idx}
+            key={'freezed-column-row-item-' + idx}
             className={clsx(
               'absolute flex items-center hover:bg-blue-900/20 group',
               'px-1.5 text-xs bg-gray-100 cursor-pointer',
@@ -46,7 +48,7 @@ export default function TableVirtualStickyColumn<TData>({
             style={{ height: rowHeight, width: stickyWidth, top: (minRow + idx) * rowHeight }}
           >
             <div ref={ref} className="w-full truncate">
-              {dataSource[rowIndex]?.['nama_produk' as keyof (typeof dataSource)[0]] as string | number}
+              {dataCols?.[rowIndex]}
             </div>
 
             {isOverflow && (
@@ -56,7 +58,7 @@ export default function TableVirtualStickyColumn<TData>({
                   'px-2 absolute bottom-full ml-2 hidden group-hover:block z-[999999999] rounded font-semibold'
                 )}
               >
-                {dataSource[rowIndex]?.['nama_produk' as keyof (typeof dataSource)[0]] as string | number}
+                {dataCols?.[rowIndex]}
               </div>
             )}
           </div>
