@@ -37,14 +37,6 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
     >
       <TableVirtualStickyHeaders />
 
-      {isLoading && (
-        <TableVirtualLoading style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
-      )}
-
-      {!finalDataSource?.length && !isLoading && (
-        <TableVirtualEmptyData style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
-      )}
-
       {freezedHeaders?.length && (
         <div className="flex flex-row">
           {freezedHeaders.map(({ key }, idx) => {
@@ -62,6 +54,14 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
             );
           })}
         </div>
+      )}
+
+      {isLoading && (
+        <TableVirtualLoading style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
+      )}
+
+      {!finalDataSource?.length && !isLoading && (
+        <TableVirtualEmptyData style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
       )}
 
       <div className="absolute" style={{ top: stickyHeight, left: stickyWidth * (freezedHeaders?.length || 0) }}>

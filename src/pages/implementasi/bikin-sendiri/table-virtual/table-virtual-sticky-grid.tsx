@@ -7,6 +7,7 @@ import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
 import useGridScrolling from './hooks/use-grid-scrolling';
+import clsx from 'clsx';
 
 export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   stickyHeight,
@@ -143,6 +144,7 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
         rowCount={finalDataSource?.length || 0}
         columnCount={headersExpectFreezed?.length || 0}
         onScroll={handleScroll}
+        className={clsx('border border-gray-300 parent-grid', isLoading && 'pointer-events-none')}
       >
         {children}
       </Grid>
