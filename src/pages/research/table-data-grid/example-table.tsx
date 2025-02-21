@@ -218,7 +218,7 @@ function createRows(): readonly Row[] {
   const rows: Row[] = [];
   const countrySet = new Set<string>();
 
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 4; i++) {
     const country = faker.location.country();
     countrySet.add(country);
 

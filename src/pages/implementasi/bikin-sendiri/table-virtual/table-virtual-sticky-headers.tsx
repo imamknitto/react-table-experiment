@@ -9,7 +9,7 @@ import IcFilter from './icons/ic-filter';
 import IcSort from './icons/ic-sort';
 import { TSortOrder } from './hooks/use-sort-table';
 
-const TableVirtualStickyHeaders = ({ className }: { className?: string }) => {
+const TableVirtualStickyHeaders = ({ className, style }: { className?: string; style?: CSSProperties }) => {
   const { headers, sort, filter, search, stickyWidth, freezedHeaders } = useTableVirtual();
 
   const { sortBy, sortKey, handleSort } = sort || {};
@@ -38,7 +38,7 @@ const TableVirtualStickyHeaders = ({ className }: { className?: string }) => {
 
   return (
     <>
-      <div className={clsx('sticky top-0 left-0 flex flex-row z-[3]', className)}>
+      <div id="headers" className={clsx('sticky top-0 left-0 flex flex-row z-[3]', className)} style={style}>
         {freezedHeaders?.map(
           ({ key, caption, useFilter, useSort, useSearch, useSingleFilter, ...style }, columnIndex) => {
             return (

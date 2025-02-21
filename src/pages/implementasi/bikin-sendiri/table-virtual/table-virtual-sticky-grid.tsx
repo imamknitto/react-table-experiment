@@ -1,16 +1,17 @@
+import { useCallback, useMemo, useState } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
-import { useMemo } from 'react';
+import clsx from 'clsx';
 import { ITableVirtualStickyGrid } from './types';
 import TableVirtualInnerElement from './table-virtual-inner-element';
 import { TableVirtualContext } from './table-virtual-context';
+import useGridScrolling from './hooks/use-grid-scrolling';
 import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
-import useGridScrolling from './hooks/use-grid-scrolling';
-import clsx from 'clsx';
 
 export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   stickyHeight,
+  stickyFooterHeight,
   stickyWidth,
   columnWidth,
   rowHeight,
@@ -21,13 +22,16 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   onChangeSort,
   useServerFilter,
   useServerSort,
+  useFooter,
   isLoading,
+  onClickRow,
   onScrollTouchBottom,
   ...rest
 }) => {
   const freezedHeaders = headers?.filter(({ freezed }) => freezed);
   const headersExpectFreezed = headers?.filter(({ freezed }) => !freezed);
 
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
     onChangeSort,
@@ -62,17 +66,26 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     data: filteredData || [],
   });
 
+  const handleSelectRow = useCallback((data: Record<string, string | number>, rowIndex: number) => {
+    setSelectedRowIndex(rowIndex);
+    onClickRow?.(data, rowIndex);
+  }, []);
+
   const finalDataSource = searchedData;
   const contextValue = useMemo(
     () => ({
       isLoading,
       stickyHeight,
+      stickyFooterHeight,
       stickyWidth,
       columnWidth,
       rowHeight,
       headers: headersExpectFreezed,
       freezedHeaders,
       finalDataSource,
+      useFooter,
+      selectedRowIndex,
+      onClickRow: handleSelectRow,
       sort: {
         sortKey,
         sortBy,
@@ -98,8 +111,12 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       },
     }),
     [
+      selectedRowIndex,
+      handleSelectRow,
+      useFooter,
       isLoading,
       stickyHeight,
+      stickyFooterHeight,
       stickyWidth,
       columnWidth,
       rowHeight,

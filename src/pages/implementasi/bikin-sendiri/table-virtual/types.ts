@@ -6,11 +6,15 @@ export interface ITableVirtualContext {
   isLoading?: boolean;
   stickyHeight: number;
   stickyWidth: number;
+  stickyFooterHeight: number;
   columnWidth: number;
   rowHeight: number;
   headers: ITableVirtualHeaderColumn[];
   freezedHeaders: ITableVirtualHeaderColumn[];
   finalDataSource: Record<string, string | number>[];
+  useFooter?: boolean;
+  selectedRowIndex?: number;
+  onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   sort?: {
     sortKey: string | null;
     sortBy: TSortOrder;
@@ -40,43 +44,36 @@ export interface ITableVirtual<TDataSource> {
   rowHeight?: number;
   columnWidth?: number;
   rowHeaderHeight?: number;
+  rowFooterHeight?: number;
   dataSource?: TDataSource[];
   headers?: IDataHeader<TDataSource>[];
   useServerFilter?: boolean;
   useServerSort?: boolean;
-  activeRowIndex?: number;
+  useFooter?: boolean;
+  selectedRowIndex?: number;
   isLoading?: boolean;
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
-  onClickRow?: (data: TDataSource, rowIndex: number) => void;
+  onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   onScrollTouchBottom?: () => void;
-}
-
-export interface IDataHeader<TDataSource> {
-  key: keyof TDataSource;
-  caption: string;
-  className?: string;
-  useFilter?: boolean;
-  useSort?: boolean;
-  useSearch?: boolean;
-  useSingleFilter?: boolean;
-  freezed?: boolean;
-  filterOptions?: string[];
-  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
 }
 
 export interface ITableVirtualStickyGrid
   extends Omit<React.ComponentProps<typeof Grid>, 'columnWidth' | 'rowHeight' | 'children'> {
   stickyHeight: number;
+  stickyFooterHeight: number;
   stickyWidth: number;
   columnWidth: number;
   rowHeight: number;
   children: React.FC<GridChildComponentProps>;
   headers: ITableVirtualHeaderColumn[];
   dataSource: Record<string, string | number>[];
+  selectedRowIndex?: number;
   useServerFilter?: boolean;
   useServerSort?: boolean;
+  useFooter?: boolean;
   isLoading?: boolean;
+  onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onScrollTouchBottom?: () => void;
@@ -99,7 +96,6 @@ export interface ITableVirtualColumn<TDataSource> {
   rowIndex: number;
   columnIndex: number;
   style: CSSProperties;
-  activeRowIndex?: number;
   activeCellIndex?: { rowIndex: number; columnIndex: number };
   onClickRow?: (data: TDataSource, rowIndex: number) => void;
   onClickCell?: (value: string | number, rowIndex: number, columnIndex: number) => void;
@@ -123,4 +119,18 @@ export interface ITableVirtualSearchCard extends HTMLAttributes<HTMLDivElement> 
   activeSearch?: string;
   onResetSearch?: (dataKey: string) => void;
   onApplySearch?: (dataKey: string, searchValue: string) => void;
+}
+
+export interface IDataHeader<TDataSource> {
+  key: keyof TDataSource;
+  caption: string;
+  className?: string;
+  useFilter?: boolean;
+  useSort?: boolean;
+  useSearch?: boolean;
+  useSingleFilter?: boolean;
+  freezed?: boolean;
+  filterOptions?: string[];
+  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
+  renderSummary?: (value?: number | string, rowIndex?: number) => ReactNode | string;
 }

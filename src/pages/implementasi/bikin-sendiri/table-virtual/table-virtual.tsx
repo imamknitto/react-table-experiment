@@ -10,12 +10,13 @@ const TableVirtual = <TDataSource,>({
   rowHeight = 36,
   rowHeaderHeight = 36,
   columnWidth = 180,
+  rowFooterHeight = 36,
   onChangeFilter,
   onChangeSort,
   useServerFilter,
   useServerSort,
+  useFooter,
   onClickRow,
-  activeRowIndex,
   isLoading,
   onScrollTouchBottom,
 }: ITableVirtual<TDataSource>) => {
@@ -52,6 +53,7 @@ const TableVirtual = <TDataSource,>({
             rowHeight={rowHeight}
             columnWidth={columnWidth}
             stickyHeight={rowHeaderHeight}
+            stickyFooterHeight={rowFooterHeight}
             stickyWidth={columnWidth}
             headers={reMapHeaders}
             dataSource={(dataSource || []) as Record<string, string | number>[]}
@@ -59,8 +61,10 @@ const TableVirtual = <TDataSource,>({
             onChangeSort={onChangeSort}
             useServerFilter={useServerFilter}
             useServerSort={useServerSort}
+            useFooter={useFooter}
             isLoading={isLoading}
             onScrollTouchBottom={onScrollTouchBottom}
+            onClickRow={onClickRow}
           >
             {({ columnIndex, rowIndex, style }) => {
               return (
@@ -68,7 +72,6 @@ const TableVirtual = <TDataSource,>({
                   columnIndex={columnIndex}
                   rowIndex={rowIndex}
                   style={style}
-                  activeRowIndex={activeRowIndex}
                   onClickRow={onClickRow}
                 />
               );

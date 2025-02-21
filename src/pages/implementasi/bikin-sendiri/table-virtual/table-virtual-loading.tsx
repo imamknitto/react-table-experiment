@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 
 export default function TableVirtualLoading({ style }: { style: CSSProperties }) {
   return (
-    <div className="sticky left-0 top-0 bg-black/20 z-[3]">
+    <div className="sticky left-0 top-0 bg-black/20 z-[4]">
       <div style={style} className="flex justify-center items-center sticky left-0">
         <div
           className={clsx(
