@@ -7,7 +7,7 @@ export default function useColumnOverflow() {
   useEffect(() => {
     const checkOverflow = () => {
       if (ref.current) {
-        setIsOverflow(ref.current.scrollWidth > ref.current.clientWidth);
+        setIsOverflow(ref.current.offsetWidth < ref.current.scrollWidth);
       }
     };
 

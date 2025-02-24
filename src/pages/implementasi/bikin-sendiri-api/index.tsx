@@ -13,6 +13,7 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       caption: '_ID',
       filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
       useSingleFilter: true,
+      freezed: true,
     },
     { key: 'tanggal', caption: 'Tanggal', useFilter: false },
     {
@@ -20,6 +21,9 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       caption: 'Path Url',
       filterOptions: generateTableFilterOptions(dataSource || [], 'pathUrl'),
       freezed: true,
+      renderSummary: () => (
+        <div className="bg-blue-950 size-full text-white flex justify-center items-center">Footer</div>
+      ),
     },
     { key: 'request', caption: 'Request', useFilter: false },
     { key: 'response', caption: 'Response', useFilter: false },
@@ -104,6 +108,7 @@ export default function ImplementasiBikinSendiriApi() {
           rowHeaderHeight={36}
           rowHeight={36}
           onScrollTouchBottom={() => fetchDataFromApi(pagination.currentPage + 1)}
+          useFooter
         />
       </div>
     </div>

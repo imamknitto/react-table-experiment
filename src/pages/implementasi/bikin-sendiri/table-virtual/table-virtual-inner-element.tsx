@@ -1,29 +1,48 @@
 import { Children, forwardRef, useEffect, useState } from 'react';
-import { useTableVirtual } from './table-virtual-context';
-import TableVirtualStickyHeaders from './table-virtual-sticky-headers';
 import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
-import TableVirtualEmptyData from './table-virtual-empty-data';
-import TableVirtualLoading from './table-virtual-loading';
+import TableVirtualStickyHeaders from './table-virtual-sticky-headers';
+import TableVirtualStickyFooters from './table-virtual-sticky-footers';
 import TableVirtualStickyColumn from './table-virtual-sticky-column';
+import TableVirtualEmptyData from './table-virtual-empty-data';
+import { useTableVirtual } from './table-virtual-context';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeight, stickyWidth, finalDataSource, isLoading, rowHeight, freezedHeaders } = useTableVirtual();
+  const {
+    stickyHeight,
+    stickyWidth,
+    finalDataSource,
+    isLoading,
+    rowHeight,
+    freezedHeaders,
+    useFooter,
+    stickyFooterHeight,
+  } = useTableVirtual();
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   const [gridViewportSize, setGridViewportSize] = useState<{ height: number; width: number }>({ height: 0, width: 0 });
-  const [_scrollBarWidth, setScrollBarWidth] = useState<number>(0);
+  const [scrollBarWidth, setScrollBarWidth] = useState<number>(0);
 
   useEffect(() => {
-    const element = document.querySelector('.parent-grid') as HTMLElement | null;
-    if (element) {
-      const height = element.offsetHeight;
-      const width = element.offsetWidth;
-      setGridViewportSize({ height, width });
+    const getGridViewportSize = () => {
+      const element = document.querySelector('.parent-grid') as HTMLElement | null;
 
-      const scrollbarWidth = element.offsetWidth - element.clientWidth;
-      setScrollBarWidth(scrollbarWidth);
-    }
+      if (element) {
+        const height = element.offsetHeight;
+        const width = element.offsetWidth;
+        setGridViewportSize({ height, width });
+
+        const scrollbarWidth = element.offsetWidth - element.clientWidth;
+        setScrollBarWidth(scrollbarWidth);
+      }
+    };
+
+    getGridViewportSize();
+
+    window.addEventListener('resize', getGridViewportSize);
+    return () => {
+      window.removeEventListener('resize', getGridViewportSize);
+    };
   }, [maxRow]);
 
   return (
@@ -38,8 +57,8 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
       <TableVirtualStickyHeaders />
 
       {freezedHeaders?.length && (
-        <div className="flex flex-row">
-          {freezedHeaders.map(({ key }, idx) => {
+        <div style={{ marginTop: minRow > 0 && useFooter ? -stickyHeight - stickyFooterHeight : 0 }}>
+          {freezedHeaders.map(({ key, render }, idx) => {
             return (
               <TableVirtualStickyColumn
                 key={'freezed-column-item-' + idx}
@@ -49,22 +68,29 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
                 rowHeight={rowHeight}
                 stickyHeight={stickyHeight}
                 stickyWidth={stickyWidth}
-                dataCols={finalDataSource?.map((item) => item[key]) || []}
+                columnKeyName={key}
+                render={render}
               />
             );
           })}
         </div>
       )}
 
-      {isLoading && (
-        <TableVirtualLoading style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
+      {useFooter && (
+        <TableVirtualStickyFooters parentHeight={gridViewportSize.height} scrollBarWidth={scrollBarWidth} />
       )}
 
       {!finalDataSource?.length && !isLoading && (
         <TableVirtualEmptyData style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
       )}
 
-      <div className="absolute" style={{ top: stickyHeight, left: stickyWidth * (freezedHeaders?.length || 0) }}>
+      <div
+        className="absolute"
+        style={{
+          top: minRow > 0 && useFooter ? -(stickyHeight - (stickyHeight - stickyFooterHeight)) : stickyHeight,
+          left: stickyWidth * (freezedHeaders?.length || 0),
+        }}
+      >
         {props.children}
       </div>
     </div>

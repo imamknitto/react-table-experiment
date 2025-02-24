@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Header from '../../../components/header';
 import TableVirtual from './table-virtual/table-virtual';
 import { ITableVirtual } from './table-virtual/types';
@@ -21,13 +20,13 @@ interface IDummyData {
 }
 
 const dummyHeaders = [
-  { key: 'nama_produk', caption: 'Nama Produk' },
+  { key: 'nama_produk', caption: 'Nama Produk', freezed: true },
   { key: 'kategori', caption: 'Kategori' },
   { key: 'harga', caption: 'Harga (Rp)' },
   { key: 'stok', caption: 'Stok (pcs)' },
   { key: 'terjual', caption: 'Terjual (pcs)' },
-  { key: 'rating', caption: 'Rating' },
-  { key: 'supplier', caption: 'Supplier' },
+  { key: 'rating', caption: 'Rating', freezed: true },
+  { key: 'supplier', caption: 'Supplier', freezed: true },
   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
   { key: 'tanggal_update', caption: 'Tanggal Update' },
   { key: 'status', caption: 'Status' },
@@ -46,7 +45,7 @@ const dummyHeaders = [
   { key: 'maksimal_pemesanan6', caption: 'Maksimal Pemesanan 6' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(5000)
+const dataSourceV2: IDummyData[] = Array(50)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -61,10 +60,11 @@ const dataSourceV2: IDummyData[] = Array(5000)
     harga: Math.random() * 1000000,
     stok: randomNumber(1, 1000),
     terjual: randomNumber(1, 200),
-    rating: Array(randomNumber(1, 5))
-      .fill(true)
-      .map(() => '⭐')
-      .join(''),
+    rating:
+      Array(randomNumber(1, 5))
+        .fill(true)
+        .map(() => '⭐')
+        .join('') + idx,
     supplier: randomString(4) + ' ' + randomString(7),
     lokasi_gudang: `Lokasi Gudang ${idx}`,
     tanggal_update: new Date().toLocaleDateString(),
@@ -85,15 +85,19 @@ const dataSourceV2: IDummyData[] = Array(5000)
   }));
 
 export default function BikinSendiri() {
-  const [activeRow, setActiveRow] = useState<number>(-1);
-
-  const modifiedHeaders: ITableVirtual<IDummyData>['headers'] = dummyHeaders?.map(({ key, caption }, idx) => ({
+  const modifiedHeaders: ITableVirtual<IDummyData>['headers'] = dummyHeaders?.map(({ key, caption, freezed }, idx) => ({
     key,
     caption,
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
-    useSingleFilter: idx === 0 || idx === 3 ? true : false,
-    freezed: key === 'harga' || key === 'rating',
+    useSingleFilter: idx === 3 ? true : false,
+    freezed,
+    renderSummary: () =>
+      key === 'nama_produk' ? (
+        <div className="size-full flex justify-center items-center bg-blue-950 text-white">TOTAL: </div>
+      ) : (
+        <div className="size-full flex justify-center items-center bg-blue-950/20 text-white" />
+      ),
   }));
 
   return (
@@ -113,16 +117,17 @@ export default function BikinSendiri() {
 
       <div className="flex-1 w-full">
         <TableVirtual
+          isLoading={false}
           dataSource={dataSourceV2 || []}
           headers={modifiedHeaders || []}
           rowHeaderHeight={50}
+          rowFooterHeight={40}
           onChangeFilter={(prop) => console.log('CHANGE FILTER', prop)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', { sortKey, sortBy })}
-          activeRowIndex={activeRow}
           onClickRow={(data, rowIndex) => {
             console.log('CLICK ROW', data, rowIndex);
-            setActiveRow(rowIndex);
           }}
+          useFooter
         />
       </div>
     </div>
