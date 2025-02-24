@@ -45,7 +45,7 @@ const dummyHeaders = [
   { key: 'maksimal_pemesanan6', caption: 'Maksimal Pemesanan 6' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(10000)
+const dataSourceV2: IDummyData[] = Array(50)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -60,10 +60,11 @@ const dataSourceV2: IDummyData[] = Array(10000)
     harga: Math.random() * 1000000,
     stok: randomNumber(1, 1000),
     terjual: randomNumber(1, 200),
-    rating: Array(randomNumber(1, 5))
-      .fill(true)
-      .map(() => '⭐')
-      .join(''),
+    rating:
+      Array(randomNumber(1, 5))
+        .fill(true)
+        .map(() => '⭐')
+        .join('') + idx,
     supplier: randomString(4) + ' ' + randomString(7),
     lokasi_gudang: `Lokasi Gudang ${idx}`,
     tanggal_update: new Date().toLocaleDateString(),

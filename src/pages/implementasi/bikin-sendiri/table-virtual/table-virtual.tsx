@@ -1,8 +1,10 @@
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { memo, useMemo } from 'react';
-import TableVirtualColumn from './table-virtual-column';
+
 import { ITableVirtualHeaderColumn, ITableVirtual } from './types';
 import { TableVirtualStickyGrid } from './table-virtual-sticky-grid';
+import TableVirtualLoading from './table-virtual-loading';
+import TableVirtualColumn from './table-virtual-column';
 
 const TableVirtual = <TDataSource,>({
   dataSource,
@@ -42,44 +44,48 @@ const TableVirtual = <TDataSource,>({
   }, [headers]);
 
   return (
-    <AutoSizer>
-      {({ width, height }) => {
-        return (
-          <TableVirtualStickyGrid
-            height={height}
-            width={width}
-            columnCount={0}
-            rowCount={dataSourceExceptFreezed?.length || 0}
-            rowHeight={rowHeight}
-            columnWidth={columnWidth}
-            stickyHeight={rowHeaderHeight}
-            stickyFooterHeight={rowFooterHeight}
-            stickyWidth={columnWidth}
-            headers={reMapHeaders}
-            dataSource={(dataSource || []) as Record<string, string | number>[]}
-            onChangeFilter={onChangeFilter}
-            onChangeSort={onChangeSort}
-            useServerFilter={useServerFilter}
-            useServerSort={useServerSort}
-            useFooter={useFooter}
-            isLoading={isLoading}
-            onScrollTouchBottom={onScrollTouchBottom}
-            onClickRow={onClickRow}
-          >
-            {({ columnIndex, rowIndex, style }) => {
-              return (
-                <TableVirtualColumn
-                  columnIndex={columnIndex}
-                  rowIndex={rowIndex}
-                  style={style}
-                  onClickRow={onClickRow}
-                />
-              );
-            }}
-          </TableVirtualStickyGrid>
-        );
-      }}
-    </AutoSizer>
+    <div className="size-full relative">
+      <AutoSizer>
+        {({ width, height }) => {
+          return (
+            <TableVirtualStickyGrid
+              height={height}
+              width={width}
+              columnCount={0}
+              rowCount={dataSourceExceptFreezed?.length || 0}
+              rowHeight={rowHeight}
+              columnWidth={columnWidth}
+              stickyHeight={rowHeaderHeight}
+              stickyFooterHeight={rowFooterHeight}
+              stickyWidth={columnWidth}
+              headers={reMapHeaders}
+              dataSource={(dataSource || []) as Record<string, string | number>[]}
+              onChangeFilter={onChangeFilter}
+              onChangeSort={onChangeSort}
+              useServerFilter={useServerFilter}
+              useServerSort={useServerSort}
+              useFooter={useFooter}
+              isLoading={isLoading}
+              onScrollTouchBottom={onScrollTouchBottom}
+              onClickRow={onClickRow}
+            >
+              {({ columnIndex, rowIndex, style }) => {
+                return (
+                  <TableVirtualColumn
+                    columnIndex={columnIndex}
+                    rowIndex={rowIndex}
+                    style={style}
+                    onClickRow={onClickRow}
+                  />
+                );
+              }}
+            </TableVirtualStickyGrid>
+          );
+        }}
+      </AutoSizer>
+
+      {isLoading && <TableVirtualLoading />}
+    </div>
   );
 };
 

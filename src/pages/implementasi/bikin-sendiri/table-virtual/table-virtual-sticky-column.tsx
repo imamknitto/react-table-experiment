@@ -31,7 +31,6 @@ export default function TableVirtualStickyColumn({
     <div
       className={clsx('sticky z-[2] bg-white')}
       style={{
-        top: stickyHeight,
         width: stickyWidth,
         height: `calc(100% - ${stickyHeight}px)`,
         ...style,

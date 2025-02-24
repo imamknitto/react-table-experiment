@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import clsx from 'clsx';
+
 import { ITableVirtualStickyGrid } from './types';
 import TableVirtualInnerElement from './table-virtual-inner-element';
 import { TableVirtualContext } from './table-virtual-context';

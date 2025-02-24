@@ -1,15 +1,15 @@
-import { CSSProperties, memo, ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useTableVirtual } from './table-virtual-context';
 
 interface ITableVirtualFooter {
   parentHeight: number;
   scrollBarWidth: number;
-  useAbsolutePosition?: boolean;
 }
 
-const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth, useAbsolutePosition }: ITableVirtualFooter) => {
-  const { headers, stickyWidth, stickyFooterHeight, freezedHeaders } = useTableVirtual();
+const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth }: ITableVirtualFooter) => {
+  const { headers, stickyWidth, stickyFooterHeight, freezedHeaders, finalDataSource, rowHeight } = useTableVirtual();
+  const useAbsolutePosition = finalDataSource?.length * rowHeight < parentHeight;
 
   return (
     <>
@@ -18,7 +18,9 @@ const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth, useAbsolutePo
         className={clsx('sticky left-0 flex flex-row z-[3]')}
         style={{
           position: useAbsolutePosition ? 'absolute' : 'sticky',
-          top: parentHeight - stickyFooterHeight - scrollBarWidth - (useAbsolutePosition ? 7.5 : 0),
+          top: useAbsolutePosition
+            ? parentHeight - stickyFooterHeight - 11
+            : parentHeight - stickyFooterHeight - scrollBarWidth,
           height: stickyFooterHeight,
           width: stickyWidth * [...freezedHeaders, ...headers].length,
         }}
@@ -81,4 +83,4 @@ const FooterItem = ({ style, columnIndex, value, totalHeaders, isFreezed = false
   );
 };
 
-export default memo(TableVirtualStickyFooters);
+export default TableVirtualStickyFooters;

@@ -6,7 +6,6 @@ import TableVirtualStickyFooters from './table-virtual-sticky-footers';
 import TableVirtualStickyColumn from './table-virtual-sticky-column';
 import TableVirtualEmptyData from './table-virtual-empty-data';
 import { useTableVirtual } from './table-virtual-context';
-import TableVirtualLoading from './table-virtual-loading';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
   const {
@@ -58,12 +57,7 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
       <TableVirtualStickyHeaders />
 
       {freezedHeaders?.length && (
-        <div
-          className="flex flex-row bg-red-50 w-full"
-          style={{
-            marginTop: 0,
-          }}
-        >
+        <div style={{ marginTop: minRow > 0 && useFooter ? -stickyHeight - stickyFooterHeight : 0 }}>
           {freezedHeaders.map(({ key, render }, idx) => {
             return (
               <TableVirtualStickyColumn
@@ -83,15 +77,7 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
       )}
 
       {useFooter && (
-        <TableVirtualStickyFooters
-          parentHeight={gridViewportSize.height}
-          scrollBarWidth={scrollBarWidth}
-          useAbsolutePosition={maxRow < Math.ceil(gridViewportSize.height / rowHeight)}
-        />
-      )}
-
-      {isLoading && (
-        <TableVirtualLoading style={{ width: gridViewportSize.width, height: gridViewportSize.height - 10 }} />
+        <TableVirtualStickyFooters parentHeight={gridViewportSize.height} scrollBarWidth={scrollBarWidth} />
       )}
 
       {!finalDataSource?.length && !isLoading && (
@@ -101,7 +87,7 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
       <div
         className="absolute"
         style={{
-          top: minRow > 2 && useFooter ? -rowHeight - (stickyFooterHeight - rowHeight) : stickyHeight,
+          top: minRow > 0 && useFooter ? -(stickyHeight - (stickyHeight - stickyFooterHeight)) : stickyHeight,
           left: stickyWidth * (freezedHeaders?.length || 0),
         }}
       >

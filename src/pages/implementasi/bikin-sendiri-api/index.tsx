@@ -103,7 +103,7 @@ export default function ImplementasiBikinSendiriApi() {
         <TableVirtual
           isLoading={loading}
           headers={getHeaders(dataSource)}
-          dataSource={[]}
+          dataSource={dataSource || []}
           columnWidth={200}
           rowHeaderHeight={36}
           rowHeight={36}
