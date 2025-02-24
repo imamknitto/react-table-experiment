@@ -56,7 +56,7 @@ const dataSourceV2: IDummyData[] = Array(50)
         : idx > 10 && idx <= 40
         ? `Laptop Macbook Pro M3`
         : `${randomString(5)} ${randomString(20)} ${randomString(5)}`,
-    kategori: `Kategori ${randomString(10)} ${randomString(10)} ${idx}`,
+    kategori: `Kategori ${randomString(5)} ${idx}`,
     harga: Math.random() * 1000000,
     stok: randomNumber(1, 1000),
     terjual: randomNumber(1, 200),

@@ -1,6 +1,5 @@
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { memo, useMemo } from 'react';
-
 import { ITableVirtualHeaderColumn, ITableVirtual } from './types';
 import { TableVirtualStickyGrid } from './table-virtual-sticky-grid';
 import TableVirtualLoading from './table-virtual-loading';
