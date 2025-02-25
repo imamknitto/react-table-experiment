@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { FixedSizeGrid as Grid, GridOnScrollProps } from 'react-window';
+import { VariableSizeGrid as Grid, GridOnScrollProps } from 'react-window';
 
 interface IUseGridScrolling {
   finalDataSource: Record<string, string | number>[];

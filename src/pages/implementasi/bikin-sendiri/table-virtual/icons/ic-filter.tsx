@@ -7,17 +7,22 @@ interface SVGProps extends React.SVGProps<SVGSVGElement> {
 export default function IcFilter({ className, ...props }: SVGProps) {
   return (
     <svg
-      viewBox="0 0 18 18"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={clsx('size-[1.125rem]', className)}
+      className={clsx('size-6', className)}
       stroke="currentColor"
       {...props}
     >
-      <path
-        d="M13.9 3H4.1C3.1102 3 2.6153 3 2.308 3.27467C2.0007 3.54934 2 3.99201 2 4.87669V5.33669C2 6.02803 2 6.37404 2.182 6.66071C2.364 6.94738 2.6951 7.12604 3.3594 7.48205L5.3985 8.57539C5.8437 8.81406 6.067 8.9334 6.2266 9.0654C6.5584 9.3394 6.7628 9.66207 6.8552 10.0587C6.9 10.2481 6.9 10.4707 6.9 10.9154V12.6954C6.9 13.3014 6.9 13.6048 7.0764 13.8408C7.2528 14.0775 7.5664 14.1941 8.1922 14.4275C9.5075 14.9168 10.1648 15.1615 10.6324 14.8828C11.1 14.6041 11.1 13.9681 11.1 12.6948V10.9148C11.1 10.4707 11.1 10.2481 11.1448 10.0581C11.2327 9.66951 11.4542 9.31996 11.7741 9.06473C11.933 8.9334 12.1563 8.81406 12.6015 8.57473L14.6406 7.48138C15.3042 7.12605 15.6367 6.94804 15.818 6.66137C16 6.3747 16 6.02803 16 5.33603V4.87602C16 3.99201 16 3.54934 15.692 3.27467C15.3854 3 14.8905 3 13.9 3Z"
-        fill="currentColor"
-      />
+      <g className="filter-outline">
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M3 7a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1m2 4.5a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M8 16a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1"
+          className="Vector 38 (Stroke)"
+          clipRule="evenodd"
+        ></path>
+      </g>
     </svg>
   );
 }

@@ -1,6 +1,7 @@
 import { GridChildComponentProps, FixedSizeGrid as Grid } from 'react-window';
 import { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import { TSortOrder } from './hooks/use-sort-table';
+import { ADVANCE_FILTER_NAMES } from './constants';
 
 export interface ITableVirtualContext {
   isLoading?: boolean;
@@ -29,6 +30,15 @@ export interface ITableVirtualContext {
     resetFilter: (dataKey: string) => void;
     activeFilters: Record<string, string[]>;
   };
+  filterAdvance?: {
+    isFilterAdvanceCardOpen: { show: boolean; key: string };
+    filterAdvanceCardRef: React.LegacyRef<HTMLDivElement>;
+    filterAdvanceCardPosition: { top: number; left: number };
+    handleOpenAdvanceFilter: (e: React.MouseEvent<HTMLElement>, activeFilterKey: string) => void;
+    applyAdvanceFilter: (dataKey: string, filterName: TAdvanceFilterName, filterValue: string) => void;
+    resetAdvanceFilter: (dataKey: string) => void;
+    activeAdvanceFilters: Record<string, { filterName: TAdvanceFilterName; value: string }>;
+  };
   search?: {
     isSearchCardOpen: { show: boolean; key: string };
     searchCardRef: React.LegacyRef<HTMLDivElement>;
@@ -48,10 +58,12 @@ export interface ITableVirtual<TDataSource> {
   dataSource?: TDataSource[];
   headers?: IDataHeader<TDataSource>[];
   useServerFilter?: boolean;
+  useServerAdvanceFilter?: boolean;
   useServerSort?: boolean;
   useFooter?: boolean;
   selectedRowIndex?: number;
   isLoading?: boolean;
+  onChangeAdvanceFilter?: (data: Record<string, { filterName: TAdvanceFilterName; value: string }>) => void;
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
@@ -70,11 +82,13 @@ export interface ITableVirtualStickyGrid
   dataSource: Record<string, string | number>[];
   selectedRowIndex?: number;
   useServerFilter?: boolean;
+  useServerAdvanceFilter?: boolean;
   useServerSort?: boolean;
   useFooter?: boolean;
   isLoading?: boolean;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   onChangeFilter?: (data: Record<string, string[]>) => void;
+  onChangeAdvanceFilter?: (data: Record<string, { filterName: TAdvanceFilterName; value: string }>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onScrollTouchBottom?: () => void;
 }
@@ -121,6 +135,15 @@ export interface ITableVirtualSearchCard extends HTMLAttributes<HTMLDivElement> 
   onApplySearch?: (dataKey: string, searchValue: string) => void;
 }
 
+export interface ITableVirtualFilterAdvanceCard extends HTMLAttributes<HTMLDivElement> {
+  filterDataKey: string;
+  filterCardRef: React.LegacyRef<HTMLDivElement>;
+  filterCardPosition: { top: number; left: number };
+  onApplyAdvanceFilter?: (dataKey: string, filterName: TAdvanceFilterName, filterValue: string) => void;
+  onResetAdvanceFilter?: (dataKey: string) => void;
+  activeAdvanceFilters?: { filterName: TAdvanceFilterName; value: string };
+}
+
 export interface IDataHeader<TDataSource> {
   key: keyof TDataSource;
   caption: string;
@@ -129,8 +152,11 @@ export interface IDataHeader<TDataSource> {
   useSort?: boolean;
   useSearch?: boolean;
   useSingleFilter?: boolean;
+  useAdvanceFilter?: boolean;
   freezed?: boolean;
   filterOptions?: string[];
   render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
   renderSummary?: (value?: number | string, rowIndex?: number) => ReactNode | string;
 }
+
+export type TAdvanceFilterName = keyof typeof ADVANCE_FILTER_NAMES;

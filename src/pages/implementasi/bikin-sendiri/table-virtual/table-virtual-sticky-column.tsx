@@ -57,7 +57,7 @@ export default function TableVirtualStickyColumn({
             )}
             style={{ height: rowHeight, width: stickyWidth, top: (minRow + idx) * rowHeight }}
           >
-            <div ref={ref} className="whitespace-nowrap w-[150px] truncate">
+            <div ref={ref} className="w-full truncate max-w-[180px]">
               {render ? render(finalValue as string | number, rowIndex) : (finalValue as string | number)}
             </div>
 

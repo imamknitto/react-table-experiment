@@ -3,21 +3,13 @@ import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
 import TableVirtualStickyHeaders from './table-virtual-sticky-headers';
 import TableVirtualStickyFooters from './table-virtual-sticky-footers';
-import TableVirtualStickyColumn from './table-virtual-sticky-column';
+import TableVirtualStickyColumns from './table-virtual-sticky-columns';
 import TableVirtualEmptyData from './table-virtual-empty-data';
 import { useTableVirtual } from './table-virtual-context';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const {
-    stickyHeight,
-    stickyWidth,
-    finalDataSource,
-    isLoading,
-    rowHeight,
-    freezedHeaders,
-    useFooter,
-    stickyFooterHeight,
-  } = useTableVirtual();
+  const { stickyHeight, stickyWidth, finalDataSource, isLoading, freezedHeaders, useFooter, stickyFooterHeight } =
+    useTableVirtual();
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   const [gridViewportSize, setGridViewportSize] = useState<{ height: number; width: number }>({ height: 0, width: 0 });
@@ -55,26 +47,7 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
       }}
     >
       <TableVirtualStickyHeaders />
-
-      {freezedHeaders?.length && (
-        <div style={{ marginTop: minRow > 0 && useFooter ? -stickyHeight - stickyFooterHeight : 0 }}>
-          {freezedHeaders.map(({ key, render }, idx) => {
-            return (
-              <TableVirtualStickyColumn
-                key={'freezed-column-item-' + idx}
-                style={{ left: idx * stickyWidth }}
-                minRow={minRow}
-                maxRow={maxRow}
-                rowHeight={rowHeight}
-                stickyHeight={stickyHeight}
-                stickyWidth={stickyWidth}
-                columnKeyName={key}
-                render={render}
-              />
-            );
-          })}
-        </div>
-      )}
+      <TableVirtualStickyColumns minRow={minRow} maxRow={maxRow} />
 
       {useFooter && (
         <TableVirtualStickyFooters parentHeight={gridViewportSize.height} scrollBarWidth={scrollBarWidth} />

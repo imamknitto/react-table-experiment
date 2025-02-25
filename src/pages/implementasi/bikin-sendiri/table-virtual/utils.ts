@@ -58,3 +58,7 @@ export function getFixedCardPosition(rect: DOMRect) {
 
   return { calculatedTop, calculatedLeft };
 }
+
+export function getKeyByValue(object: Record<string, string | number>, value: string | number) {
+  return Object.keys(object).find((key) => object[key] === value);
+}

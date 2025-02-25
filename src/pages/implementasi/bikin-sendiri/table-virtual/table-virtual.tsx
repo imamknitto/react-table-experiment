@@ -13,8 +13,10 @@ const TableVirtual = <TDataSource,>({
   columnWidth = 180,
   rowFooterHeight = 36,
   onChangeFilter,
+  onChangeAdvanceFilter,
   onChangeSort,
   useServerFilter,
+  useServerAdvanceFilter,
   useServerSort,
   useFooter,
   onClickRow,
@@ -60,8 +62,10 @@ const TableVirtual = <TDataSource,>({
               headers={reMapHeaders}
               dataSource={(dataSource || []) as Record<string, string | number>[]}
               onChangeFilter={onChangeFilter}
+              onChangeAdvanceFilter={onChangeAdvanceFilter}
               onChangeSort={onChangeSort}
               useServerFilter={useServerFilter}
+              useServerAdvanceFilter={useServerAdvanceFilter}
               useServerSort={useServerSort}
               useFooter={useFooter}
               isLoading={isLoading}

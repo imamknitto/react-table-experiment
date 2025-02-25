@@ -23,10 +23,10 @@ const dummyHeaders = [
   { key: 'nama_produk', caption: 'Nama Produk', freezed: true },
   { key: 'kategori', caption: 'Kategori' },
   { key: 'harga', caption: 'Harga (Rp)' },
-  { key: 'stok', caption: 'Stok (pcs)' },
+  { key: 'stok', caption: 'Stok (pcs)', freezed: true },
   { key: 'terjual', caption: 'Terjual (pcs)' },
   { key: 'rating', caption: 'Rating', freezed: true },
-  { key: 'supplier', caption: 'Supplier', freezed: true },
+  { key: 'supplier', caption: 'Supplier' },
   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
   { key: 'tanggal_update', caption: 'Tanggal Update' },
   { key: 'status', caption: 'Status' },
@@ -56,15 +56,14 @@ const dataSourceV2: IDummyData[] = Array(50)
         : idx > 10 && idx <= 40
         ? `Laptop Macbook Pro M3`
         : `${randomString(5)} ${randomString(20)} ${randomString(5)}`,
-    kategori: `Kategori ${randomString(5)} ${idx}`,
+    kategori: `Kategori ${randomString(20)} ${idx}`,
     harga: Math.random() * 1000000,
     stok: randomNumber(1, 1000),
     terjual: randomNumber(1, 200),
-    rating:
-      Array(randomNumber(1, 5))
-        .fill(true)
-        .map(() => '⭐')
-        .join('') + idx,
+    rating: Array(randomNumber(1, 5))
+      .fill(true)
+      .map(() => '⭐')
+      .join(''),
     supplier: randomString(4) + ' ' + randomString(7),
     lokasi_gudang: `Lokasi Gudang ${idx}`,
     tanggal_update: new Date().toLocaleDateString(),
@@ -91,6 +90,7 @@ export default function BikinSendiri() {
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
     useSingleFilter: idx === 3 ? true : false,
+    useAdvanceFilter: idx !== -1,
     freezed,
     renderSummary: () =>
       key === 'nama_produk' ? (
@@ -123,6 +123,7 @@ export default function BikinSendiri() {
           rowHeaderHeight={50}
           rowFooterHeight={40}
           onChangeFilter={(prop) => console.log('CHANGE FILTER', prop)}
+          onChangeAdvanceFilter={(prop) => console.log('CHANGE ADVANCE FILTER', prop)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', { sortKey, sortBy })}
           onClickRow={(data, rowIndex) => {
             console.log('CLICK ROW', data, rowIndex);

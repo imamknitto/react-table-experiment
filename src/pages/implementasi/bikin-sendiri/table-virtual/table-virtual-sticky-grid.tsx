@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { FixedSizeGrid as Grid } from 'react-window';
+import { VariableSizeGrid as Grid } from 'react-window';
 import clsx from 'clsx';
 
 import { ITableVirtualStickyGrid } from './types';
@@ -9,6 +9,7 @@ import useGridScrolling from './hooks/use-grid-scrolling';
 import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
+import useFilterAdvanceTable from './hooks/use-filter-advance-table';
 
 export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   stickyHeight,
@@ -20,8 +21,10 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   headers,
   dataSource,
   onChangeFilter,
+  onChangeAdvanceFilter,
   onChangeSort,
   useServerFilter,
+  useServerAdvanceFilter,
   useServerSort,
   useFooter,
   isLoading,
@@ -55,6 +58,21 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
   });
 
   const {
+    filteredAdvanceData,
+    filterAdvanceCardRef,
+    isFilterAdvanceCardOpen,
+    handleOpenAdvanceFilter,
+    filterAdvanceCardPosition,
+    applyAdvanceFilter,
+    resetAdvanceFilter,
+    activeAdvanceFilters,
+  } = useFilterAdvanceTable({
+    data: filteredData || [],
+    onChangeAdvanceFilter,
+    useServerAdvanceFilter,
+  });
+
+  const {
     searchedData,
     isSearchCardOpen,
     handleOpenSearch,
@@ -64,7 +82,7 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     resetSearch,
     activeSearch,
   } = useSearchTable({
-    data: filteredData || [],
+    data: filteredAdvanceData || [],
   });
 
   const handleSelectRow = useCallback((data: Record<string, string | number>, rowIndex: number) => {
@@ -100,6 +118,15 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
         updateFilter,
         resetFilter,
         activeFilters,
+      },
+      filterAdvance: {
+        isFilterAdvanceCardOpen,
+        handleOpenAdvanceFilter,
+        filterAdvanceCardRef,
+        filterAdvanceCardPosition,
+        applyAdvanceFilter,
+        resetAdvanceFilter,
+        activeAdvanceFilters,
       },
       search: {
         isSearchCardOpen,
@@ -141,6 +168,13 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
       finalDataSource,
       freezedHeaders,
       headersExpectFreezed,
+      filterAdvanceCardRef,
+      isFilterAdvanceCardOpen,
+      handleOpenAdvanceFilter,
+      filterAdvanceCardPosition,
+      applyAdvanceFilter,
+      resetAdvanceFilter,
+      activeAdvanceFilters,
     ]
   );
 
@@ -155,10 +189,10 @@ export const TableVirtualStickyGrid: React.FC<ITableVirtualStickyGrid> = ({
     <TableVirtualContext.Provider value={contextValue}>
       <Grid
         {...rest}
-        columnWidth={columnWidth}
-        rowHeight={rowHeight}
-        innerElementType={TableVirtualInnerElement}
         ref={gridRef}
+        columnWidth={() => columnWidth}
+        rowHeight={() => rowHeight}
+        innerElementType={TableVirtualInnerElement}
         rowCount={finalDataSource?.length || 0}
         columnCount={headersExpectFreezed?.length || 0}
         onScroll={handleScroll}
