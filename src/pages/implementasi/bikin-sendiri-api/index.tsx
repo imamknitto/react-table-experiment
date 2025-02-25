@@ -21,11 +21,18 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       caption: 'Path Url',
       filterOptions: generateTableFilterOptions(dataSource || [], 'pathUrl'),
       freezed: true,
+      useAdvanceFilter: true,
       renderSummary: () => (
         <div className="bg-blue-950 size-full text-white flex justify-center items-center">Footer</div>
       ),
     },
-    { key: 'request', caption: 'Request', useFilter: false },
+    {
+      key: 'request',
+      caption: 'Request',
+      useAdvanceFilter: true,
+      useSingleFilter: true,
+      filterOptions: generateTableFilterOptions(dataSource || [], 'request'),
+    },
     { key: 'response', caption: 'Response', useFilter: false },
     {
       key: 'status',
