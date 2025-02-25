@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import useOnClickOutside from '../hooks/use-click-outside';
 import IcChevron from '../icons/ic-chevon';
@@ -20,8 +20,33 @@ export default function TableVirtualDropdown({
   const dropdownOptRef = useRef<HTMLDivElement>(null);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedOptIndex, setSelectedOptIndex] = useState(-1);
 
   useOnClickOutside(dropdownWrapperRef, () => setIsDropdownOpen(false));
+
+  // Handle Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isDropdownOpen) return;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setSelectedOptIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setSelectedOptIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+      } else if (event.key === 'Enter' && selectedOptIndex >= 0) {
+        event.preventDefault();
+        onSelectOption?.(options[selectedOptIndex]);
+        setIsDropdownOpen(false);
+      } else if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isDropdownOpen, selectedOptIndex, options]);
 
   return (
     <div ref={dropdownWrapperRef} className="relative inline-block text-left">
@@ -62,7 +87,8 @@ export default function TableVirtualDropdown({
                   key={'table-virtual-dropdown-opt-' + idx}
                   className={clsx(
                     'py-1.5 px-2 hover:bg-blue-950 hover:text-white text-gray-900 cursor-pointer text-xs',
-                    value === opt && 'bg-blue-950 text-white'
+                    value === opt && 'bg-blue-950 text-white',
+                    idx === selectedOptIndex && 'bg-blue-950 text-white'
                   )}
                   onClick={() => {
                     setIsDropdownOpen(false);
