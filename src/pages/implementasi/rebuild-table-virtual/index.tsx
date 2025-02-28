@@ -19,32 +19,26 @@ interface IDummyData {
 }
 
 const dummyHeaders = [
-  { key: 'nama_produk', caption: 'Nama Produk', freezed: true },
+  { key: 'nama_produk', caption: 'Nama Produk' },
   { key: 'kategori', caption: 'Kategori' },
   { key: 'harga', caption: 'Harga (Rp)' },
-  { key: 'stok', caption: 'Stok (pcs)', freezed: true },
-  //   { key: 'terjual', caption: 'Terjual (pcs)' },
-  //   { key: 'rating', caption: 'Rating', freezed: true },
-  //   { key: 'supplier', caption: 'Supplier' },
-  //   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
-  //   { key: 'tanggal_update', caption: 'Tanggal Update' },
-  //   { key: 'status', caption: 'Status' },
-  //   { key: 'berat', caption: 'Berat (kg)' },
-  //   { key: 'dimensi', caption: 'Dimensi (cm)' },
-  //   { key: 'warna', caption: 'Warna' },
-  //   { key: 'bahan', caption: 'Bahan' },
-  //   { key: 'diskon', caption: 'Diskon (%)' },
-  //   { key: 'harga_setelah_diskon', caption: 'Harga Setelah Diskon (Rp)' },
-  //   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
-  //   { key: 'maksimal_pemesanan', caption: 'Maksimal Pemesanan' },
-  //   { key: 'maksimal_pemesanan2', caption: 'Maksimal Pemesanan 2' },
-  //   { key: 'maksimal_pemesanan3', caption: 'Maksimal Pemesanan 3' },
-  //   { key: 'maksimal_pemesanan4', caption: 'Maksimal Pemesanan 4' },
-  //   { key: 'maksimal_pemesanan5', caption: 'Maksimal Pemesanan 5' },
-  //   { key: 'maksimal_pemesanan6', caption: 'Maksimal Pemesanan 6' },
+  { key: 'stok', caption: 'Stok (pcs)' },
+  { key: 'terjual', caption: 'Terjual (pcs)' },
+  { key: 'rating', caption: 'Rating' },
+  { key: 'supplier', caption: 'Supplier' },
+  { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
+  { key: 'tanggal_update', caption: 'Tanggal Update' },
+  { key: 'status', caption: 'Status' },
+  { key: 'berat', caption: 'Berat (kg)' },
+  { key: 'dimensi', caption: 'Dimensi (cm)' },
+  { key: 'warna', caption: 'Warna' },
+  { key: 'bahan', caption: 'Bahan' },
+  { key: 'diskon', caption: 'Diskon (%)' },
+  { key: 'harga_setelah_diskon', caption: 'Harga Setelah Diskon (Rp)' },
+  { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(25)
+const dataSourceV2: IDummyData[] = Array(40)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -74,23 +68,17 @@ const dataSourceV2: IDummyData[] = Array(25)
     diskon: Math.random() * 10,
     harga_setelah_diskon: Math.random() * 1000000,
     minimal_pemesanan: Math.random() * 10,
-    maksimal_pemesanan: Math.random() * 10,
-    maksimal_pemesanan2: Math.random() * 10,
-    maksimal_pemesanan3: Math.random() * 10,
-    maksimal_pemesanan4: Math.random() * 10,
-    maksimal_pemesanan5: Math.random() * 10,
-    maksimal_pemesanan6: Math.random() * 10,
   }));
 
 export default function RebuildTableVirtual() {
-  const modifiedHeaders = dummyHeaders?.map(({ key, caption, freezed }, idx) => ({
+  const modifiedHeaders = dummyHeaders?.map(({ key, caption }, idx) => ({
     key,
     caption,
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
     useSingleFilter: idx === 3 ? true : false,
     useAdvanceFilter: idx !== -1,
-    freezed,
+    freezed: false,
     renderSummary: () =>
       key === 'nama_produk' ? (
         <div className="size-full flex justify-center items-center bg-blue-950 text-white">TOTAL: </div>
@@ -106,7 +94,15 @@ export default function RebuildTableVirtual() {
       </Header>
 
       <div className="flex-1 w-full">
-        <TableVirtual headers={modifiedHeaders || []} dataSource={[]} useAutoWidth />
+        <TableVirtual
+          isLoading={false}
+          headers={modifiedHeaders || []}
+          dataSource={[]}
+          onChangeAdvanceFilter={(props) => console.log('CHANGE ADVANCE FILTER', props)}
+          onChangeFilter={(props) => console.log('CHANGE FILTER', props)}
+          onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
+          useFooter
+        />
       </div>
     </div>
   );

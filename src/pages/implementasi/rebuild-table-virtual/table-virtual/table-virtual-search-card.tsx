@@ -1,8 +1,8 @@
-import clsx from 'clsx';
-import Portal from './components/portal';
-import { ITableVirtualSearchCard } from './types';
 import { useState } from 'react';
+import clsx from 'clsx';
+import { ITableVirtualSearchCard } from './types';
 import TableVirtualInput from './components/table-virtual-input';
+import Portal from './components/portal';
 
 export default function TableVirtualSearchCard({
   searchDataKey,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export type TSortOrder = 'asc' | 'desc' | 'unset';
 
@@ -8,47 +8,34 @@ interface ISortTable<TDataSource> {
   useServerSort?: boolean;
 }
 
-export default function useSortTable<TDataSource>({
-  data,
-  onChangeSort,
-  useServerSort = false,
-}: ISortTable<TDataSource>) {
-  const [sortedData, setSortedData] = useState<TDataSource[]>(data);
+export default function useSortTable<TDataSource>({ data, useServerSort, onChangeSort }: ISortTable<TDataSource>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<TSortOrder>('unset');
 
-  useEffect(() => {
-    if (!sortKey) {
-      setSortedData(data);
-      return;
-    }
+  const sortedData = useMemo(() => {
+    if (!sortKey || sortBy === 'unset') return data;
+    if (useServerSort) return data;
 
-    if (useServerSort) {
-      onChangeSort?.(sortKey, sortBy);
-      return;
-    }
-
-    const sorted = [...data].sort((a, b) => {
+    return [...data].sort((a, b) => {
       if (a[sortKey as keyof TDataSource] < b[sortKey as keyof TDataSource]) return sortBy === 'asc' ? -1 : 1;
       if (a[sortKey as keyof TDataSource] > b[sortKey as keyof TDataSource]) return sortBy === 'asc' ? 1 : -1;
       return 0;
     });
+  }, [data, sortKey, sortBy, useServerSort]);
 
-    setSortedData(sortBy === 'unset' ? data : sorted);
-    onChangeSort?.(sortKey, sortBy);
-  }, [sortKey, sortBy, data, onChangeSort, useServerSort]);
+  const handleSort = useCallback(
+    (key: string) => {
+      setSortKey((prevKey) => {
+        const newSortBy = prevKey === key ? (sortBy === 'asc' ? 'desc' : sortBy === 'desc' ? 'unset' : 'asc') : 'asc';
 
-  const handleSort = (key: string) => {
-    let newOrder: TSortOrder = 'asc';
-    if (sortKey === key && sortBy === 'asc') {
-      newOrder = 'desc';
-    } else if (sortKey === key && sortBy === 'desc') {
-      newOrder = 'unset';
-    }
+        setSortBy(newSortBy);
+        onChangeSort?.(key, newSortBy);
 
-    setSortKey(newOrder ? key : null);
-    setSortBy(newOrder);
-  };
+        return newSortBy === 'unset' ? null : key;
+      });
+    },
+    [sortBy, onChangeSort]
+  );
 
   return { sortedData, handleSort, sortKey, sortBy };
 }

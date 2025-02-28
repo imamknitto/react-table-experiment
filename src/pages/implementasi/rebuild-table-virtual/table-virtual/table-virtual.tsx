@@ -1,21 +1,16 @@
-import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useRef, useState } from 'react';
 
-import { IDataHeader, ITableVirtualContext, ITableVirtualHeaderColumn } from './types';
+import { ITableVirtual, ITableVirtualHeaderColumn } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
+import useFilterAdvanceTable from './hooks/use-filter-advance-table';
+import useFilterTable from './hooks/use-filter-table';
+import useSearchTable from './hooks/use-search-table';
+import useSortTable from './hooks/use-sort-table';
 import TableVirtualStickyGrid from './table-virtual-sticky-grid';
 import TableVirtualCell from './table-virtual-cell';
-
-interface Props<T> {
-  dataSource?: T[];
-  headers?: IDataHeader<T>[];
-  columnWidth?: number;
-  rowHeight?: number;
-  stickyrowHeaderHeight?: number;
-  stickyFooterHeight?: number;
-  useAutoWidth?: boolean;
-}
+import { useMemo } from 'react';
+import TableVirtualLoading from './table-virtual-loading';
+import TableVirtualEmptyData from './table-virtual-empty-data';
 
 export default function TableVirtual<T>({
   dataSource,
@@ -25,11 +20,12 @@ export default function TableVirtual<T>({
   stickyrowHeaderHeight = 50,
   stickyFooterHeight = 40,
   useAutoWidth = false,
-}: Props<T>) {
-  const gridRef = useRef<Grid>(null);
-
-  const [adjustedColumnWidth, setAdjustedColumnWidth] = useState(columnWidth);
-
+  useFooter,
+  isLoading,
+  onChangeAdvanceFilter,
+  onChangeFilter,
+  onChangeSort,
+}: ITableVirtual<T>) {
   const mappedHeaders = headers?.map((data, idx) => ({
     width: columnWidth,
     height: stickyrowHeaderHeight,
@@ -40,29 +36,111 @@ export default function TableVirtual<T>({
     useSingleFilter: data.useSingleFilter || false,
     ...data,
   })) as ITableVirtualHeaderColumn[];
+  const freezedHeaders = useMemo(() => mappedHeaders?.filter(({ freezed }) => freezed), [mappedHeaders]);
+  const nonFreezedHeaders = useMemo(() => mappedHeaders?.filter(({ freezed }) => !freezed), [mappedHeaders]);
 
-  const contextValue: ITableVirtualContext = {
-    adjustedColumnWidth,
-    setAdjustedColumnWidth,
-    columnWidth: columnWidth,
-    rowHeight: rowHeight,
-    stickyHeaderHeight: stickyrowHeaderHeight,
-    stickyFooterHeight: stickyFooterHeight,
-    headers: mappedHeaders || [],
-    finalDataSource: (dataSource || []) as Record<string, string | number>[],
-    isLoading: false,
-    freezedHeaders: [],
-    selectedRowIndex: -1,
-    useAutoWidth,
-  };
+  const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
+    data: dataSource || [],
+    onChangeSort,
+    useServerSort: false,
+  });
+
+  const {
+    filteredData,
+    isFilterCardOpen,
+    handleOpenFilter,
+    filterCardRef,
+    filterCardPosition,
+    updateFilter,
+    resetFilter,
+    activeFilters,
+  } = useFilterTable({
+    data: sortedData || [],
+    onChangeFilter,
+    useServerFilter: false,
+  });
+
+  const {
+    filteredAdvanceData,
+    filterAdvanceCardRef,
+    isFilterAdvanceCardOpen,
+    handleOpenAdvanceFilter,
+    filterAdvanceCardPosition,
+    applyAdvanceFilter,
+    resetAdvanceFilter,
+    activeAdvanceFilters,
+  } = useFilterAdvanceTable({
+    data: filteredData || [],
+    onChangeAdvanceFilter,
+    useServerAdvanceFilter: false,
+  });
+
+  const {
+    searchedData,
+    isSearchCardOpen,
+    handleOpenSearch,
+    searchCardRef,
+    searchCardPosition,
+    updateSearch,
+    resetSearch,
+    activeSearch,
+  } = useSearchTable({
+    data: filteredAdvanceData || [],
+  });
 
   return (
-    <TableVirtualProvider value={contextValue}>
-      <div className="border size-full relative">
+    <TableVirtualProvider
+      value={{
+        columnWidth: columnWidth,
+        rowHeight: rowHeight,
+        stickyHeaderHeight: stickyrowHeaderHeight,
+        stickyFooterHeight: stickyFooterHeight,
+        freezedHeaders,
+        nonFreezedHeaders,
+        finalDataSource: (searchedData || []) as Record<string, string | number>[],
+        isLoading,
+        selectedRowIndex: -1,
+        useAutoWidth,
+        useFooter,
+        sort: {
+          sortKey,
+          sortBy,
+          handleSort,
+        },
+        filter: {
+          isFilterCardOpen,
+          handleOpenFilter,
+          filterCardRef,
+          filterCardPosition,
+          updateFilter,
+          resetFilter,
+          activeFilters,
+        },
+        filterAdvance: {
+          isFilterAdvanceCardOpen,
+          handleOpenAdvanceFilter,
+          filterAdvanceCardRef,
+          filterAdvanceCardPosition,
+          applyAdvanceFilter,
+          resetAdvanceFilter,
+          activeAdvanceFilters,
+        },
+        search: {
+          isSearchCardOpen,
+          handleOpenSearch,
+          searchCardRef,
+          searchCardPosition,
+          updateSearch,
+          resetSearch,
+          activeSearch,
+        },
+      }}
+    >
+      <div className="border border-gray-300 size-full relative">
         <AutoSizer>
           {({ width, height }) => {
             return (
-              <TableVirtualStickyGrid gridRef={gridRef} width={width} height={height}>
+              <TableVirtualStickyGrid width={width} height={height}>
                 {({ columnIndex, rowIndex, style }) => (
                   <TableVirtualCell rowIndex={rowIndex} columnIndex={columnIndex} style={style} />
                 )}
@@ -70,6 +148,10 @@ export default function TableVirtual<T>({
             );
           }}
         </AutoSizer>
+
+        {isLoading && <TableVirtualLoading />}
+
+        {!searchedData?.length && !isLoading && <TableVirtualEmptyData />}
       </div>
     </TableVirtualProvider>
   );

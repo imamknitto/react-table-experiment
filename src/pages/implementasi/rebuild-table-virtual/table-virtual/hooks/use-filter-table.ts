@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 
@@ -14,70 +14,58 @@ export default function useFilterTable<TDataSource>({
   useServerFilter = false,
 }: IFilterTable<TDataSource>) {
   const filterCardRef = useRef<HTMLDivElement | null>(null);
-
-  const [filteredData, setFilteredData] = useState<TDataSource[]>(data);
   const [activeFilters, setActiveFilters] = useState<Record<keyof TDataSource, string[]>>(
     {} as Record<keyof TDataSource, string[]>
   );
 
   const [isFilterCardOpen, setIsFilterCardOpen] = useState({ show: false, key: '' });
-  const [filterCardPosition, setFilterCardPosition] = useState({
-    top: 0,
-    left: 0,
-  });
+  const [filterCardPosition, setFilterCardPosition] = useState({ top: 0, left: 0 });
 
   useOnClickOutside(filterCardRef, () => setIsFilterCardOpen({ show: false, key: '' }));
 
   useEffect(() => {
-    if (Object.keys(activeFilters).length === 0) {
-      setFilteredData(data);
-      return;
-    }
-
-    if (useServerFilter) {
-      onChangeFilter?.(activeFilters);
-      return;
-    }
-
-    let cpData = [...data];
-    Object.entries(activeFilters).forEach(([columnName, filterValues]) => {
-      if ((filterValues as []).length > 0) {
-        cpData = cpData?.filter((row) =>
-          (filterValues as string[]).some((value) => value == row[columnName as keyof TDataSource])
-        );
-      }
-    });
-    setFilteredData(cpData);
     onChangeFilter?.(activeFilters);
-  }, [data, activeFilters, onChangeFilter, useServerFilter]);
+  }, [activeFilters, onChangeFilter]);
 
-  const handleOpenFilter = (e: React.MouseEvent<HTMLElement>, activeFilterKey: string) => {
+  const filteredData = useMemo(() => {
+    if (Object.keys(activeFilters).length === 0) return data;
+    if (useServerFilter) return data;
+
+    return data.filter((row) => {
+      return Object.entries(activeFilters).every(([columnName, filterValues]) => {
+        const rowValue = String(row[columnName as keyof TDataSource]).toLowerCase();
+        const filterValue = (filterValues as string[]).map((value) => value.toLowerCase());
+        return filterValue.some((value) => rowValue.includes(value));
+      });
+    });
+  }, [data, activeFilters, useServerFilter]);
+
+  const handleOpenFilter = useCallback((e: React.MouseEvent<HTMLElement>, activeFilterKey: string) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const { calculatedTop, calculatedLeft } = getFixedCardPosition(rect);
 
     setFilterCardPosition({ top: calculatedTop, left: calculatedLeft });
     setIsFilterCardOpen({ show: true, key: activeFilterKey });
-  };
+  }, []);
 
-  const updateFilter = (dataKey: keyof TDataSource, filterValues: string[]) => {
+  const updateFilter = useCallback((dataKey: keyof TDataSource | string, filterValues: string[]) => {
     setActiveFilters((prev) => ({
       ...prev,
       [dataKey]: filterValues,
     }));
     setIsFilterCardOpen({ show: false, key: '' });
-  };
+  }, []);
 
-  const resetFilter = (dataKey: keyof TDataSource) => {
+  const resetFilter = useCallback((dataKey: keyof TDataSource | string) => {
     setActiveFilters((prev) => {
       const newFilters = { ...prev };
-      delete newFilters[dataKey];
+      delete newFilters[dataKey as keyof TDataSource];
       return newFilters;
     });
-    setFilteredData(data);
     setIsFilterCardOpen({ show: false, key: '' });
-  };
+  }, []);
 
-  const resetAllFilter = () => setActiveFilters({} as Record<keyof TDataSource, string[]>);
+  const resetAllFilter = useCallback(() => setActiveFilters({} as Record<keyof TDataSource, string[]>), []);
 
   return {
     filteredData,

@@ -1,65 +1,63 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 
-interface ISearchTable<TData> {
-  data?: TData[];
+interface ISearchTable<TDataSource> {
+  data: TDataSource[];
 }
 
-export default function useSearchTable<TData>({ data }: ISearchTable<TData>) {
+export default function useSearchTable<TDataSource>({ data }: ISearchTable<TDataSource>) {
   const searchCardRef = useRef<HTMLDivElement | null>(null);
   const [isSearchCardOpen, setIsSearchCardOpen] = useState({ show: false, key: '' });
-  const [searchCardPosition, setSearchCardPosition] = useState({
-    top: 0,
-    left: 0,
-  });
+  const [searchCardPosition, setSearchCardPosition] = useState({ top: 0, left: 0 });
 
-  const [searchedData, setSearchedData] = useState<TData[]>(data || []);
-  const [activeSearch, seActiveSearch] = useState<Record<keyof TData, string>>({} as Record<keyof TData, string>);
+  const [activeSearch, seActiveSearch] = useState<Record<keyof TDataSource, string>>(
+    {} as Record<keyof TDataSource, string>
+  );
 
   useOnClickOutside(searchCardRef, () => setIsSearchCardOpen({ show: false, key: '' }));
 
-  useEffect(() => {
-    let cpData = [...(data || [])];
-    Object.entries(activeSearch).forEach(([dataKey, searchValue]) => {
-      if ((searchValue as string).length > 0) {
-        cpData = cpData?.filter((row) =>
-          row[dataKey as keyof TData]
-            ?.toString()
-            ?.toLowerCase()
-            ?.includes((searchValue as string).toLowerCase())
-        );
-      }
-    });
-    setSearchedData(cpData);
+  const searchedData = useMemo(() => {
+    if (!activeSearch || Object.keys(activeSearch).length === 0) return data || [];
+
+    return (data || []).filter((row) =>
+      Object.entries(activeSearch).every(([dataKey, searchValue]) =>
+        (searchValue as string).length === 0
+          ? true
+          : row[dataKey as keyof TDataSource]
+              ?.toString()
+              ?.toLowerCase()
+              ?.includes((searchValue as string).toLowerCase())
+      )
+    );
   }, [data, activeSearch]);
 
-  const handleOpenSearch = (e: React.MouseEvent<HTMLElement>, activeSearchKey: string) => {
+  const handleOpenSearch = useCallback((e: React.MouseEvent<HTMLElement>, activeSearchKey: string) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const { calculatedTop, calculatedLeft } = getFixedCardPosition(rect);
 
     setSearchCardPosition({ top: calculatedTop, left: calculatedLeft });
     setIsSearchCardOpen({ show: true, key: activeSearchKey });
-  };
+  }, []);
 
-  const updateSearch = (dataKey: keyof TData, searchValue: string) => {
+  const updateSearch = useCallback((dataKey: keyof TDataSource | string, searchValue: string) => {
     seActiveSearch((prev) => ({
       ...prev,
       [dataKey]: searchValue,
     }));
     setIsSearchCardOpen({ show: false, key: '' });
-  };
+  }, []);
 
-  const resetSearch = (dataKey: keyof TData) => {
+  const resetSearch = useCallback((dataKey: keyof TDataSource | string) => {
     seActiveSearch((prev) => {
       const cpActiveSearch = { ...prev };
-      delete cpActiveSearch[dataKey];
+      delete cpActiveSearch[dataKey as keyof TDataSource];
       return cpActiveSearch;
     });
     setIsSearchCardOpen({ show: false, key: '' });
-  };
+  }, []);
 
-  const resetAllSearch = () => seActiveSearch({} as Record<keyof TData, string>);
+  const resetAllSearch = useCallback(() => seActiveSearch({} as Record<keyof TDataSource, string>), []);
 
   return {
     searchedData,

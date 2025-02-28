@@ -4,15 +4,15 @@ import { ITableVirtualContext } from '../types';
 export const TableVirtualContext = createContext<ITableVirtualContext>({
   columnWidth: 180,
   rowHeight: 36,
-  stickyHeight: 50,
+  stickyHeaderHeight: 50,
   stickyFooterHeight: 36,
-  stickyWidth: 180,
-  headers: [],
+  adjustedColumnWidth: 180,
+  nonFreezedHeaders: [],
   finalDataSource: [],
   isLoading: false,
   freezedHeaders: [],
   selectedRowIndex: -1,
+  outerSize: { width: 0, height: 0 },
 });
 
 export const useTableVirtual = () => useContext(TableVirtualContext);
-// TableVirtualContext.displayName = 'TableVirtualContext';

@@ -13,7 +13,7 @@ import { useTableVirtual } from './service/table-virtual-context';
 import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
 
 const TableVirtualStickyHeaders = ({ className, style }: { className?: string; style?: CSSProperties }) => {
-  const { headers, sort, filter, search, columnWidth, freezedHeaders, filterAdvance, adjustedColumnWidth } =
+  const { sort, filter, search, columnWidth, freezedHeaders, nonFreezedHeaders, filterAdvance, adjustedColumnWidth } =
     useTableVirtual();
 
   const { sortBy, sortKey, handleSort } = sort || {};
@@ -49,30 +49,59 @@ const TableVirtualStickyHeaders = ({ className, style }: { className?: string; s
   } = search || {};
 
   const selectedHeader = useMemo(() => {
-    return [...freezedHeaders, ...headers].find(({ key }) => key === isFilterCardOpen?.key);
-  }, [freezedHeaders, headers, isFilterCardOpen]);
+    return [...freezedHeaders, ...nonFreezedHeaders].find(({ key }) => key === isFilterCardOpen?.key);
+  }, [freezedHeaders, nonFreezedHeaders, isFilterCardOpen]);
 
   return (
     <>
       <div id="headers" className={clsx('sticky top-0 left-0 flex flex-row z-[3]', className)} style={style}>
-        {freezedHeaders?.map(
-          (
-            { key, caption, useAdvanceFilter, useFilter, useSort, useSearch, useSingleFilter, ...style },
-            columnIndex
-          ) => {
+        {freezedHeaders?.map((freezedHeader, columnIndex) => {
+          const { key, caption, useAdvanceFilter, useFilter, useSort, useSearch, useSingleFilter, ...style } =
+            freezedHeader;
+
+          return (
+            <HeaderItem
+              isFreezed
+              key={'table-header-freezed-' + key + columnIndex}
+              caption={caption}
+              style={{ ...style, width: adjustedColumnWidth, left: columnIndex * columnWidth }}
+              columnIndex={columnIndex}
+              useFilter={useFilter}
+              useAdvanceFilter={useAdvanceFilter}
+              useSort={useSort}
+              useSearch={useSearch}
+              useSingleFilter={useSingleFilter}
+              totalHeaders={freezedHeaders.length}
+              handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
+              handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
+              handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
+              handleSort={() => handleSort?.(key)}
+              sortValue={sortKey === key ? sortBy : 'unset'}
+            />
+          );
+        })}
+
+        <div className="absolute">
+          {nonFreezedHeaders?.map((nonFreezedHeader, colIndex) => {
+            const { key, caption, useAdvanceFilter, useFilter, useSort, useSearch, useSingleFilter, ...style } =
+              nonFreezedHeader;
+
             return (
               <HeaderItem
-                isFreezed
-                key={'table-header-freezed-' + key + columnIndex}
+                key={'table-header' + key + colIndex}
                 caption={caption}
-                style={{ ...style, width: adjustedColumnWidth, left: columnIndex * columnWidth }}
-                columnIndex={columnIndex}
+                style={{
+                  ...style,
+                  width: adjustedColumnWidth,
+                  left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
+                }}
+                columnIndex={colIndex}
                 useFilter={useFilter}
                 useAdvanceFilter={useAdvanceFilter}
                 useSort={useSort}
                 useSearch={useSearch}
                 useSingleFilter={useSingleFilter}
-                totalHeaders={headers.length}
+                totalHeaders={nonFreezedHeaders.length}
                 handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
                 handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
                 handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
@@ -80,40 +109,7 @@ const TableVirtualStickyHeaders = ({ className, style }: { className?: string; s
                 sortValue={sortKey === key ? sortBy : 'unset'}
               />
             );
-          }
-        )}
-
-        <div className="absolute">
-          {headers?.map(
-            (
-              { key, caption, useAdvanceFilter, useFilter, useSort, useSearch, useSingleFilter, ...style },
-              colIndex
-            ) => {
-              return (
-                <HeaderItem
-                  key={'table-header' + key + colIndex}
-                  caption={caption}
-                  style={{
-                    ...style,
-                    width: adjustedColumnWidth,
-                    left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
-                  }}
-                  columnIndex={colIndex}
-                  useFilter={useFilter}
-                  useAdvanceFilter={useAdvanceFilter}
-                  useSort={useSort}
-                  useSearch={useSearch}
-                  useSingleFilter={useSingleFilter}
-                  totalHeaders={headers.length}
-                  handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
-                  handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
-                  handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
-                  handleSort={() => handleSort?.(key)}
-                  sortValue={sortKey === key ? sortBy : 'unset'}
-                />
-              );
-            }
-          )}
+          })}
         </div>
       </div>
 
@@ -196,7 +192,8 @@ const HeaderItem = ({
         isFreezed ? 'sticky z-[3]' : 'absolute',
         'bg-gray-100 flex flex-row space-x-3 items-center text-xs font-bold',
         'px-1.5 border-b border-b-gray-300',
-        columnIndex !== totalHeaders - 1 && 'border-r border-r-gray-300'
+        columnIndex !== totalHeaders - 1 && 'border-r border-r-gray-300',
+        isFreezed && '!border-r !border-r-gray-300'
       )}
       style={style}
     >
