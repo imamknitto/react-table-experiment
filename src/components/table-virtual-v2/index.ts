@@ -1,3 +1,3 @@
-import RebuildTableVirtual from './table-virtual';
+import TableVirtualV2 from './table-virtual';
 
-export { RebuildTableVirtual };
+export { TableVirtualV2 };

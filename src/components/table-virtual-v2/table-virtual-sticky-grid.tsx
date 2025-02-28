@@ -20,7 +20,7 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     isLoading,
   } = useTableVirtual();
 
-  const columnCount = nonFreezedHeaders.length || 0;
+  const columnCount = nonFreezedHeaders?.length || 0;
 
   useEffect(() => {
     if (!outerRef.current) return;

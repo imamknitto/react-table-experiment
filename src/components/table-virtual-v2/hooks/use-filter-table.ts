@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 
@@ -8,11 +9,9 @@ interface IFilterTable<TDataSource> {
   useServerFilter?: boolean;
 }
 
-export default function useFilterTable<TDataSource>({
-  data,
-  onChangeFilter,
-  useServerFilter = false,
-}: IFilterTable<TDataSource>) {
+export default function useFilterTable<TDataSource>(props: IFilterTable<TDataSource>) {
+  const { data, onChangeFilter, useServerFilter = false } = props;
+
   const filterCardRef = useRef<HTMLDivElement | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<keyof TDataSource, string[]>>(
     {} as Record<keyof TDataSource, string[]>

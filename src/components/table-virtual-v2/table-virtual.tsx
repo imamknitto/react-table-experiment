@@ -1,6 +1,6 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { ITableVirtual, ITableVirtualHeaderColumn } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
@@ -95,17 +95,13 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     data: filteredAdvanceData || [],
   });
 
-  const { handleScroll, onScrollToTop } = useGridScrolling({
+  const { handleScroll } = useGridScrolling({
     gridRef,
     finalDataSource: (searchedData || []) as Record<string, string | number>[],
     isLoading,
     rowHeight,
     onScrollTouchBottom,
   });
-
-  useEffect(() => {
-    onScrollToTop();
-  }, [activeFilters, activeSearch, activeAdvanceFilters]);
 
   return (
     <TableVirtualProvider

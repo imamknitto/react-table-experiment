@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import Header from '../../../components/header';
-import TableVirtual from '../../../components/table-virtual-v1/table-virtual';
-import { ITableVirtual } from '../../../components/table-virtual-v1/types';
 import { getDataStreamApi, IResponse, IStreamApi } from './data';
 import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
+import { TableVirtualV2 } from '../../../components/table-virtual-v2';
+import { ITableVirtual } from '../../../components/table-virtual-v2/types';
 
 const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['headers'] => {
   return [
@@ -13,14 +13,14 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       caption: '_ID',
       filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
       useSingleFilter: true,
-      freezed: true,
+      freezed: false,
     },
     { key: 'tanggal', caption: 'Tanggal', useFilter: false },
     {
       key: 'pathUrl',
       caption: 'Path Url',
       filterOptions: generateTableFilterOptions(dataSource || [], 'pathUrl'),
-      freezed: true,
+      freezed: false,
       useAdvanceFilter: true,
       renderSummary: () => (
         <div className="bg-blue-950 size-full text-white flex justify-center items-center">Footer</div>
@@ -79,7 +79,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 1000, page: page || 1 };
+    const params = { limit: 8000, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -107,15 +107,16 @@ export default function ImplementasiBikinSendiriApi() {
       </div>
 
       <div className="flex-1 w-full">
-        <TableVirtual
+        <TableVirtualV2
           isLoading={loading}
           headers={getHeaders(dataSource)}
           dataSource={dataSource || []}
           columnWidth={200}
-          rowHeaderHeight={36}
           rowHeight={36}
-          onScrollTouchBottom={() => fetchDataFromApi(pagination.currentPage + 1)}
-          useFooter
+          onScrollTouchBottom={() => {
+            fetchDataFromApi(pagination.currentPage + 1);
+            console.log('TOUCH BOTTOM');
+          }}
         />
       </div>
     </div>

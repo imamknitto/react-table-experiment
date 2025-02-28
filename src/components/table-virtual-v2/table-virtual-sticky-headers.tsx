@@ -50,7 +50,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
   } = search || {};
 
   const selectedHeader = useMemo(() => {
-    return [...freezedHeaders, ...nonFreezedHeaders].find(({ key }) => key === isFilterCardOpen?.key);
+    return [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.find(({ key }) => key === isFilterCardOpen?.key);
   }, [freezedHeaders, nonFreezedHeaders, isFilterCardOpen]);
 
   return (
