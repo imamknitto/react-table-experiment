@@ -1,7 +1,7 @@
 import Header from '../../../components/header';
-import TableVirtual from './table-virtual/table-virtual';
-import { ITableVirtual } from './table-virtual/types';
-import { generateTableFilterOptions } from './table-virtual/utils';
+import TableVirtual from '../../../components/table-virtual-v1/table-virtual';
+import { ITableVirtual } from '../../../components/table-virtual-v1/types';
+import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
 
 const randomString = (length: number): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

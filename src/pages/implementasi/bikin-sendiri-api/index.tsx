@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import Header from '../../../components/header';
-import TableVirtual from '../bikin-sendiri/table-virtual/table-virtual';
-import { ITableVirtual } from '../bikin-sendiri/table-virtual/types';
+import TableVirtual from '../../../components/table-virtual-v1/table-virtual';
+import { ITableVirtual } from '../../../components/table-virtual-v1/types';
 import { getDataStreamApi, IResponse, IStreamApi } from './data';
-import { generateTableFilterOptions } from '../bikin-sendiri/table-virtual/utils';
+import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
 
 const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['headers'] => {
   return [

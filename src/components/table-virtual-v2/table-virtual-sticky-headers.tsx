@@ -11,8 +11,9 @@ import IcFilter from './icons/ic-filter';
 import IcSort from './icons/ic-sort';
 import { useTableVirtual } from './service/table-virtual-context';
 import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
+import { ITableVirtualStickyHeaders } from './types';
 
-const TableVirtualStickyHeaders = ({ className, style }: { className?: string; style?: CSSProperties }) => {
+const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
   const { sort, filter, search, columnWidth, freezedHeaders, nonFreezedHeaders, filterAdvance, adjustedColumnWidth } =
     useTableVirtual();
 

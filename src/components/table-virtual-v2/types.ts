@@ -1,3 +1,4 @@
+import { GridChildComponentProps, GridOnScrollProps, VariableSizeGrid as Grid } from 'react-window';
 import { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import { TSortOrder } from './hooks/use-sort-table';
 import { ADVANCE_FILTER_NAMES } from './constants';
@@ -15,6 +16,20 @@ export interface ITableVirtual<TDataSource> {
   onChangeAdvanceFilter?: (data: Record<string, { filterName: TAdvanceFilterName; value: string }>) => void;
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
+  onScrollTouchBottom?: () => void;
+}
+
+export interface ITableVierualProvider {
+  children: React.ReactNode;
+  value: Omit<
+    ITableVirtualContext,
+    | 'setAdjustedColumnWidth'
+    | 'adjustedColumnWidth'
+    | 'outerSize'
+    | 'setOuterSize'
+    | 'scrollbarWidth'
+    | 'setScrollbarWidth'
+  >;
 }
 
 export interface ITableVirtualContext {
@@ -30,6 +45,8 @@ export interface ITableVirtualContext {
   finalDataSource: Record<string, string | number>[];
   useFooter?: boolean;
   selectedRowIndex?: number;
+  scrollbarWidth: number;
+  setScrollbarWidth?: React.Dispatch<React.SetStateAction<number>>;
   outerSize: { width: number; height: number };
   setOuterSize?: React.Dispatch<React.SetStateAction<{ width: number; height: number }>>;
   setAdjustedColumnWidth?: React.Dispatch<React.SetStateAction<number>>;
@@ -66,6 +83,30 @@ export interface ITableVirtualContext {
     resetSearch: (dataKey: string) => void;
     activeSearch: Record<string, string>;
   };
+}
+
+export interface ITableVirtualStickyGrid {
+  children: React.FC<GridChildComponentProps>;
+  width: number;
+  height: number;
+  gridRef: React.RefObject<Grid | null>;
+  outerRef: React.RefObject<HTMLElement | null>;
+  onGridScroll?: (props: GridOnScrollProps) => void;
+}
+
+export interface ITableVirtualInnerElement {
+  children: ReactNode;
+  style: CSSProperties;
+}
+
+export interface ITableVirtualStickyHeaders {
+  className?: string;
+  style?: CSSProperties;
+}
+
+export interface ITableVirtualStickyColumns {
+  minRow: number;
+  maxRow: number;
 }
 
 export interface ITableVirtualHeaderColumn extends Omit<IDataHeader<unknown>, 'caption'> {

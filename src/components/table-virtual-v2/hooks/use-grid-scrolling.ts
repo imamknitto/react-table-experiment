@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react';
 import { VariableSizeGrid as Grid, GridOnScrollProps } from 'react-window';
+import { useCallback, useState } from 'react';
 
 interface IUseGridScrolling {
   finalDataSource: Record<string, string | number>[];
   isLoading?: boolean;
   onScrollTouchBottom?: () => void;
   rowHeight: number;
+  gridRef: React.RefObject<Grid | null>;
 }
 
 export default function useGridScrolling({
@@ -13,8 +14,8 @@ export default function useGridScrolling({
   isLoading = false,
   finalDataSource,
   onScrollTouchBottom,
+  gridRef,
 }: IUseGridScrolling) {
-  const gridRef = useRef<Grid>(null);
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
 
   const handleScroll = ({ scrollTop }: GridOnScrollProps) => {
@@ -33,5 +34,9 @@ export default function useGridScrolling({
     }
   };
 
-  return { gridRef, handleScroll };
+  const onScrollToTop = useCallback(() => {
+    gridRef.current?.scrollTo({ scrollTop: 0 });
+  }, []);
+
+  return { handleScroll, onScrollToTop };
 }

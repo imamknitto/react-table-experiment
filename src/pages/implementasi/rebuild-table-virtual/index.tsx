@@ -1,6 +1,6 @@
 import Header from '../../../components/header';
-import { generateTableFilterOptions } from '../bikin-sendiri/table-virtual/utils';
-import TableVirtual from './table-virtual/table-virtual';
+import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
+import TableVirtual from '../../../components/table-virtual-v2/table-virtual';
 
 const randomString = (length: number): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -19,23 +19,23 @@ interface IDummyData {
 }
 
 const dummyHeaders = [
-  { key: 'nama_produk', caption: 'Nama Produk' },
-  { key: 'kategori', caption: 'Kategori' },
+  { key: 'nama_produk', caption: 'Nama Produk', freezed: false },
+  { key: 'kategori', caption: 'Kategori', freezed: false },
   { key: 'harga', caption: 'Harga (Rp)' },
   { key: 'stok', caption: 'Stok (pcs)' },
-  { key: 'terjual', caption: 'Terjual (pcs)' },
-  { key: 'rating', caption: 'Rating' },
-  { key: 'supplier', caption: 'Supplier' },
-  { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
-  { key: 'tanggal_update', caption: 'Tanggal Update' },
-  { key: 'status', caption: 'Status' },
-  { key: 'berat', caption: 'Berat (kg)' },
-  { key: 'dimensi', caption: 'Dimensi (cm)' },
-  { key: 'warna', caption: 'Warna' },
-  { key: 'bahan', caption: 'Bahan' },
-  { key: 'diskon', caption: 'Diskon (%)' },
-  { key: 'harga_setelah_diskon', caption: 'Harga Setelah Diskon (Rp)' },
-  { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
+  //   { key: 'terjual', caption: 'Terjual (pcs)' },
+  //   { key: 'rating', caption: 'Rating', freezed: true },
+  //   { key: 'supplier', caption: 'Supplier' },
+  //   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
+  //   { key: 'tanggal_update', caption: 'Tanggal Update' },
+  //   { key: 'status', caption: 'Status' },
+  //   { key: 'berat', caption: 'Berat (kg)' },
+  //   { key: 'dimensi', caption: 'Dimensi (cm)' },
+  //   { key: 'warna', caption: 'Warna' },
+  //   { key: 'bahan', caption: 'Bahan' },
+  //   { key: 'diskon', caption: 'Diskon (%)' },
+  //   { key: 'harga_setelah_diskon', caption: 'Harga Setelah Diskon (Rp)' },
+  //   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
 const dataSourceV2: IDummyData[] = Array(40)
@@ -71,14 +71,14 @@ const dataSourceV2: IDummyData[] = Array(40)
   }));
 
 export default function RebuildTableVirtual() {
-  const modifiedHeaders = dummyHeaders?.map(({ key, caption }, idx) => ({
+  const modifiedHeaders = dummyHeaders?.map(({ key, caption, freezed }, idx) => ({
     key,
     caption,
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
     filterOptions: generateTableFilterOptions(dataSourceV2, key),
     useSingleFilter: idx === 3 ? true : false,
     useAdvanceFilter: idx !== -1,
-    freezed: false,
+    freezed,
     renderSummary: () =>
       key === 'nama_produk' ? (
         <div className="size-full flex justify-center items-center bg-blue-950 text-white">TOTAL: </div>
@@ -97,11 +97,13 @@ export default function RebuildTableVirtual() {
         <TableVirtual
           isLoading={false}
           headers={modifiedHeaders || []}
-          dataSource={[]}
+          dataSource={dataSourceV2 || []}
           onChangeAdvanceFilter={(props) => console.log('CHANGE ADVANCE FILTER', props)}
           onChangeFilter={(props) => console.log('CHANGE FILTER', props)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
+          onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
           useFooter
+          useAutoWidth
         />
       </div>
     </div>

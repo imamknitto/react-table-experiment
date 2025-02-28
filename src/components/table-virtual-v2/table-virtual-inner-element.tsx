@@ -1,18 +1,13 @@
-import { Children, CSSProperties, forwardRef, memo, ReactNode } from 'react';
-import TableVirtualStickyHeaders from './table-virtual-sticky-headers';
+import { Children, forwardRef, memo } from 'react';
 import { useTableVirtual } from './service/table-virtual-context';
-import TableVirtualStickyColumns from './table-virtual-sticky-columns';
+import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
+import TableVirtualStickyHeaders from './table-virtual-sticky-headers';
+import TableVirtualStickyColumns from './table-virtual-sticky-columns';
 import TableVirtualStickyFooters from './table-virtual-sticky-footers';
 
-interface Props {
-  children: ReactNode;
-  style: CSSProperties;
-}
-
-const TableVirtualInnerElement = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const { stickyHeaderHeight, outerSize, useFooter, stickyFooterHeight, adjustedColumnWidth, freezedHeaders } =
-    useTableVirtual();
+const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
+  const { stickyHeaderHeight, useFooter, stickyFooterHeight, adjustedColumnWidth, freezedHeaders } = useTableVirtual();
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   return (
@@ -26,7 +21,7 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, Props>((props, ref) 
     >
       <TableVirtualStickyHeaders />
       <TableVirtualStickyColumns minRow={minRow} maxRow={maxRow} />
-      {useFooter && <TableVirtualStickyFooters parentHeight={outerSize.height} scrollBarWidth={8} />}
+      {useFooter && <TableVirtualStickyFooters />}
 
       <div
         className="absolute"

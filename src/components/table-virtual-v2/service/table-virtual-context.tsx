@@ -13,6 +13,7 @@ export const TableVirtualContext = createContext<ITableVirtualContext>({
   freezedHeaders: [],
   selectedRowIndex: -1,
   outerSize: { width: 0, height: 0 },
+  scrollbarWidth: 0,
 });
 
 export const useTableVirtual = () => useContext(TableVirtualContext);

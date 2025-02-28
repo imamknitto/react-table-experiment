@@ -1,31 +1,38 @@
+import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { ITableVirtual, ITableVirtualHeaderColumn } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
 import useFilterAdvanceTable from './hooks/use-filter-advance-table';
+import useGridScrolling from './hooks/use-grid-scrolling';
 import useFilterTable from './hooks/use-filter-table';
 import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
 import TableVirtualStickyGrid from './table-virtual-sticky-grid';
-import TableVirtualCell from './table-virtual-cell';
-import { useMemo } from 'react';
 import TableVirtualLoading from './table-virtual-loading';
-import TableVirtualEmptyData from './table-virtual-empty-data';
+import TableVirtualCell from './table-virtual-cell';
 
-export default function TableVirtual<T>({
-  dataSource,
-  headers,
-  columnWidth = 180,
-  rowHeight = 36,
-  stickyrowHeaderHeight = 50,
-  stickyFooterHeight = 40,
-  useAutoWidth = false,
-  useFooter,
-  isLoading,
-  onChangeAdvanceFilter,
-  onChangeFilter,
-  onChangeSort,
-}: ITableVirtual<T>) {
+export default function TableVirtual<T>(props: ITableVirtual<T>) {
+  const {
+    dataSource,
+    headers,
+    columnWidth = 180,
+    rowHeight = 36,
+    stickyrowHeaderHeight = 50,
+    stickyFooterHeight = 40,
+    useAutoWidth = false,
+    useFooter,
+    isLoading,
+    onChangeAdvanceFilter,
+    onChangeFilter,
+    onChangeSort,
+    onScrollTouchBottom,
+  } = props;
+
+  const gridRef = useRef<Grid>(null);
+  const outerRef = useRef<HTMLElement>(null);
+
   const mappedHeaders = headers?.map((data, idx) => ({
     width: columnWidth,
     height: stickyrowHeaderHeight,
@@ -88,6 +95,18 @@ export default function TableVirtual<T>({
     data: filteredAdvanceData || [],
   });
 
+  const { handleScroll, onScrollToTop } = useGridScrolling({
+    gridRef,
+    finalDataSource: (searchedData || []) as Record<string, string | number>[],
+    isLoading,
+    rowHeight,
+    onScrollTouchBottom,
+  });
+
+  useEffect(() => {
+    onScrollToTop();
+  }, [activeFilters, activeSearch, activeAdvanceFilters]);
+
   return (
     <TableVirtualProvider
       value={{
@@ -140,7 +159,13 @@ export default function TableVirtual<T>({
         <AutoSizer>
           {({ width, height }) => {
             return (
-              <TableVirtualStickyGrid width={width} height={height}>
+              <TableVirtualStickyGrid
+                width={width}
+                height={height}
+                gridRef={gridRef}
+                outerRef={outerRef}
+                onGridScroll={handleScroll}
+              >
                 {({ columnIndex, rowIndex, style }) => (
                   <TableVirtualCell rowIndex={rowIndex} columnIndex={columnIndex} style={style} />
                 )}
@@ -150,8 +175,6 @@ export default function TableVirtual<T>({
         </AutoSizer>
 
         {isLoading && <TableVirtualLoading />}
-
-        {!searchedData?.length && !isLoading && <TableVirtualEmptyData />}
       </div>
     </TableVirtualProvider>
   );

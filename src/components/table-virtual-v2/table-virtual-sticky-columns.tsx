@@ -1,13 +1,9 @@
 import clsx from 'clsx';
 import useColumnOverflow from './hooks/use-column-overflow';
 import { useTableVirtual } from './service/table-virtual-context';
+import { ITableVirtualStickyColumns } from './types';
 
-interface ITableVirtualStickyColumn {
-  minRow: number;
-  maxRow: number;
-}
-
-export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirtualStickyColumn) {
+export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirtualStickyColumns) {
   const { ref, isOverflow } = useColumnOverflow();
   const {
     selectedRowIndex,

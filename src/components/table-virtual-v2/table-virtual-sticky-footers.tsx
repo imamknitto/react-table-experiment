@@ -2,15 +2,20 @@ import { CSSProperties, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useTableVirtual } from './service/table-virtual-context';
 
-interface ITableVirtualFooter {
-  parentHeight: number;
-  scrollBarWidth: number;
-}
+const TableVirtualStickyFooters = () => {
+  const {
+    nonFreezedHeaders,
+    adjustedColumnWidth,
+    stickyFooterHeight,
+    freezedHeaders,
+    finalDataSource,
+    rowHeight,
+    useAutoWidth,
+    outerSize,
+    scrollbarWidth,
+  } = useTableVirtual();
 
-const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth }: ITableVirtualFooter) => {
-  const { nonFreezedHeaders, adjustedColumnWidth, stickyFooterHeight, freezedHeaders, finalDataSource, rowHeight } =
-    useTableVirtual();
-  const useAbsolutePosition = finalDataSource?.length * rowHeight < parentHeight;
+  const useAbsolutePosition = finalDataSource?.length * rowHeight < outerSize.height;
 
   return (
     <>
@@ -20,8 +25,8 @@ const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth }: ITableVirtu
         style={{
           position: useAbsolutePosition ? 'absolute' : 'sticky',
           top: useAbsolutePosition
-            ? parentHeight - stickyFooterHeight - 8
-            : parentHeight - stickyFooterHeight - scrollBarWidth,
+            ? outerSize.height - stickyFooterHeight - 8
+            : outerSize.height - stickyFooterHeight - (useAutoWidth ? 0 : scrollbarWidth),
           height: stickyFooterHeight,
           width: adjustedColumnWidth * [...freezedHeaders, ...nonFreezedHeaders].length,
         }}
@@ -34,7 +39,12 @@ const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth }: ITableVirtu
               value={renderSummary?.() || ''}
               columnIndex={columnIndex}
               totalHeaders={[...freezedHeaders, ...nonFreezedHeaders].length}
-              style={{ ...style, height: stickyFooterHeight, left: columnIndex * adjustedColumnWidth }}
+              style={{
+                ...style,
+                width: adjustedColumnWidth,
+                height: stickyFooterHeight,
+                left: columnIndex * adjustedColumnWidth,
+              }}
             />
           );
         })}
@@ -49,6 +59,7 @@ const TableVirtualStickyFooters = ({ parentHeight, scrollBarWidth }: ITableVirtu
                 totalHeaders={[...freezedHeaders, ...nonFreezedHeaders].length}
                 style={{
                   ...style,
+                  width: adjustedColumnWidth,
                   height: stickyFooterHeight,
                   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
                 }}
