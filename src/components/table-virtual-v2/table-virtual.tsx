@@ -151,7 +151,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
         },
       }}
     >
-      <div className="border border-gray-300 size-full relative">
+      <div className="size-full relative">
         <AutoSizer>
           {({ width, height }) => {
             return (

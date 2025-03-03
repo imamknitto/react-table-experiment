@@ -13,9 +13,12 @@ const TableVirtualStickyFooters = () => {
     useAutoWidth,
     outerSize,
     scrollbarWidth,
+    columnWidth,
   } = useTableVirtual();
 
   const useAbsolutePosition = finalDataSource?.length * rowHeight < outerSize.height;
+  const hasScrollHorizontal =
+    [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.length * columnWidth > outerSize.width;
 
   return (
     <>
@@ -25,8 +28,8 @@ const TableVirtualStickyFooters = () => {
         style={{
           position: useAbsolutePosition ? 'absolute' : 'sticky',
           top: useAbsolutePosition
-            ? outerSize.height - stickyFooterHeight - 8
-            : outerSize.height - stickyFooterHeight - (useAutoWidth ? 0 : scrollbarWidth),
+            ? outerSize.height - stickyFooterHeight - scrollbarWidth
+            : outerSize.height - stickyFooterHeight - (useAutoWidth || !hasScrollHorizontal ? 2 : scrollbarWidth),
           height: stickyFooterHeight,
           width: adjustedColumnWidth * [...freezedHeaders, ...nonFreezedHeaders].length,
         }}

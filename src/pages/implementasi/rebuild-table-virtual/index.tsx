@@ -23,8 +23,8 @@ const dummyHeaders = [
   { key: 'kategori', caption: 'Kategori', freezed: false },
   { key: 'harga', caption: 'Harga (Rp)' },
   { key: 'stok', caption: 'Stok (pcs)' },
-  //   { key: 'terjual', caption: 'Terjual (pcs)' },
-  //   { key: 'rating', caption: 'Rating', freezed: true },
+  { key: 'terjual', caption: 'Terjual (pcs)' },
+  //   { key: 'rating', caption: 'Rating', freezed: false },
   //   { key: 'supplier', caption: 'Supplier' },
   //   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
   //   { key: 'tanggal_update', caption: 'Tanggal Update' },
@@ -38,7 +38,7 @@ const dummyHeaders = [
   //   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(40)
+const dataSourceV2: IDummyData[] = Array(100)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -104,6 +104,7 @@ export default function RebuildTableVirtual() {
           onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
           useFooter
           useAutoWidth
+          stickyFooterHeight={30}
         />
       </div>
     </div>

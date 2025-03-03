@@ -29,6 +29,8 @@ export interface ITableVierualProvider {
     | 'setOuterSize'
     | 'scrollbarWidth'
     | 'setScrollbarWidth'
+    | 'isScrolling'
+    | 'setIsScrolling'
   >;
 }
 
@@ -46,6 +48,8 @@ export interface ITableVirtualContext {
   useFooter?: boolean;
   selectedRowIndex?: number;
   scrollbarWidth: number;
+  isScrolling?: boolean;
+  setIsScrolling?: React.Dispatch<React.SetStateAction<boolean>>;
   setScrollbarWidth?: React.Dispatch<React.SetStateAction<number>>;
   outerSize: { width: number; height: number };
   setOuterSize?: React.Dispatch<React.SetStateAction<{ width: number; height: number }>>;

@@ -7,7 +7,8 @@ import TableVirtualStickyColumns from './table-virtual-sticky-columns';
 import TableVirtualStickyFooters from './table-virtual-sticky-footers';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeaderHeight, useFooter, stickyFooterHeight, adjustedColumnWidth, freezedHeaders } = useTableVirtual();
+  const { stickyHeaderHeight, useFooter, stickyFooterHeight, adjustedColumnWidth, freezedHeaders, isScrolling } =
+    useTableVirtual();
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   return (
@@ -27,7 +28,7 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
         className="absolute"
         style={{
           top:
-            minRow > 0 && useFooter
+            isScrolling && useFooter
               ? -(stickyHeaderHeight - (stickyHeaderHeight - stickyFooterHeight))
               : stickyHeaderHeight,
           left: adjustedColumnWidth * (freezedHeaders?.length || 0),

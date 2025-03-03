@@ -18,11 +18,20 @@ export default function useGridScrolling({
 }: IUseGridScrolling) {
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
 
-  const handleScroll = ({ scrollTop }: GridOnScrollProps) => {
+  const handleScroll = ({ scrollTop, scrollLeft }: GridOnScrollProps) => {
+    let lastScrollLeft = scrollLeft;
+
+    const isHorizontalScroll = scrollLeft !== lastScrollLeft;
+    lastScrollLeft = scrollLeft;
+
+    if (isHorizontalScroll) return;
+
     const visibleHeight = gridRef.current?.props.height ?? 0;
     const totalHeight = rowHeight * finalDataSource?.length || 0;
 
-    if (scrollTop + visibleHeight >= totalHeight - rowHeight && !isLoading) {
+    const canScroll = totalHeight > visibleHeight;
+
+    if (canScroll && scrollTop + visibleHeight >= totalHeight - rowHeight && !isLoading) {
       if (!hasReachedBottom && finalDataSource?.length > 0) {
         setHasReachedBottom(true);
         onScrollTouchBottom?.();

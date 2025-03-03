@@ -18,6 +18,8 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     setOuterSize,
     setScrollbarWidth,
     isLoading,
+    isScrolling,
+    setIsScrolling,
   } = useTableVirtual();
 
   const columnCount = nonFreezedHeaders?.length || 0;
@@ -46,8 +48,18 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         columnWidth={() => adjustedColumnWidth}
         columnCount={columnCount}
         rowCount={finalDataSource?.length || 0}
-        onScroll={onGridScroll}
+        onScroll={(props) => {
+          onGridScroll?.(props);
+          const scrollTop = props.scrollTop;
+
+          if (scrollTop >= 36 && !isScrolling) {
+            setIsScrolling?.(true);
+          } else if (scrollTop <= 36 && isScrolling) {
+            setIsScrolling?.(false);
+          }
+        }}
         innerElementType={tableVirtualInnerElement}
+        className="border border-gray-300"
       >
         {children}
       </Grid>

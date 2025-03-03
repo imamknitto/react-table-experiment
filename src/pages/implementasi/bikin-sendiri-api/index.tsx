@@ -79,7 +79,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 8000, page: page || 1 };
+    const params = { limit: 5, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -113,10 +113,7 @@ export default function ImplementasiBikinSendiriApi() {
           dataSource={dataSource || []}
           columnWidth={200}
           rowHeight={36}
-          onScrollTouchBottom={() => {
-            fetchDataFromApi(pagination.currentPage + 1);
-            console.log('TOUCH BOTTOM');
-          }}
+          onScrollTouchBottom={() => fetchDataFromApi(pagination.currentPage + 1)}
         />
       </div>
     </div>

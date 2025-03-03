@@ -15,12 +15,13 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
     stickyHeaderHeight,
     adjustedColumnWidth,
     rowHeight,
+    isScrolling,
   } = useTableVirtual();
 
   if (!freezedHeaders?.length) return;
 
   return (
-    <div style={{ marginTop: minRow > 0 && useFooter ? -stickyHeaderHeight - stickyFooterHeight : 0 }}>
+    <div style={{ marginTop: isScrolling && useFooter ? -stickyHeaderHeight - stickyFooterHeight : 0 }}>
       {freezedHeaders.map(({ key: columnKeyName, render }, idx) => {
         return (
           <div
