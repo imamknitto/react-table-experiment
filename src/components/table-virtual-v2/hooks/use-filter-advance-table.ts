@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { VariableSizeGrid as Grid } from 'react-window';
+
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 import { TAdvanceFilterName } from '../types';
@@ -6,16 +8,15 @@ import { TAdvanceFilterName } from '../types';
 type IActiveAdvanceFilters<T> = Record<keyof T, { filterName: TAdvanceFilterName; value: string }>;
 
 interface IAdvanceFilterTable<TDataSource> {
+  gridRef: React.RefObject<Grid | null>;
   data: TDataSource[];
   onChangeAdvanceFilter?: (data: IActiveAdvanceFilters<TDataSource>) => void;
   useServerAdvanceFilter?: boolean;
 }
 
-export default function useFilterAdvanceTable<TDataSource>({
-  data,
-  onChangeAdvanceFilter,
-  useServerAdvanceFilter = false,
-}: IAdvanceFilterTable<TDataSource>) {
+export default function useFilterAdvanceTable<TDataSource>(props: IAdvanceFilterTable<TDataSource>) {
+  const { gridRef, data, onChangeAdvanceFilter, useServerAdvanceFilter = false } = props;
+
   const filterAdvanceCardRef = useRef<HTMLDivElement | null>(null);
   const [isFilterAdvanceCardOpen, setIsFilterAdvanceCardOpen] = useState({ show: false, key: '' });
   const [filterAdvanceCardPosition, setFilterAdvanceCardPosition] = useState({ top: 0, left: 0 });
@@ -78,6 +79,8 @@ export default function useFilterAdvanceTable<TDataSource>({
   );
 
   const resetAdvanceFilter = useCallback((dataKey: keyof TDataSource | string) => {
+    gridRef.current?.scrollTo({ scrollTop: 0 });
+
     setActiveAdvanceFilters((prev) => {
       const newFilters = { ...prev };
       delete newFilters[dataKey as keyof TDataSource];

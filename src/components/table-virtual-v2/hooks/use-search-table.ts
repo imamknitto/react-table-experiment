@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { VariableSizeGrid as Grid } from 'react-window';
+
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 
 interface ISearchTable<TDataSource> {
+  gridRef: React.RefObject<Grid | null>;
   data: TDataSource[];
 }
 
-export default function useSearchTable<TDataSource>({ data }: ISearchTable<TDataSource>) {
+export default function useSearchTable<TDataSource>({ data, gridRef }: ISearchTable<TDataSource>) {
   const searchCardRef = useRef<HTMLDivElement | null>(null);
   const [isSearchCardOpen, setIsSearchCardOpen] = useState({ show: false, key: '' });
   const [searchCardPosition, setSearchCardPosition] = useState({ top: 0, left: 0 });
@@ -41,6 +44,8 @@ export default function useSearchTable<TDataSource>({ data }: ISearchTable<TData
   }, []);
 
   const updateSearch = useCallback((dataKey: keyof TDataSource | string, searchValue: string) => {
+    gridRef.current?.scrollTo({ scrollTop: 0 });
+
     seActiveSearch((prev) => ({
       ...prev,
       [dataKey]: searchValue,

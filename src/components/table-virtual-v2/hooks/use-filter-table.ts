@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { VariableSizeGrid as Grid } from 'react-window';
 
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 
 interface IFilterTable<TDataSource> {
+  gridRef: React.RefObject<Grid | null>;
   data: TDataSource[];
   onChangeFilter?: (data: Record<keyof TDataSource, string[]>) => void;
   useServerFilter?: boolean;
 }
 
 export default function useFilterTable<TDataSource>(props: IFilterTable<TDataSource>) {
-  const { data, onChangeFilter, useServerFilter = false } = props;
+  const { gridRef, data, onChangeFilter, useServerFilter = false } = props;
 
   const filterCardRef = useRef<HTMLDivElement | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<keyof TDataSource, string[]>>(
@@ -48,6 +50,8 @@ export default function useFilterTable<TDataSource>(props: IFilterTable<TDataSou
   }, []);
 
   const updateFilter = useCallback((dataKey: keyof TDataSource | string, filterValues: string[]) => {
+    gridRef.current?.scrollTo({ scrollTop: 0 });
+
     setActiveFilters((prev) => ({
       ...prev,
       [dataKey]: filterValues,

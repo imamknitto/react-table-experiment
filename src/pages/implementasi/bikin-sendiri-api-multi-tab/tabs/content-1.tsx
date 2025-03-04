@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
-import Header from '../../../components/header';
-import { getDataStreamApi, IResponse, IStreamApi } from './data';
-import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
-import { TableVirtualV2 } from '../../../components/table-virtual-v2';
-import { ITableVirtual } from '../../../components/table-virtual-v2/types';
+import { ITableVirtual } from '../../../../components/table-virtual-v2/types';
+import { generateTableFilterOptions } from '../../../../components/table-virtual-v2/utils';
+import { getDataStreamApi, IResponse, IStreamApi } from '../data';
+import { memo, useEffect, useRef, useState } from 'react';
+import { TableVirtualV2 } from '../../../../components/table-virtual-v2';
 
 const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['headers'] => {
   return [
@@ -64,7 +63,7 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
   ];
 };
 
-export default function ImplementasiBikinSendiriApi() {
+const Content1 = () => {
   const [dataSource, setDataSource] = useState<IStreamApi[]>([]);
   const firstEntry = useRef<boolean>(true);
 
@@ -79,7 +78,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 1000, page: page || 1 };
+    const params = { limit: 10000, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -97,16 +96,12 @@ export default function ImplementasiBikinSendiriApi() {
   }, []);
 
   return (
-    <div className="p-4 flex flex-col h-screen w-full space-y-2.5">
-      <Header>
-        <h1>Implementasi Table Bikin Sendiri [API]</h1>
-      </Header>
-
-      <div className="py-2 bg-yellow-400/20 w-max px-2 text-gray-900">
-        <pre>{JSON.stringify({ ...pagination, showed: dataSource.length })}</pre>
+    <div className="size-full pr-2 flex flex-col space-y-2.5">
+      <div className="py-2 bg-green-400/20 w-max px-2 text-gray-900">
+        <pre>{JSON.stringify({ ...pagination, diTampilkan: dataSource.length })}</pre>
       </div>
 
-      <div className="flex-1 w-full">
+      <div className="w-full flex-1">
         <TableVirtualV2
           isLoading={loading}
           headers={getHeaders(dataSource)}
@@ -118,4 +113,6 @@ export default function ImplementasiBikinSendiriApi() {
       </div>
     </div>
   );
-}
+};
+
+export default memo(Content1);

@@ -62,6 +62,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     resetFilter,
     activeFilters,
   } = useFilterTable({
+    gridRef,
     data: sortedData || [],
     onChangeFilter,
     useServerFilter: false,
@@ -77,6 +78,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     resetAdvanceFilter,
     activeAdvanceFilters,
   } = useFilterAdvanceTable({
+    gridRef,
     data: filteredData || [],
     onChangeAdvanceFilter,
     useServerAdvanceFilter: false,
@@ -92,6 +94,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     resetSearch,
     activeSearch,
   } = useSearchTable({
+    gridRef,
     data: filteredAdvanceData || [],
   });
 
