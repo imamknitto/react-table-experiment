@@ -27,6 +27,8 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
       {freezedHeaders.map(({ key: columnKeyName, render, fixedWidth }, idx) => {
         currentLeftPosition += fixedWidth || adjustedColumnWidth;
 
+        const columnIndex = idx;
+
         return (
           <div
             key={'freezed-column-item-' + idx}
@@ -54,7 +56,7 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
                     rowIndex % 2 !== 0 ? 'bg-gray-100' : 'bg-white',
                     {
                       '!border-y !border-y-blue-900 !bg-blue-100': rowIndex === selectedRowIndex,
-                      '!border-l !border-l-blue-900': rowIndex === selectedRowIndex && selectedRowIndex === 0,
+                      '!border-l !border-l-blue-900': rowIndex === selectedRowIndex && columnIndex === 0,
                     }
                   )}
                   style={{

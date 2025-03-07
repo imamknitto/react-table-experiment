@@ -21,21 +21,21 @@ interface IDummyData {
 const dummyHeaders = [
   { key: 'nama_produk', caption: 'Nama Produk', fixedWidth: 500, freezed: false },
   { key: 'kategori', caption: 'Kategori', freezed: false },
-  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 300, freezed: false },
-  //   { key: 'stok', caption: 'Stok (pcs)' },
-  //   { key: 'terjual', caption: 'Terjual (pcs)' },
-  //   { key: 'rating', caption: 'Rating', freezed: false },
-  //   { key: 'supplier', caption: 'Supplier' },
-  //   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
-  //   { key: 'tanggal_update', caption: 'Tanggal Update' },
-  //   { key: 'status', caption: 'Status' },
-  //   { key: 'berat', caption: 'Berat (kg)' },
-  //   { key: 'dimensi', caption: 'Dimensi (cm)' },
-  //   { key: 'warna', caption: 'Warna' },
-  //   { key: 'bahan', caption: 'Bahan' },
-  //   { key: 'diskon', caption: 'Diskon (%)' },
-  //   { key: 'harga_setelah_diskon', caption: 'Harga Setelah Diskon (Rp)' },
-  //   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
+  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 300, freezed: true },
+  { key: 'stok', caption: 'Stok (pcs)' },
+  { key: 'terjual', caption: 'Terjual (pcs)' },
+  { key: 'rating', caption: 'Rating', freezed: true },
+  { key: 'supplier', caption: 'Supplier' },
+  { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
+  { key: 'tanggal_update', caption: 'Tanggal Update' },
+  { key: 'status', caption: 'Status' },
+  { key: 'berat', caption: 'Berat (kg)' },
+  { key: 'dimensi', caption: 'Dimensi (cm)' },
+  { key: 'warna', caption: 'Warna' },
+  { key: 'bahan', caption: 'Bahan' },
+  { key: 'diskon', caption: 'Diskon (%)' },
+  { key: 'harga_setelah_diskon', caption: 'Harga Setelah Diskon (Rp)' },
+  { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
 const dataSourceV2: IDummyData[] = Array(50000)
@@ -99,7 +99,7 @@ export default function RebuildTableVirtual() {
       <div className="flex-1 w-full">
         <TableVirtual
           useFooter
-          useAutoWidth
+          //   useAutoWidth
           isLoading={false}
           headers={modifiedHeaders || []}
           dataSource={dataSourceV2 || []}
@@ -108,7 +108,7 @@ export default function RebuildTableVirtual() {
           onChangeFilter={(props) => console.log('CHANGE FILTER', props)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
           onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
-          //   onClickRow={(data, rowIndex) => console.log('CLICK ROW', { data, rowIndex })}
+          onClickRow={(data, rowIndex) => console.log('CLICK ROW', { data, rowIndex })}
         />
       </div>
     </div>
