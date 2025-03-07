@@ -38,7 +38,7 @@ const dummyHeaders = [
   //   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(100)
+const dataSourceV2: IDummyData[] = Array(50000)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -92,20 +92,23 @@ export default function RebuildTableVirtual() {
     <div className="p-4 flex flex-col h-screen w-full space-y-2.5">
       <Header>
         <h1>Rebuild Table Virtual</h1>
+
+        <div className="ms-5">showed: {dataSourceV2.length}</div>
       </Header>
 
       <div className="flex-1 w-full">
         <TableVirtual
+          useFooter
+          useAutoWidth
           isLoading={false}
           headers={modifiedHeaders || []}
           dataSource={dataSourceV2 || []}
+          stickyFooterHeight={30}
           onChangeAdvanceFilter={(props) => console.log('CHANGE ADVANCE FILTER', props)}
           onChangeFilter={(props) => console.log('CHANGE FILTER', props)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
           onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
-          stickyFooterHeight={30}
-          useFooter
-          useAutoWidth
+          //   onClickRow={(data, rowIndex) => console.log('CLICK ROW', { data, rowIndex })}
         />
       </div>
     </div>

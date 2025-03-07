@@ -20,6 +20,7 @@ export interface ITableVirtual<TDataSource> {
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onScrollTouchBottom?: () => void;
+  onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
 }
 
 export interface ITableVierualProvider {

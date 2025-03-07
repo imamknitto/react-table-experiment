@@ -1,6 +1,6 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ITableVirtual, ITableVirtualHeaderColumn } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
@@ -31,23 +31,38 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     onChangeFilter,
     onChangeSort,
     onScrollTouchBottom,
+    onClickRow,
   } = props;
 
   const gridRef = useRef<Grid>(null);
   const outerRef = useRef<HTMLElement>(null);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
 
-  const mappedHeaders = headers?.map((data, idx) => ({
-    width: columnWidth,
-    height: stickyrowHeaderHeight,
-    left: idx * columnWidth,
-    useFilter: data.useFilter || true,
-    useSort: data.useSort || true,
-    useSearch: data.useSearch || true,
-    useSingleFilter: data.useSingleFilter || false,
-    ...data,
-  })) as ITableVirtualHeaderColumn[];
-  const freezedHeaders = useMemo(() => mappedHeaders?.filter(({ freezed }) => freezed), [mappedHeaders]);
-  const nonFreezedHeaders = useMemo(() => mappedHeaders?.filter(({ freezed }) => !freezed), [mappedHeaders]);
+  const { freezedHeaders, nonFreezedHeaders } = useMemo(() => {
+    const freezed: ITableVirtualHeaderColumn[] = [];
+    const nonFreezed: ITableVirtualHeaderColumn[] = [];
+
+    headers?.forEach((data, idx) => {
+      const header = {
+        ...data,
+        width: columnWidth,
+        height: stickyrowHeaderHeight,
+        left: idx * columnWidth,
+        useFilter: data.useFilter ?? true,
+        useSort: data.useSort ?? true,
+        useSearch: data.useSearch ?? true,
+        useSingleFilter: data.useSingleFilter ?? false,
+      };
+
+      if (header.freezed) {
+        freezed.push(header as ITableVirtualHeaderColumn);
+      } else {
+        nonFreezed.push(header as ITableVirtualHeaderColumn);
+      }
+    });
+
+    return { freezedHeaders: freezed, nonFreezedHeaders: nonFreezed };
+  }, [headers, columnWidth, stickyrowHeaderHeight]);
 
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
@@ -109,6 +124,12 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     onScrollTouchBottom,
   });
 
+  const handleClickRow = useCallback((data: Record<string, string | number>, rowIndex: number) => {
+    if (!onClickRow) return;
+    setSelectedRowIndex(rowIndex);
+    onClickRow?.(data, rowIndex);
+  }, []);
+
   return (
     <TableVirtualProvider
       value={{
@@ -120,9 +141,10 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
         nonFreezedHeaders,
         finalDataSource: (searchedData || []) as Record<string, string | number>[],
         isLoading,
-        selectedRowIndex: -1,
         useAutoWidth,
         useFooter,
+        onClickRow: handleClickRow,
+        selectedRowIndex,
         sort: {
           sortKey,
           sortBy,
