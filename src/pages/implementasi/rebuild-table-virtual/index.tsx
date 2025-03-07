@@ -21,10 +21,10 @@ interface IDummyData {
 const dummyHeaders = [
   { key: 'nama_produk', caption: 'Nama Produk', fixedWidth: 500, freezed: false },
   { key: 'kategori', caption: 'Kategori', freezed: false },
-  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 300, freezed: true },
+  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 300, freezed: false },
   { key: 'stok', caption: 'Stok (pcs)' },
   { key: 'terjual', caption: 'Terjual (pcs)' },
-  { key: 'rating', caption: 'Rating', freezed: true },
+  { key: 'rating', caption: 'Rating', freezed: false },
   { key: 'supplier', caption: 'Supplier' },
   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
   { key: 'tanggal_update', caption: 'Tanggal Update' },
@@ -109,6 +109,7 @@ export default function RebuildTableVirtual() {
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
           onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
           onClickRow={(data, rowIndex) => console.log('CLICK ROW', { data, rowIndex })}
+          classNameCell={(rowIndex, columnIndex) => (rowIndex === 0 && columnIndex === 0 ? '!bg-red-400' : '')}
         />
       </div>
     </div>

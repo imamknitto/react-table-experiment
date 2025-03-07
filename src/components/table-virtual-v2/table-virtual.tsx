@@ -32,6 +32,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     onChangeSort,
     onScrollTouchBottom,
     onClickRow,
+    classNameCell,
   } = props;
 
   const gridRef = useRef<Grid>(null);
@@ -145,6 +146,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
         useFooter,
         onClickRow: handleClickRow,
         selectedRowIndex,
+        classNameCell,
         sort: {
           sortKey,
           sortBy,

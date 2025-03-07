@@ -21,6 +21,7 @@ export interface ITableVirtual<TDataSource> {
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onScrollTouchBottom?: () => void;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
+  classNameCell?: (rowIndex: number, columnIndex: number) => string;
 }
 
 export interface ITableVierualProvider {
@@ -63,6 +64,7 @@ export interface ITableVirtualContext {
   totalCountFreezedHeadersWidth: number;
   setAdjustedColumnWidth?: React.Dispatch<React.SetStateAction<number>>;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
+  classNameCell?: (rowIndex: number, columnIndex: number) => string;
   sort?: {
     sortKey: string | null;
     sortBy: TSortOrder;

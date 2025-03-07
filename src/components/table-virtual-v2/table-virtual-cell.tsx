@@ -6,7 +6,8 @@ import { useTableVirtual } from './service/table-virtual-context';
 
 const TableVirtualCell = ({ rowIndex, columnIndex, style }: ITableVirtualCell) => {
   const { ref, isOverflow } = useColumnOverflow();
-  const { nonFreezedHeaders, finalDataSource, selectedRowIndex, onClickRow, freezedHeaders } = useTableVirtual();
+  const { nonFreezedHeaders, finalDataSource, selectedRowIndex, onClickRow, freezedHeaders, classNameCell } =
+    useTableVirtual();
 
   const headerKey = nonFreezedHeaders?.[columnIndex]?.key;
   const headerRender = nonFreezedHeaders?.[columnIndex]?.render;
@@ -36,7 +37,8 @@ const TableVirtualCell = ({ rowIndex, columnIndex, style }: ITableVirtualCell) =
           '!border-l !border-l-blue-900': rowIndex === selectedRowIndex && columnIndex === 0 && !freezedHeaders?.length,
           '!border-r !border-r-blue-900':
             rowIndex === selectedRowIndex && columnIndex === nonFreezedHeaders?.length - 1,
-        }
+        },
+        classNameCell?.(rowIndex, columnIndex)
       )}
     >
       <div ref={ref} className="truncate w-full">
