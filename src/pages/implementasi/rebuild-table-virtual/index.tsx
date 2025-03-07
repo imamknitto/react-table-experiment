@@ -19,11 +19,11 @@ interface IDummyData {
 }
 
 const dummyHeaders = [
-  { key: 'nama_produk', caption: 'Nama Produk', freezed: false },
+  { key: 'nama_produk', caption: 'Nama Produk', fixedWidth: 500, freezed: false },
   { key: 'kategori', caption: 'Kategori', freezed: false },
-  { key: 'harga', caption: 'Harga (Rp)' },
-  { key: 'stok', caption: 'Stok (pcs)' },
-  { key: 'terjual', caption: 'Terjual (pcs)' },
+  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 300, freezed: false },
+  //   { key: 'stok', caption: 'Stok (pcs)' },
+  //   { key: 'terjual', caption: 'Terjual (pcs)' },
   //   { key: 'rating', caption: 'Rating', freezed: false },
   //   { key: 'supplier', caption: 'Supplier' },
   //   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
@@ -71,7 +71,7 @@ const dataSourceV2: IDummyData[] = Array(100)
   }));
 
 export default function RebuildTableVirtual() {
-  const modifiedHeaders = dummyHeaders?.map(({ key, caption, freezed }, idx) => ({
+  const modifiedHeaders = dummyHeaders?.map(({ key, caption, freezed, fixedWidth }, idx) => ({
     key,
     caption,
     className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
@@ -79,6 +79,7 @@ export default function RebuildTableVirtual() {
     useSingleFilter: idx === 3 ? true : false,
     useAdvanceFilter: idx !== -1,
     freezed,
+    fixedWidth,
     renderSummary: () =>
       key === 'nama_produk' ? (
         <div className="size-full flex justify-center items-center bg-blue-950 text-white">TOTAL: </div>
@@ -102,9 +103,9 @@ export default function RebuildTableVirtual() {
           onChangeFilter={(props) => console.log('CHANGE FILTER', props)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
           onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
+          stickyFooterHeight={30}
           useFooter
           useAutoWidth
-          stickyFooterHeight={30}
         />
       </div>
     </div>

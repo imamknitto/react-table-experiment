@@ -14,11 +14,17 @@ const TableVirtualStickyFooters = () => {
     outerSize,
     scrollbarWidth,
     columnWidth,
+    totalCountGridWidth,
+    totalCountFreezedHeadersWidth,
   } = useTableVirtual();
 
   const useAbsolutePosition = finalDataSource?.length * rowHeight < outerSize.height;
-  const hasScrollHorizontal =
-    [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.length * columnWidth > outerSize.width;
+
+  const allHeaders = [...(freezedHeaders || []), ...(nonFreezedHeaders || [])];
+  const hasScrollHorizontal = allHeaders?.length * columnWidth > outerSize.width;
+
+  let footerLeftPosition = 0;
+  let footerLeftFreezedPosition = 0;
 
   return (
     <>
@@ -31,10 +37,13 @@ const TableVirtualStickyFooters = () => {
             ? outerSize.height - stickyFooterHeight - scrollbarWidth
             : outerSize.height - stickyFooterHeight - (useAutoWidth || !hasScrollHorizontal ? 2 : scrollbarWidth),
           height: stickyFooterHeight,
-          width: adjustedColumnWidth * [...freezedHeaders, ...nonFreezedHeaders].length,
+          width: totalCountGridWidth,
+          //   width: adjustedColumnWidth * [...freezedHeaders, ...nonFreezedHeaders].length,
         }}
       >
-        {freezedHeaders?.map(({ key, renderSummary, ...style }, columnIndex) => {
+        {freezedHeaders?.map(({ key, renderSummary, fixedWidth, ...style }, columnIndex) => {
+          footerLeftFreezedPosition += fixedWidth || adjustedColumnWidth;
+
           return (
             <FooterItem
               isFreezed
@@ -44,16 +53,19 @@ const TableVirtualStickyFooters = () => {
               totalHeaders={[...freezedHeaders, ...nonFreezedHeaders].length}
               style={{
                 ...style,
-                width: adjustedColumnWidth,
+                width: fixedWidth || adjustedColumnWidth,
                 height: stickyFooterHeight,
-                left: columnIndex * adjustedColumnWidth,
+                // left: columnIndex * adjustedColumnWidth,
+                left: footerLeftFreezedPosition - (fixedWidth || adjustedColumnWidth),
               }}
             />
           );
         })}
 
         <div className="absolute">
-          {nonFreezedHeaders?.map(({ key, renderSummary, ...style }, colIndex) => {
+          {nonFreezedHeaders?.map(({ key, renderSummary, fixedWidth, ...style }, colIndex) => {
+            footerLeftPosition += fixedWidth || adjustedColumnWidth;
+
             return (
               <FooterItem
                 key={'table-footer' + key + colIndex}
@@ -62,9 +74,11 @@ const TableVirtualStickyFooters = () => {
                 totalHeaders={[...freezedHeaders, ...nonFreezedHeaders].length}
                 style={{
                   ...style,
-                  width: adjustedColumnWidth,
+                  //   width: adjustedColumnWidth,
+                  width: fixedWidth || adjustedColumnWidth,
                   height: stickyFooterHeight,
-                  left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
+                  //   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
+                  left: totalCountFreezedHeadersWidth + footerLeftPosition - (fixedWidth || adjustedColumnWidth),
                 }}
               />
             );

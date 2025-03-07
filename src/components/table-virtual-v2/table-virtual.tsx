@@ -23,6 +23,9 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     stickyFooterHeight = 40,
     useAutoWidth = false,
     useFooter,
+    useServerSort,
+    useServerFilter,
+    useServerAdvanceFilter,
     isLoading,
     onChangeAdvanceFilter,
     onChangeFilter,
@@ -49,7 +52,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
     onChangeSort,
-    useServerSort: false,
+    useServerSort,
   });
 
   const {
@@ -65,7 +68,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     gridRef,
     data: sortedData || [],
     onChangeFilter,
-    useServerFilter: false,
+    useServerFilter,
   });
 
   const {
@@ -81,7 +84,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     gridRef,
     data: filteredData || [],
     onChangeAdvanceFilter,
-    useServerAdvanceFilter: false,
+    useServerAdvanceFilter,
   });
 
   const {

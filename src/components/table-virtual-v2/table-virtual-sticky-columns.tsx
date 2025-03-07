@@ -20,17 +20,22 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
 
   if (!freezedHeaders?.length) return;
 
+  let currentLeftPosition = 0;
+
   return (
     <div style={{ marginTop: isScrolling && useFooter ? -stickyHeaderHeight - stickyFooterHeight : 0 }}>
-      {freezedHeaders.map(({ key: columnKeyName, render }, idx) => {
+      {freezedHeaders.map(({ key: columnKeyName, render, fixedWidth }, idx) => {
+        currentLeftPosition += fixedWidth || adjustedColumnWidth;
+
         return (
           <div
             key={'freezed-column-item-' + idx}
-            className={clsx('sticky z-[2] bg-white')}
+            className={clsx('sticky z-[2] bg-green-50')}
             style={{
               width: adjustedColumnWidth,
               height: `calc(100% - ${stickyHeaderHeight}px)`,
-              left: idx * adjustedColumnWidth,
+              //   left: idx * adjustedColumnWidth,
+              left: currentLeftPosition - (fixedWidth || adjustedColumnWidth),
             }}
           >
             {Array.from({ length: maxRow - minRow + 1 }).map((_, idx) => {
@@ -52,7 +57,11 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
                       '!border-l !border-l-blue-900': rowIndex === selectedRowIndex && selectedRowIndex === 0,
                     }
                   )}
-                  style={{ height: rowHeight, width: adjustedColumnWidth, top: (minRow + idx) * rowHeight }}
+                  style={{
+                    height: rowHeight,
+                    width: fixedWidth || adjustedColumnWidth,
+                    top: (minRow + idx) * rowHeight,
+                  }}
                 >
                   <div ref={ref} className="w-full truncate max-w-[180px]">
                     {render ? render(finalValue as string | number, rowIndex) : (finalValue as string | number)}

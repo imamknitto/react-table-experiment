@@ -14,8 +14,17 @@ import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
 import { ITableVirtualStickyHeaders } from './types';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
-  const { sort, filter, search, columnWidth, freezedHeaders, nonFreezedHeaders, filterAdvance, adjustedColumnWidth } =
-    useTableVirtual();
+  const {
+    sort,
+    filter,
+    search,
+    freezedHeaders,
+    nonFreezedHeaders,
+    filterAdvance,
+    adjustedColumnWidth,
+    totalCountGridWidth,
+    totalCountFreezedHeadersWidth,
+  } = useTableVirtual();
 
   const { sortBy, sortKey, handleSort } = sort || {};
 
@@ -53,19 +62,42 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
     return [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.find(({ key }) => key === isFilterCardOpen?.key);
   }, [freezedHeaders, nonFreezedHeaders, isFilterCardOpen]);
 
+  let headerLeftPosition = 0;
+  let headerLeftFreezedPosition = 0;
+
   return (
     <>
-      <div id="headers" className={clsx('sticky top-0 left-0 flex flex-row z-[3]', className)} style={style}>
+      <div
+        id="headers"
+        className={clsx('sticky top-0 flex flex-row z-[3]', className)}
+        style={{ ...style, width: totalCountGridWidth }}
+      >
         {freezedHeaders?.map((freezedHeader, columnIndex) => {
-          const { key, caption, useAdvanceFilter, useFilter, useSort, useSearch, useSingleFilter, ...style } =
-            freezedHeader;
+          const {
+            key,
+            caption,
+            useAdvanceFilter,
+            useFilter,
+            useSort,
+            useSearch,
+            useSingleFilter,
+            fixedWidth,
+            ...style
+          } = freezedHeader;
+
+          headerLeftFreezedPosition += fixedWidth || adjustedColumnWidth;
 
           return (
             <HeaderItem
               isFreezed
               key={'table-header-freezed-' + key + columnIndex}
               caption={caption}
-              style={{ ...style, width: adjustedColumnWidth, left: columnIndex * columnWidth }}
+              style={{
+                ...style,
+                width: fixedWidth || adjustedColumnWidth,
+                // left: columnIndex * adjustedColumnWidth
+                left: headerLeftFreezedPosition - (fixedWidth || adjustedColumnWidth),
+              }}
               columnIndex={columnIndex}
               useFilter={useFilter}
               useAdvanceFilter={useAdvanceFilter}
@@ -84,8 +116,19 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
 
         <div className="absolute">
           {nonFreezedHeaders?.map((nonFreezedHeader, colIndex) => {
-            const { key, caption, useAdvanceFilter, useFilter, useSort, useSearch, useSingleFilter, ...style } =
-              nonFreezedHeader;
+            const {
+              key,
+              caption,
+              useAdvanceFilter,
+              useFilter,
+              useSort,
+              useSearch,
+              useSingleFilter,
+              fixedWidth,
+              ...style
+            } = nonFreezedHeader;
+
+            headerLeftPosition += fixedWidth || adjustedColumnWidth;
 
             return (
               <HeaderItem
@@ -93,8 +136,9 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                 caption={caption}
                 style={{
                   ...style,
-                  width: adjustedColumnWidth,
-                  left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
+                  width: fixedWidth || adjustedColumnWidth,
+                  //   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
+                  left: totalCountFreezedHeadersWidth + headerLeftPosition - (fixedWidth || adjustedColumnWidth),
                 }}
                 columnIndex={colIndex}
                 useFilter={useFilter}

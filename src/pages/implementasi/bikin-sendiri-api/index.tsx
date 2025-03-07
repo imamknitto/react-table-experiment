@@ -14,8 +14,9 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
       useSingleFilter: true,
       freezed: false,
+      columnWidth: 500,
     },
-    { key: 'tanggal', caption: 'Tanggal', useFilter: false },
+    { key: 'tanggal', caption: 'Tanggal', useFilter: false, columnWidth: 300 },
     {
       key: 'pathUrl',
       caption: 'Path Url',

@@ -7,16 +7,25 @@ import TableVirtualStickyColumns from './table-virtual-sticky-columns';
 import TableVirtualStickyFooters from './table-virtual-sticky-footers';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const { stickyHeaderHeight, useFooter, stickyFooterHeight, adjustedColumnWidth, freezedHeaders, isScrolling } =
-    useTableVirtual();
+  const {
+    stickyHeaderHeight,
+    useFooter,
+    stickyFooterHeight,
+    freezedHeaders,
+    isScrolling,
+    totalCountGridWidth,
+    totalCountFreezedHeadersWidth,
+  } = useTableVirtual();
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   return (
     <div
+      id="innerbase-grid"
       ref={ref}
       style={{
         ...props.style,
-        width: props.style.width || 0 + adjustedColumnWidth,
+        // width: props.style.width || 0 + adjustedColumnWidth,
+        width: totalCountGridWidth,
         height: props.style.height || 0 + stickyHeaderHeight,
       }}
     >
@@ -31,7 +40,8 @@ const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerEl
             isScrolling && useFooter
               ? -(stickyHeaderHeight - (stickyHeaderHeight - stickyFooterHeight))
               : stickyHeaderHeight,
-          left: adjustedColumnWidth * (freezedHeaders?.length || 0),
+          //   left: adjustedColumnWidth * (freezedHeaders?.length || 0),
+          left: freezedHeaders?.length ? totalCountFreezedHeadersWidth : 0,
         }}
       >
         {props.children}

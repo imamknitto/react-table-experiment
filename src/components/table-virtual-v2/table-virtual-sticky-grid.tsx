@@ -1,5 +1,5 @@
 import { VariableSizeGrid as Grid } from 'react-window';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualStickyGrid } from './types';
 import tableVirtualInnerElement from './table-virtual-inner-element';
@@ -23,7 +23,13 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     useFooter,
   } = useTableVirtual();
 
-  const columnCount = nonFreezedHeaders?.length || 0;
+  const totalColumn = nonFreezedHeaders?.length || 0;
+  const totalColumnExceptFixedWidth = nonFreezedHeaders?.filter(({ fixedWidth }) => !fixedWidth)?.length || 0;
+  const totalCountFixedColumnWidth = nonFreezedHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || 0), 0) || 0;
+
+  const columnWidths = useMemo(() => {
+    return nonFreezedHeaders.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth);
+  }, [nonFreezedHeaders, adjustedColumnWidth]);
 
   useEffect(() => {
     if (!outerRef.current) return;
@@ -33,7 +39,11 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     setScrollbarWidth?.(scrollbarWidth);
 
     if (useAutoWidth) {
-      setAdjustedColumnWidth?.(Math.ceil((width - scrollbarWidth) / (columnCount || 1)) - 1);
+      const calculatedOuterWidth = width - totalCountFixedColumnWidth;
+
+      setAdjustedColumnWidth?.(
+        Math.ceil((calculatedOuterWidth - scrollbarWidth) / (totalColumnExceptFixedWidth || 1)) - 1
+      );
     }
   }, [width, height, useAutoWidth]);
 
@@ -47,8 +57,8 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         width={width}
         height={height}
         rowHeight={() => rowHeight}
-        columnWidth={() => adjustedColumnWidth}
-        columnCount={columnCount}
+        columnWidth={(index) => columnWidths[index]}
+        columnCount={totalColumn}
         rowCount={finalDataSource?.length || 0}
         innerElementType={tableVirtualInnerElement}
         onScroll={(props) => {

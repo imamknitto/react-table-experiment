@@ -16,6 +16,15 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
     [value.freezedHeaders, value.nonFreezedHeaders]
   );
 
+  const totalCountGridWidth = useMemo(() => {
+    const allHeaders = [...(value.freezedHeaders || []), ...(value.nonFreezedHeaders || [])];
+    return allHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || curr.width), 0);
+  }, [value.freezedHeaders, value.nonFreezedHeaders]);
+
+  const totalCountFreezedHeadersWidth = useMemo(() => {
+    return value.freezedHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || curr.width), 0);
+  }, [value.freezedHeaders]);
+
   return (
     <TableVirtualContext.Provider
       value={{
@@ -29,6 +38,8 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
         setScrollbarWidth,
         isScrolling,
         setIsScrolling,
+        totalCountGridWidth,
+        totalCountFreezedHeadersWidth,
       }}
     >
       {children}

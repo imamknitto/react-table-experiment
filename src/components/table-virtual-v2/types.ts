@@ -13,6 +13,9 @@ export interface ITableVirtual<TDataSource> {
   isLoading?: boolean;
   useAutoWidth?: boolean;
   useFooter?: boolean;
+  useServerSort?: boolean;
+  useServerFilter?: boolean;
+  useServerAdvanceFilter?: boolean;
   onChangeAdvanceFilter?: (data: Record<string, { filterName: TAdvanceFilterName; value: string }>) => void;
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
@@ -31,6 +34,8 @@ export interface ITableVierualProvider {
     | 'setScrollbarWidth'
     | 'isScrolling'
     | 'setIsScrolling'
+    | 'totalCountGridWidth'
+    | 'totalCountFreezedHeadersWidth'
   >;
 }
 
@@ -53,6 +58,8 @@ export interface ITableVirtualContext {
   setScrollbarWidth?: React.Dispatch<React.SetStateAction<number>>;
   outerSize: { width: number; height: number };
   setOuterSize?: React.Dispatch<React.SetStateAction<{ width: number; height: number }>>;
+  totalCountGridWidth: number;
+  totalCountFreezedHeadersWidth: number;
   setAdjustedColumnWidth?: React.Dispatch<React.SetStateAction<number>>;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   sort?: {
@@ -134,6 +141,7 @@ export interface IDataHeader<TDataSource> {
   filterOptions?: string[];
   render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
   renderSummary?: (value?: number | string, rowIndex?: number) => ReactNode | string;
+  fixedWidth?: number;
 }
 
 export interface ITableVirtualCell {
