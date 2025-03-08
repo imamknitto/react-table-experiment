@@ -26,6 +26,7 @@ export interface ITableVirtual<TDataSource> {
 
 export interface ITableVierualProvider {
   children: React.ReactNode;
+  gridRef: React.RefObject<Grid | null>;
   value: Omit<
     ITableVirtualContext,
     | 'setAdjustedColumnWidth'
@@ -65,6 +66,7 @@ export interface ITableVirtualContext {
   setAdjustedColumnWidth?: React.Dispatch<React.SetStateAction<number>>;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   classNameCell?: (rowIndex: number, columnIndex: number) => string;
+  onResizeHeaderColumn?: (isFreezedHeader: boolean, columnIndex: number, width: number) => void;
   sort?: {
     sortKey: string | null;
     sortBy: TSortOrder;

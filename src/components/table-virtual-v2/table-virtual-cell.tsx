@@ -1,11 +1,9 @@
 import { memo } from 'react';
 import clsx from 'clsx';
 import { ITableVirtualCell } from './types';
-import useColumnOverflow from './hooks/use-column-overflow';
 import { useTableVirtual } from './service/table-virtual-context';
 
 const TableVirtualCell = ({ rowIndex, columnIndex, style }: ITableVirtualCell) => {
-  const { ref, isOverflow } = useColumnOverflow();
   const { nonFreezedHeaders, finalDataSource, selectedRowIndex, onClickRow, freezedHeaders, classNameCell } =
     useTableVirtual();
 
@@ -41,20 +39,9 @@ const TableVirtualCell = ({ rowIndex, columnIndex, style }: ITableVirtualCell) =
         classNameCell?.(rowIndex, columnIndex)
       )}
     >
-      <div ref={ref} className="truncate w-full">
+      <div className="truncate w-full">
         {headerRender ? headerRender(finalValue as string | number, rowIndex) : (finalValue as string | number)}
       </div>
-
-      {isOverflow && (
-        <div
-          className={clsx(
-            'max-h-[300px] min-w-[200px] max-w-[400px] overflow-auto py-3 bg-white shadow-lg shadow-gray-300 border border-gray-200',
-            'px-2 absolute bottom-full ml-2 hidden group-hover:block z-[999999] rounded font-semibold'
-          )}
-        >
-          {finalValue as string | number}
-        </div>
-      )}
     </div>
   );
 };

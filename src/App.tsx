@@ -7,6 +7,7 @@ import ReactVirtuoso from './pages/research/react-virtuoso';
 import ImplementasiBikinSendiriApi from './pages/implementasi/bikin-sendiri-api';
 import RebuildTableVirtual from './pages/implementasi/rebuild-table-virtual';
 import ImplementasiBikinSendiriApiMultiTab from './pages/implementasi/bikin-sendiri-api-multi-tab';
+import Resizable from './pages/research/resizable';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/implementasi/rebuild-table-virtual" element={<RebuildTableVirtual />} />
       <Route path="/implementasi/bikin-sendiri-api" element={<ImplementasiBikinSendiriApi />} />
       <Route path="/implementasi/bikin-sendiri-api-multi-tab" element={<ImplementasiBikinSendiriApiMultiTab />} />
+      <Route path="/research/resizable-div" element={<Resizable />} />
       <Route path="/implementasi/table-data-grid" element={<></>} />
       <Route path="/implementasi/react-virtuoso" element={<></>} />
     </Routes>

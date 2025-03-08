@@ -7,6 +7,7 @@ const menu = [
       { url: 'research/bikin-sendiri', title: 'Bikin Sendiri' },
       { url: 'research/table-data-grid', title: 'Table dengan library' },
       { url: 'research/react-virtuoso', title: 'Table dengan React Virtuoso' },
+      { url: 'research/resizable-div', title: 'Resizable Div' },
     ],
   },
   {

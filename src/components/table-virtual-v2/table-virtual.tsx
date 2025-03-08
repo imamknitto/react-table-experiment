@@ -1,6 +1,6 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { ITableVirtual, ITableVirtualHeaderColumn } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
@@ -13,7 +13,7 @@ import TableVirtualStickyGrid from './table-virtual-sticky-grid';
 import TableVirtualLoading from './table-virtual-loading';
 import TableVirtualCell from './table-virtual-cell';
 
-export default function TableVirtual<T>(props: ITableVirtual<T>) {
+const TableVirtual = <T,>(props: ITableVirtual<T>) => {
   const {
     dataSource,
     headers,
@@ -46,6 +46,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
     headers?.forEach((data, idx) => {
       const header = {
         ...data,
+        filterOptions: data.filterOptions || [],
         width: columnWidth,
         height: stickyrowHeaderHeight,
         left: idx * columnWidth,
@@ -133,6 +134,7 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
 
   return (
     <TableVirtualProvider
+      gridRef={gridRef}
       value={{
         columnWidth: columnWidth,
         rowHeight: rowHeight,
@@ -204,4 +206,6 @@ export default function TableVirtual<T>(props: ITableVirtual<T>) {
       </div>
     </TableVirtualProvider>
   );
-}
+};
+
+export default memo(TableVirtual) as typeof TableVirtual;

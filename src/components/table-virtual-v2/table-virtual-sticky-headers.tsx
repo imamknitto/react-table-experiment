@@ -1,4 +1,4 @@
-import { CSSProperties, memo, useMemo } from 'react';
+import { CSSProperties, memo, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 
 import { TSortOrder } from './hooks/use-sort-table';
@@ -12,6 +12,7 @@ import IcSort from './icons/ic-sort';
 import { useTableVirtual } from './service/table-virtual-context';
 import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
 import { ITableVirtualStickyHeaders } from './types';
+import useResizableHeader from './hooks/use-resizable-header';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
   const {
@@ -231,47 +232,68 @@ const HeaderItem = ({
   sortValue,
   isFreezed = false,
 }: IHeaderItem) => {
+  const { onResizeHeaderColumn } = useTableVirtual();
+  const { boxRef, handleMouseDown, resizableWidth } = useResizableHeader({ currentWidth: Number(style.width || 180) });
+
+  useEffect(() => {
+    if (resizableWidth === Number(style.width)) return;
+    onResizeHeaderColumn?.(isFreezed, columnIndex, resizableWidth);
+  }, [resizableWidth]);
+
   return (
     <div
-      className={clsx(
-        isFreezed ? 'sticky z-[3]' : 'absolute',
-        'bg-gray-100 flex flex-row space-x-3 items-center text-xs font-bold',
-        'px-1.5 border-b border-b-gray-300',
-        columnIndex !== totalHeaders - 1 && 'border-r border-r-gray-300',
-        isFreezed && '!border-r !border-r-gray-300'
-      )}
-      style={style}
+      ref={boxRef}
+      className={clsx(isFreezed ? 'sticky' : 'absolute')}
+      style={{
+        ...style,
+        width: resizableWidth,
+        zIndex: isFreezed ? 99999999 - columnIndex : 9999999 - columnIndex,
+      }}
     >
-      <span>{caption}</span>
-
-      <div className="flex flex-row space-x-1.5 shrink-0 ml-auto">
-        {useAdvanceFilter && (
-          <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenAdvanceFilter?.(e)}>
-            <IcFilterAdvance className="!size-5 text-gray-600" />
-          </button>
+      <div
+        className={clsx(
+          'bg-gray-100 relative flex flex-row justify-between space-x-3 items-center text-xs font-bold h-full group',
+          'px-1.5 border-b border-b-gray-300',
+          columnIndex !== totalHeaders - 1 && 'border-r border-r-gray-300',
+          isFreezed && '!border-r !border-r-gray-300'
         )}
+      >
+        <span>{caption}</span>
 
-        {useFilter && (
-          <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenFilter?.(e)}>
-            {!useSingleFilter ? (
-              <IcFilterMultiple className="!size-[0.85rem] text-gray-600" />
-            ) : (
-              <IcFilter className="!size-[1rem] text-gray-600 stroke-0" />
-            )}
-          </button>
-        )}
+        <div className="flex flex-row space-x-1.5 shrink-0 -mr-0">
+          {useAdvanceFilter && (
+            <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenAdvanceFilter?.(e)}>
+              <IcFilterAdvance className="!size-5 text-gray-600" />
+            </button>
+          )}
 
-        {useSearch && (
-          <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenSearch?.(e)}>
-            <IcSearch className="!size-[0.85rem] text-gray-600" />
-          </button>
-        )}
+          {useFilter && (
+            <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenFilter?.(e)}>
+              {!useSingleFilter ? (
+                <IcFilterMultiple className="!size-[0.85rem] text-gray-600" />
+              ) : (
+                <IcFilter className="!size-[1rem] text-gray-600 stroke-0" />
+              )}
+            </button>
+          )}
 
-        {useSort && (
-          <button className="shrink-0 cursor-pointer" onClick={() => handleSort?.()}>
-            <IcSort sort={sortValue} />
-          </button>
-        )}
+          {useSearch && (
+            <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenSearch?.(e)}>
+              <IcSearch className="!size-[0.85rem] text-gray-600" />
+            </button>
+          )}
+
+          {useSort && (
+            <button className="shrink-0 cursor-pointer" onClick={() => handleSort?.()}>
+              <IcSort sort={sortValue} />
+            </button>
+          )}
+        </div>
+
+        <div
+          className="w-1 h-full absolute right-0 cursor-col-resize top-1/2 -translate-y-1/2 group-hover:bg-blue-300/20 z-[9999]"
+          onMouseDown={handleMouseDown}
+        />
       </div>
     </div>
   );

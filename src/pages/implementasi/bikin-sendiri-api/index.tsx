@@ -14,14 +14,13 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
       useSingleFilter: true,
       freezed: false,
-      columnWidth: 500,
     },
-    { key: 'tanggal', caption: 'Tanggal', useFilter: false, columnWidth: 300 },
+    { key: 'tanggal', caption: 'Tanggal', useFilter: false },
     {
       key: 'pathUrl',
       caption: 'Path Url',
       filterOptions: generateTableFilterOptions(dataSource || [], 'pathUrl'),
-      freezed: false,
+      freezed: true,
       useAdvanceFilter: true,
       renderSummary: () => (
         <div className="bg-blue-950 size-full text-white flex justify-center items-center">Footer</div>

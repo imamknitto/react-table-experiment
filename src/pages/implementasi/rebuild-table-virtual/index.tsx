@@ -19,12 +19,12 @@ interface IDummyData {
 }
 
 const dummyHeaders = [
-  { key: 'nama_produk', caption: 'Nama Produk', fixedWidth: 500, freezed: false },
+  { key: 'nama_produk', caption: 'Nama Produk', fixedWidth: 500, freezed: true },
   { key: 'kategori', caption: 'Kategori', freezed: false },
-  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 300, freezed: false },
+  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 350, freezed: false },
   { key: 'stok', caption: 'Stok (pcs)' },
   { key: 'terjual', caption: 'Terjual (pcs)' },
-  { key: 'rating', caption: 'Rating', freezed: false },
+  { key: 'rating', caption: 'Rating', freezed: true },
   { key: 'supplier', caption: 'Supplier' },
   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
   { key: 'tanggal_update', caption: 'Tanggal Update' },
@@ -38,7 +38,7 @@ const dummyHeaders = [
   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(50000)
+const dataSourceV2: IDummyData[] = Array(10000)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
@@ -49,7 +49,7 @@ const dataSourceV2: IDummyData[] = Array(50000)
         : idx > 10 && idx <= 40
         ? `Laptop Macbook Pro M3`
         : `${randomString(5)} ${randomString(20)} ${randomString(5)}`,
-    kategori: `Kategori ${randomString(20)} ${idx}`,
+    kategori: `Kategori ${randomString(idx > 5 ? 20 : 4)} ${idx}`,
     harga: Math.random() * 1000000,
     stok: randomNumber(1, 1000),
     terjual: randomNumber(1, 200),
@@ -98,12 +98,12 @@ export default function RebuildTableVirtual() {
 
       <div className="flex-1 w-full">
         <TableVirtual
-          useFooter
+          //   useFooter
           //   useAutoWidth
           isLoading={false}
           headers={modifiedHeaders || []}
           dataSource={dataSourceV2 || []}
-          stickyFooterHeight={30}
+          stickyFooterHeight={40}
           onChangeAdvanceFilter={(props) => console.log('CHANGE ADVANCE FILTER', props)}
           onChangeFilter={(props) => console.log('CHANGE FILTER', props)}
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}

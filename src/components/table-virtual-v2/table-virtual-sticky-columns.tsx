@@ -1,10 +1,8 @@
 import clsx from 'clsx';
-import useColumnOverflow from './hooks/use-column-overflow';
 import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualStickyColumns } from './types';
 
 export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirtualStickyColumns) {
-  const { ref, isOverflow } = useColumnOverflow();
   const {
     selectedRowIndex,
     onClickRow,
@@ -65,20 +63,9 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
                     top: (minRow + idx) * rowHeight,
                   }}
                 >
-                  <div ref={ref} className="w-full truncate max-w-[180px]">
+                  <div className="w-full truncate">
                     {render ? render(finalValue as string | number, rowIndex) : (finalValue as string | number)}
                   </div>
-
-                  {isOverflow && (
-                    <div
-                      className={clsx(
-                        'max-h-[300px] min-w-[200px] max-w-[400px] overflow-auto py-3 bg-white shadow-lg shadow-gray-300 border border-gray-200',
-                        'px-2 absolute bottom-full ml-2 hidden group-hover:block z-[999999] rounded font-semibold'
-                      )}
-                    >
-                      {finalValue as string | number}
-                    </div>
-                  )}
                 </div>
               );
             })}
