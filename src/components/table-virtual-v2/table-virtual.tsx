@@ -1,8 +1,8 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 
-import { ITableVirtual, ITableVirtualHeaderColumn } from './types';
+import { ITableVirtual, ICellPosition } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
 import useFilterAdvanceTable from './hooks/use-filter-advance-table';
 import useGridScrolling from './hooks/use-grid-scrolling';
@@ -11,7 +11,7 @@ import useSearchTable from './hooks/use-search-table';
 import useSortTable from './hooks/use-sort-table';
 import TableVirtualStickyGrid from './table-virtual-sticky-grid';
 import TableVirtualLoading from './table-virtual-loading';
-import TableVirtualCell from './table-virtual-cell';
+import { useGenerateHeaders } from './hooks/use-generate-headers';
 
 const TableVirtual = <T,>(props: ITableVirtual<T>) => {
   const {
@@ -19,7 +19,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     headers,
     columnWidth = 180,
     rowHeight = 36,
-    stickyrowHeaderHeight = 50,
+    stickyHeaderHeight = 50,
     stickyFooterHeight = 40,
     useAutoWidth = false,
     useFooter,
@@ -33,38 +33,20 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     onScrollTouchBottom,
     onClickRow,
     classNameCell,
+    renderRightClickRow,
   } = props;
 
   const gridRef = useRef<Grid>(null);
   const outerRef = useRef<HTMLElement>(null);
+
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
+  const [cellPosition, setCellPosition] = useState<ICellPosition | null>(null);
 
-  const { freezedHeaders, nonFreezedHeaders } = useMemo(() => {
-    const freezed: ITableVirtualHeaderColumn[] = [];
-    const nonFreezed: ITableVirtualHeaderColumn[] = [];
-
-    headers?.forEach((data, idx) => {
-      const header = {
-        ...data,
-        filterOptions: data.filterOptions || [],
-        width: columnWidth,
-        height: stickyrowHeaderHeight,
-        left: idx * columnWidth,
-        useFilter: data.useFilter ?? true,
-        useSort: data.useSort ?? true,
-        useSearch: data.useSearch ?? true,
-        useSingleFilter: data.useSingleFilter ?? false,
-      };
-
-      if (header.freezed) {
-        freezed.push(header as ITableVirtualHeaderColumn);
-      } else {
-        nonFreezed.push(header as ITableVirtualHeaderColumn);
-      }
-    });
-
-    return { freezedHeaders: freezed, nonFreezedHeaders: nonFreezed };
-  }, [headers, columnWidth, stickyrowHeaderHeight]);
+  const { freezedHeaders, nonFreezedHeaders, handleResizeHeaderColumn } = useGenerateHeaders({
+    headers,
+    columnWidth,
+    stickyHeaderHeight,
+  });
 
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
@@ -132,13 +114,18 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     onClickRow?.(data, rowIndex);
   }, []);
 
+  const handleRightClickCell = useCallback((position: ICellPosition | null) => {
+    setCellPosition(position);
+  }, []);
+
   return (
     <TableVirtualProvider
       gridRef={gridRef}
       value={{
+        gridRef,
         columnWidth: columnWidth,
         rowHeight: rowHeight,
-        stickyHeaderHeight: stickyrowHeaderHeight,
+        stickyHeaderHeight: stickyHeaderHeight,
         stickyFooterHeight: stickyFooterHeight,
         freezedHeaders,
         nonFreezedHeaders,
@@ -149,6 +136,10 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
         onClickRow: handleClickRow,
         selectedRowIndex,
         classNameCell,
+        cellPosition,
+        onResizeHeaderColumn: handleResizeHeaderColumn,
+        onRightClickCell: handleRightClickCell,
+        renderRightClickRow,
         sort: {
           sortKey,
           sortBy,
@@ -193,11 +184,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
                 gridRef={gridRef}
                 outerRef={outerRef}
                 onGridScroll={handleScroll}
-              >
-                {({ columnIndex, rowIndex, style }) => (
-                  <TableVirtualCell rowIndex={rowIndex} columnIndex={columnIndex} style={style} />
-                )}
-              </TableVirtualStickyGrid>
+              />
             );
           }}
         </AutoSizer>

@@ -1,5 +1,5 @@
-import { GridChildComponentProps, GridOnScrollProps, VariableSizeGrid as Grid } from 'react-window';
-import { CSSProperties, HTMLAttributes, ReactNode } from 'react';
+import { GridOnScrollProps, VariableSizeGrid as Grid } from 'react-window';
+import { CSSProperties, HTMLAttributes, JSX, ReactNode } from 'react';
 import { TSortOrder } from './hooks/use-sort-table';
 import { ADVANCE_FILTER_NAMES } from './constants';
 
@@ -8,7 +8,7 @@ export interface ITableVirtual<TDataSource> {
   headers?: IDataHeader<TDataSource>[];
   columnWidth?: number;
   rowHeight?: number;
-  stickyrowHeaderHeight?: number;
+  stickyHeaderHeight?: number;
   stickyFooterHeight?: number;
   isLoading?: boolean;
   useAutoWidth?: boolean;
@@ -22,6 +22,11 @@ export interface ITableVirtual<TDataSource> {
   onScrollTouchBottom?: () => void;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   classNameCell?: (rowIndex: number, columnIndex: number) => string;
+  renderRightClickRow?: (
+    data: Record<string, string | number> | null,
+    value: string | number,
+    callbackFn?: () => void
+  ) => JSX.Element;
 }
 
 export interface ITableVierualProvider {
@@ -43,6 +48,7 @@ export interface ITableVierualProvider {
 }
 
 export interface ITableVirtualContext {
+  gridRef?: React.RefObject<Grid | null>;
   isLoading?: boolean;
   stickyHeaderHeight: number;
   stickyFooterHeight: number;
@@ -66,7 +72,14 @@ export interface ITableVirtualContext {
   setAdjustedColumnWidth?: React.Dispatch<React.SetStateAction<number>>;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
   classNameCell?: (rowIndex: number, columnIndex: number) => string;
-  onResizeHeaderColumn?: (isFreezedHeader: boolean, columnIndex: number, width: number) => void;
+  onResizeHeaderColumn?: (caption: string, width: number) => void;
+  cellPosition?: ICellPosition | null;
+  onRightClickCell?: (cellPosition: ICellPosition | null) => void;
+  renderRightClickRow?: (
+    data: Record<string, string | number> | null,
+    value: string | number,
+    callbackFn?: () => void
+  ) => ReactNode | string;
   sort?: {
     sortKey: string | null;
     sortBy: TSortOrder;
@@ -101,8 +114,15 @@ export interface ITableVirtualContext {
   };
 }
 
+export interface ICellPosition {
+  x: number;
+  y: number;
+  rowIndex: number;
+  columnIndex: number;
+  isFreezed?: boolean;
+}
+
 export interface ITableVirtualStickyGrid {
-  children: React.FC<GridChildComponentProps>;
   width: number;
   height: number;
   gridRef: React.RefObject<Grid | null>;
@@ -144,9 +164,10 @@ export interface IDataHeader<TDataSource> {
   useAdvanceFilter?: boolean;
   freezed?: boolean;
   filterOptions?: string[];
-  render?: (value?: number | string, rowIndex?: number) => ReactNode | string;
-  renderSummary?: (value?: number | string, rowIndex?: number) => ReactNode | string;
+  render?: (value?: number | string, rowIndex?: number, columnIndex?: number) => ReactNode | string;
+  renderSummary?: (value?: number | string, rowIndex?: number, columnIndex?: number) => ReactNode | string;
   fixedWidth?: number;
+  isHide?: boolean;
 }
 
 export interface ITableVirtualCell {

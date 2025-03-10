@@ -1,12 +1,22 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTableVirtual } from '../service/table-virtual-context';
 
 interface IResizableBox {
   currentWidth: number;
+  caption: string;
+  columnIndex: number;
 }
 
-export default function useResizableHeader({ currentWidth }: IResizableBox) {
+export default function useResizableHeader({ currentWidth, caption, columnIndex }: IResizableBox) {
+  const { gridRef, onResizeHeaderColumn } = useTableVirtual();
   const boxRef = useRef<HTMLDivElement | null>(null);
   const [resizableWidth, setResizableWidth] = useState<number>(Number(currentWidth) || 180);
+
+  useEffect(() => {
+    if (resizableWidth === Number(currentWidth)) return;
+    gridRef?.current?.resetAfterColumnIndex(columnIndex);
+    onResizeHeaderColumn?.(caption, resizableWidth);
+  }, [resizableWidth]);
 
   const handleMouseDown = () => {
     if (!boxRef.current) return;

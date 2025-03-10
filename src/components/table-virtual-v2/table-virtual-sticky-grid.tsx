@@ -4,9 +4,10 @@ import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualStickyGrid } from './types';
 import tableVirtualInnerElement from './table-virtual-inner-element';
 import TableVirtualEmptyData from './table-virtual-empty-data';
+import TableVirtualCell from './table-virtual-cell';
 
 const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
-  const { children, width, height, gridRef, outerRef, onGridScroll } = props;
+  const { width, height, gridRef, outerRef, onGridScroll } = props;
 
   const {
     rowHeight,
@@ -21,6 +22,7 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     isScrolling,
     setIsScrolling,
     useFooter,
+    onRightClickCell,
   } = useTableVirtual();
 
   const totalColumn = nonFreezedHeaders?.length || 0;
@@ -63,6 +65,7 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         innerElementType={tableVirtualInnerElement}
         onScroll={(props) => {
           onGridScroll?.(props);
+          onRightClickCell?.(null);
           const scrollTop = props.scrollTop;
 
           if (!useFooter) return;
@@ -73,7 +76,9 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
           }
         }}
       >
-        {children}
+        {({ columnIndex, rowIndex, style }) => (
+          <TableVirtualCell rowIndex={rowIndex} columnIndex={columnIndex} style={style} />
+        )}
       </Grid>
 
       {!finalDataSource?.length && !isLoading && <TableVirtualEmptyData />}

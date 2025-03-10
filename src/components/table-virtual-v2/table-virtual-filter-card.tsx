@@ -68,7 +68,9 @@ const TableVirtualFilterCard = ({
           <div className="h-40">
             <AutoSizer>
               {({ width, height }) => {
-                return !filteredOptions?.length ? (
+                return !filterOptions?.length ? (
+                  <EmptyData height={height} width={width} />
+                ) : !filteredOptions?.length ? (
                   <EmptyFilter searchVal={searchValue} height={height} width={width} />
                 ) : (
                   <List height={height} itemCount={filteredOptions?.length || 0} itemSize={23} width={width}>
@@ -112,10 +114,17 @@ const TableVirtualFilterCard = ({
 };
 
 interface IEmptyFilter {
-  searchVal: string;
+  searchVal?: string;
   height: number;
   width: number;
 }
+
+// Empty data jika tidak ada data yang tersedia.
+const EmptyData = ({ height, width }: IEmptyFilter) => (
+  <div style={{ height, width }} className="flex justify-center items-center px-5">
+    <p className="text-center text-xs text-gray-800">Data tidak tersedia</p>
+  </div>
+);
 
 // Empty filter jika tidak ada data yang ditemukan.
 const EmptyFilter = ({ searchVal, height, width }: IEmptyFilter) => (

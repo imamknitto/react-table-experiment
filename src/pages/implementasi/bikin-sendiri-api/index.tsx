@@ -5,6 +5,8 @@ import { getDataStreamApi, IResponse, IStreamApi } from './data';
 import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
 import { TableVirtualV2 } from '../../../components/table-virtual-v2';
 import { ITableVirtual } from '../../../components/table-virtual-v2/types';
+import IcDelete from '../../../components/table-virtual-v2/icons/ic-delete';
+import IcCopy from '../../../components/table-virtual-v2/icons/ic-copy';
 
 const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['headers'] => {
   return [
@@ -13,7 +15,7 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       caption: '_ID',
       filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
       useSingleFilter: true,
-      freezed: false,
+      freezed: true,
     },
     { key: 'tanggal', caption: 'Tanggal', useFilter: false },
     {
@@ -32,6 +34,7 @@ const getHeaders = (dataSource?: IStreamApi[]): ITableVirtual<IStreamApi>['heade
       useAdvanceFilter: true,
       useSingleFilter: true,
       filterOptions: generateTableFilterOptions(dataSource || [], 'request'),
+      fixedWidth: 400,
     },
     { key: 'response', caption: 'Response', useFilter: false },
     {
@@ -79,7 +82,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 1000, page: page || 1 };
+    const params = { limit: 200, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -114,8 +117,57 @@ export default function ImplementasiBikinSendiriApi() {
           columnWidth={200}
           rowHeight={36}
           onScrollTouchBottom={() => fetchDataFromApi(pagination.currentPage + 1)}
+          onChangeSort={(sortKey, sortBy) => console.log('On Change Sort: ', { sortKey, sortBy })}
+          onChangeFilter={(data) => console.log('On Change Filter: ', data)}
+          onChangeAdvanceFilter={(data) => console.log('On Change Advance Filter: ', data)}
+          renderRightClickRow={(data, value, callbackFn) => (
+            <RightClickContent data={data} value={value} callbackFn={callbackFn} />
+          )}
         />
       </div>
     </div>
   );
 }
+
+interface IRightClickContentProps {
+  data: Record<string, string | number> | null;
+  value: string | number;
+  callbackFn?: () => void;
+}
+
+const RightClickContent = ({ data, value, callbackFn }: IRightClickContentProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleClickHapus = () => {
+    alert(`Hapus: ${JSON.stringify(data, null, 2)}`);
+    callbackFn?.();
+  };
+
+  const handleClickCopy = () => {
+    navigator.clipboard.writeText(value.toString());
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+      callbackFn?.();
+    }, 1000);
+  };
+
+  return (
+    <div className="max-w-sm overflow-auto p-4 text-sm flex flex-col gap-2">
+      <button
+        className="cursor-pointer p-1.5 bg-red-600 text-white rounded inline-flex items-center"
+        onClick={handleClickHapus}
+      >
+        <IcDelete className="me-2 !w-[1.1rem]" />
+        Hapus
+      </button>
+      <button
+        className="cursor-pointer p-1.5 bg-blue-950 text-white rounded inline-flex items-center"
+        onClick={handleClickCopy}
+      >
+        <IcCopy className="me-2 !size-[1.1rem]" />
+        {isCopied ? 'Copied' : 'Copy'}
+      </button>
+    </div>
+  );
+};

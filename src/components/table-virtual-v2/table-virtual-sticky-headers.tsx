@@ -1,4 +1,4 @@
-import { CSSProperties, memo, useEffect, useMemo } from 'react';
+import { CSSProperties, memo, useMemo } from 'react';
 import clsx from 'clsx';
 
 import { TSortOrder } from './hooks/use-sort-table';
@@ -232,13 +232,30 @@ const HeaderItem = ({
   sortValue,
   isFreezed = false,
 }: IHeaderItem) => {
-  const { onResizeHeaderColumn } = useTableVirtual();
-  const { boxRef, handleMouseDown, resizableWidth } = useResizableHeader({ currentWidth: Number(style.width || 180) });
+  const { boxRef, handleMouseDown } = useResizableHeader({
+    caption,
+    columnIndex,
+    currentWidth: Number(style.width || 180),
+  });
 
-  useEffect(() => {
-    if (resizableWidth === Number(style.width)) return;
-    onResizeHeaderColumn?.(isFreezed, columnIndex, resizableWidth);
-  }, [resizableWidth]);
+  const actionButtons = [
+    {
+      condition: useAdvanceFilter,
+      icon: <IcFilterAdvance className="!size-5 text-gray-600" />,
+      onClick: handleOpenAdvanceFilter,
+    },
+    {
+      condition: useFilter,
+      icon: !useSingleFilter ? (
+        <IcFilterMultiple className="!size-[0.85rem] text-gray-600" />
+      ) : (
+        <IcFilter className="!size-[1rem] text-gray-600 stroke-0" />
+      ),
+      onClick: handleOpenFilter,
+    },
+    { condition: useSearch, icon: <IcSearch className="!size-[0.85rem] text-gray-600" />, onClick: handleOpenSearch },
+    { condition: useSort, icon: <IcSort sort={sortValue} />, onClick: handleSort },
+  ];
 
   return (
     <div
@@ -246,7 +263,6 @@ const HeaderItem = ({
       className={clsx(isFreezed ? 'sticky' : 'absolute')}
       style={{
         ...style,
-        width: resizableWidth,
         zIndex: isFreezed ? 99999999 - columnIndex : 9999999 - columnIndex,
       }}
     >
@@ -261,32 +277,13 @@ const HeaderItem = ({
         <span>{caption}</span>
 
         <div className="flex flex-row space-x-1.5 shrink-0 -mr-0">
-          {useAdvanceFilter && (
-            <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenAdvanceFilter?.(e)}>
-              <IcFilterAdvance className="!size-5 text-gray-600" />
-            </button>
-          )}
-
-          {useFilter && (
-            <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenFilter?.(e)}>
-              {!useSingleFilter ? (
-                <IcFilterMultiple className="!size-[0.85rem] text-gray-600" />
-              ) : (
-                <IcFilter className="!size-[1rem] text-gray-600 stroke-0" />
-              )}
-            </button>
-          )}
-
-          {useSearch && (
-            <button className="shrink-0 cursor-pointer" onClick={(e) => handleOpenSearch?.(e)}>
-              <IcSearch className="!size-[0.85rem] text-gray-600" />
-            </button>
-          )}
-
-          {useSort && (
-            <button className="shrink-0 cursor-pointer" onClick={() => handleSort?.()}>
-              <IcSort sort={sortValue} />
-            </button>
+          {actionButtons.map(
+            ({ condition, icon, onClick }, index) =>
+              condition && (
+                <button key={index} className="shrink-0 cursor-pointer" onClick={(e) => onClick?.(e)}>
+                  {icon}
+                </button>
+              )
           )}
         </div>
 
