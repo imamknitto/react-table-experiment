@@ -209,7 +209,7 @@ const RightClickContent = ({ data, value, callbackFn }: IRightClickContentProps)
     setTimeout(() => {
       setIsCopied(false);
       callbackFn?.();
-    }, 1000);
+    }, 200);
   };
 
   return (

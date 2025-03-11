@@ -31,7 +31,6 @@ export interface ITableVirtual<TDataSource> {
 
 export interface ITableVierualProvider {
   children: React.ReactNode;
-  gridRef: React.RefObject<Grid | null>;
   value: Omit<
     ITableVirtualContext,
     | 'setAdjustedColumnWidth'

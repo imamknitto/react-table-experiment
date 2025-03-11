@@ -2,7 +2,7 @@ import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { memo, useCallback, useRef, useState } from 'react';
 
-import { ITableVirtual, ICellPosition } from './types';
+import { ITableVirtual } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
 import useFilterAdvanceTable from './hooks/use-filter-advance-table';
 import useGridScrolling from './hooks/use-grid-scrolling';
@@ -40,7 +40,6 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
   const outerRef = useRef<HTMLElement>(null);
 
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
-  const [cellPosition, setCellPosition] = useState<ICellPosition | null>(null);
 
   const { freezedHeaders, nonFreezedHeaders, handleResizeHeaderColumn } = useGenerateHeaders({
     headers,
@@ -114,13 +113,8 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     onClickRow?.(data, rowIndex);
   }, []);
 
-  const handleRightClickCell = useCallback((position: ICellPosition | null) => {
-    setCellPosition(position);
-  }, []);
-
   return (
     <TableVirtualProvider
-      gridRef={gridRef}
       value={{
         gridRef,
         columnWidth: columnWidth,
@@ -136,9 +130,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
         onClickRow: handleClickRow,
         selectedRowIndex,
         classNameCell,
-        cellPosition,
         onResizeHeaderColumn: handleResizeHeaderColumn,
-        onRightClickCell: handleRightClickCell,
         renderRightClickRow,
         sort: {
           sortKey,

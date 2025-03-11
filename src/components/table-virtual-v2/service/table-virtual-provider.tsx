@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { ITableVierualProvider } from '../types';
+import { useCallback, useMemo, useState } from 'react';
+import { ICellPosition, ITableVierualProvider } from '../types';
 import { TableVirtualContext } from './table-virtual-context';
 
 const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
@@ -7,6 +7,7 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
   const [outerSize, setOuterSize] = useState({ width: 0, height: 0 });
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  const [cellPosition, setCellPosition] = useState<ICellPosition | null>(null);
 
   // Hitung total maksimal lebar grid berdasarkan total lebar tiap kolom headers.
   const totalCountGridWidth = useMemo(() => {
@@ -18,6 +19,10 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
   const totalCountFreezedHeadersWidth = useMemo(() => {
     return value.freezedHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || curr.width), 0);
   }, [value.freezedHeaders]);
+
+  const handleRightClickCell = useCallback((position: ICellPosition | null) => {
+    setCellPosition(position);
+  }, []);
 
   return (
     <TableVirtualContext.Provider
@@ -33,6 +38,8 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
         setIsScrolling,
         totalCountGridWidth,
         totalCountFreezedHeadersWidth,
+        cellPosition,
+        onRightClickCell: handleRightClickCell,
       }}
     >
       {children}
