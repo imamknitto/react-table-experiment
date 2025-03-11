@@ -1,5 +1,5 @@
 import { VariableSizeGrid as Grid, GridOnScrollProps } from 'react-window';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface IUseGridScrolling {
   finalDataSource: Record<string, string | number>[];
@@ -17,6 +17,13 @@ export default function useGridScrolling({
   gridRef,
 }: IUseGridScrolling) {
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
+  const visibleHeight = gridRef.current?.props.height ?? 0;
+  const totalHeight = rowHeight * finalDataSource?.length || 0;
+
+  useEffect(() => {
+    if (totalHeight < visibleHeight) setHasReachedBottom(true);
+    else setHasReachedBottom(false);
+  }, [totalHeight, visibleHeight]);
 
   const handleScroll = ({ scrollTop, scrollLeft }: GridOnScrollProps) => {
     let lastScrollLeft = scrollLeft;
@@ -25,9 +32,6 @@ export default function useGridScrolling({
     lastScrollLeft = scrollLeft;
 
     if (isHorizontalScroll) return;
-
-    const visibleHeight = gridRef.current?.props.height ?? 0;
-    const totalHeight = rowHeight * finalDataSource?.length || 0;
 
     const canScroll = totalHeight > visibleHeight;
 
