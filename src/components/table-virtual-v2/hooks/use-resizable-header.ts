@@ -14,7 +14,7 @@ export default function useResizableHeader({ currentWidth, caption, columnIndex 
 
   useEffect(() => {
     if (resizableWidth === Number(currentWidth)) return;
-    gridRef?.current?.resetAfterColumnIndex(columnIndex);
+    gridRef?.current?.resetAfterColumnIndex(columnIndex, false);
     onResizeHeaderColumn?.(caption, resizableWidth);
   }, [resizableWidth]);
 

@@ -50,9 +50,6 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     }
   }, [width, height, useAutoWidth]);
 
-  //   //  Masukan ke key grid agar ketika ada perubahan di header length maka grid di re render.
-  //   const allHeadersLength = [...(freezedHeaders || []), ...(nonFreezedHeaders || [])].length;
-
   const itemKey = useCallback(
     ({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }) => {
       const col = nonFreezedHeaders?.[columnIndex];
