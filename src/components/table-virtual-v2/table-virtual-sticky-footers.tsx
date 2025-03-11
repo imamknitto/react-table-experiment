@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, memo, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useTableVirtual } from './service/table-virtual-context';
 
@@ -112,4 +112,4 @@ const FooterItem = ({ style, columnIndex, value, totalHeaders, isFreezed = false
   );
 };
 
-export default TableVirtualStickyFooters;
+export default memo(TableVirtualStickyFooters);

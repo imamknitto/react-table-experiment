@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import clsx from 'clsx';
 
 import { ITableVirtualFilterAdvanceCard, TAdvanceFilterName } from './types';
@@ -8,7 +8,7 @@ import TableVirtualDropdown from './components/table-virtual-dropdown';
 import TableVirtualInput from './components/table-virtual-input';
 import Portal from './components/portal';
 
-export default function TableVirtualAdvanceFilterCard({
+const TableVirtualAdvanceFilterCard = ({
   filterDataKey,
   filterCardRef,
   filterCardPosition,
@@ -17,7 +17,7 @@ export default function TableVirtualAdvanceFilterCard({
   className,
   activeAdvanceFilters,
   ...props
-}: ITableVirtualFilterAdvanceCard) {
+}: ITableVirtualFilterAdvanceCard) => {
   const { filterName, value } = activeAdvanceFilters ?? {};
   const [selectedFilterName, setSelectedFilterName] = useState<string>('');
   const [filterValue, setFilterValue] = useState<string>(value || '');
@@ -96,4 +96,6 @@ export default function TableVirtualAdvanceFilterCard({
       </Portal>
     </>
   );
-}
+};
+
+export default memo(TableVirtualAdvanceFilterCard) as typeof TableVirtualAdvanceFilterCard;

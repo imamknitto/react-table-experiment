@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import clsx from 'clsx';
 import { ITableVirtualSearchCard } from './types';
 import TableVirtualInput from './components/table-virtual-input';
 import Portal from './components/portal';
 
-export default function TableVirtualSearchCard({
+const TableVirtualSearchCard = ({
   searchDataKey,
   searchCardRef,
   searchCardPosition,
@@ -13,7 +13,7 @@ export default function TableVirtualSearchCard({
   activeSearch,
   className,
   ...props
-}: ITableVirtualSearchCard) {
+}: ITableVirtualSearchCard) => {
   const [searchValue, setSearchValue] = useState<string>(activeSearch || '');
 
   const handleClickReset = () => {
@@ -55,4 +55,6 @@ export default function TableVirtualSearchCard({
       </div>
     </Portal>
   );
-}
+};
+
+export default memo(TableVirtualSearchCard) as typeof TableVirtualSearchCard;

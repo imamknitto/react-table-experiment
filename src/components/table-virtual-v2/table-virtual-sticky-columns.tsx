@@ -1,11 +1,11 @@
-import { Fragment, useRef } from 'react';
+import { Fragment, memo, useRef } from 'react';
 import clsx from 'clsx';
 import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualStickyColumns } from './types';
 import useOnClickOutside from './hooks/use-click-outside';
 import TableRightClickCardWrapper from './components/table-right-click-card-wrapper';
 
-export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirtualStickyColumns) {
+const TableVirtualStickyColumns = ({ minRow, maxRow }: ITableVirtualStickyColumns) => {
   const rightClickWrapperRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -111,4 +111,6 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
       })}
     </div>
   );
-}
+};
+
+export default memo(TableVirtualStickyColumns);
