@@ -19,6 +19,8 @@ export function useGenerateHeaders<T>({ headers, columnWidth, stickyHeaderHeight
     const nonFreezed: ITableVirtualHeaderColumn[] = [];
 
     headers?.forEach((data, idx) => {
+      if (data.isHide) return;
+
       const header = {
         ...data,
         filterOptions: data.filterOptions || [],

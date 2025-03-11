@@ -12,6 +12,7 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
   const {
     rowHeight,
     adjustedColumnWidth,
+    freezedHeaders,
     nonFreezedHeaders,
     finalDataSource,
     setAdjustedColumnWidth,
@@ -49,10 +50,13 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     }
   }, [width, height, useAutoWidth]);
 
+  //  Masukan ke key grid agar ketika ada perubahan di header length maka grid di re render.
+  const allHeadersLength = [...freezedHeaders, ...nonFreezedHeaders].length;
+
   return (
     <div className="size-max relative">
       <Grid
-        key={'table-virtual-grid' + adjustedColumnWidth}
+        key={'table-virtual-grid' + adjustedColumnWidth + allHeadersLength}
         className="border border-gray-300"
         ref={gridRef}
         outerRef={outerRef}
