@@ -1,6 +1,6 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { ITableVirtual } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
@@ -113,59 +113,99 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     onClickRow?.(data, rowIndex);
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      gridRef,
+      columnWidth,
+      rowHeight,
+      stickyHeaderHeight,
+      stickyFooterHeight,
+      freezedHeaders,
+      nonFreezedHeaders,
+      finalDataSource: (searchedData || []) as Record<string, string | number>[],
+      isLoading,
+      useAutoWidth,
+      useFooter,
+      onClickRow: handleClickRow,
+      selectedRowIndex,
+      classNameCell,
+      onResizeHeaderColumn: handleResizeHeaderColumn,
+      renderRightClickRow,
+      sort: { sortKey, sortBy, handleSort },
+      filter: {
+        isFilterCardOpen,
+        handleOpenFilter,
+        filterCardRef,
+        filterCardPosition,
+        updateFilter,
+        resetFilter,
+        activeFilters,
+      },
+      filterAdvance: {
+        isFilterAdvanceCardOpen,
+        handleOpenAdvanceFilter,
+        filterAdvanceCardRef,
+        filterAdvanceCardPosition,
+        applyAdvanceFilter,
+        resetAdvanceFilter,
+        activeAdvanceFilters,
+      },
+      search: {
+        isSearchCardOpen,
+        handleOpenSearch,
+        searchCardRef,
+        searchCardPosition,
+        updateSearch,
+        resetSearch,
+        activeSearch,
+      },
+    }),
+    [
+      gridRef,
+      columnWidth,
+      rowHeight,
+      stickyHeaderHeight,
+      stickyFooterHeight,
+      freezedHeaders,
+      nonFreezedHeaders,
+      searchedData,
+      isLoading,
+      useAutoWidth,
+      useFooter,
+      handleClickRow,
+      selectedRowIndex,
+      classNameCell,
+      handleResizeHeaderColumn,
+      renderRightClickRow,
+      sortKey,
+      sortBy,
+      handleSort,
+      isFilterCardOpen,
+      handleOpenFilter,
+      filterCardRef,
+      filterCardPosition,
+      updateFilter,
+      resetFilter,
+      activeFilters,
+      isFilterAdvanceCardOpen,
+      handleOpenAdvanceFilter,
+      filterAdvanceCardRef,
+      filterAdvanceCardPosition,
+      applyAdvanceFilter,
+      resetAdvanceFilter,
+      activeAdvanceFilters,
+      isSearchCardOpen,
+      handleOpenSearch,
+      searchCardRef,
+      searchCardPosition,
+      updateSearch,
+      resetSearch,
+      activeSearch,
+    ]
+  );
+
   return (
-    <TableVirtualProvider
-      value={{
-        gridRef,
-        columnWidth: columnWidth,
-        rowHeight: rowHeight,
-        stickyHeaderHeight: stickyHeaderHeight,
-        stickyFooterHeight: stickyFooterHeight,
-        freezedHeaders,
-        nonFreezedHeaders,
-        finalDataSource: (searchedData || []) as Record<string, string | number>[],
-        isLoading,
-        useAutoWidth,
-        useFooter,
-        onClickRow: handleClickRow,
-        selectedRowIndex,
-        classNameCell,
-        onResizeHeaderColumn: handleResizeHeaderColumn,
-        renderRightClickRow,
-        sort: {
-          sortKey,
-          sortBy,
-          handleSort,
-        },
-        filter: {
-          isFilterCardOpen,
-          handleOpenFilter,
-          filterCardRef,
-          filterCardPosition,
-          updateFilter,
-          resetFilter,
-          activeFilters,
-        },
-        filterAdvance: {
-          isFilterAdvanceCardOpen,
-          handleOpenAdvanceFilter,
-          filterAdvanceCardRef,
-          filterAdvanceCardPosition,
-          applyAdvanceFilter,
-          resetAdvanceFilter,
-          activeAdvanceFilters,
-        },
-        search: {
-          isSearchCardOpen,
-          handleOpenSearch,
-          searchCardRef,
-          searchCardPosition,
-          updateSearch,
-          resetSearch,
-          activeSearch,
-        },
-      }}
-    >
+    <TableVirtualProvider value={contextValue}>
       <div className="size-full relative">
         <AutoSizer>
           {({ width, height }) => {
