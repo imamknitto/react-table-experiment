@@ -14,39 +14,49 @@ interface IAdjustedHeadWidth {
 export function useGenerateHeaders<T>({ headers, columnWidth, stickyHeaderHeight }: IGenerateHeaders<T>) {
   const [adjustedHeadWidth, setAdjustedHeadWidth] = useState<IAdjustedHeadWidth>({});
 
-  const { freezedHeaders, nonFreezedHeaders } = useMemo(() => {
-    const freezed: ITableVirtualHeaderColumn[] = [];
-    const nonFreezed: ITableVirtualHeaderColumn[] = [];
+  const headerData = useMemo(() => {
+    return headers?.reduce(
+      (acc, data, idx) => {
+        if (data.isHide) return acc;
 
-    headers?.forEach((data, idx) => {
-      if (data.isHide) return;
+        const width = adjustedHeadWidth[data.caption]?.width || columnWidth;
+        const fixedWidth = adjustedHeadWidth[data.caption]?.width || data.fixedWidth;
 
-      const header = {
-        ...data,
-        filterOptions: data.filterOptions || [],
-        width: adjustedHeadWidth[data.caption]?.width || columnWidth,
-        fixedWidth: adjustedHeadWidth[data.caption]?.width || data.fixedWidth,
-        height: stickyHeaderHeight,
-        left: idx * columnWidth,
-        useFilter: data.useFilter ?? true,
-        useSort: data.useSort ?? true,
-        useSearch: data.useSearch ?? true,
-        useSingleFilter: data.useSingleFilter ?? false,
-      };
+        const header: ITableVirtualHeaderColumn = {
+          ...(data as ITableVirtualHeaderColumn),
+          filterOptions: data.filterOptions || [],
+          width,
+          fixedWidth,
+          height: stickyHeaderHeight,
+          left: idx * columnWidth,
+          useFilter: data.useFilter ?? true,
+          useSort: data.useSort ?? true,
+          useSearch: data.useSearch ?? true,
+          useSingleFilter: data.useSingleFilter ?? false,
+        };
 
-      if (header.freezed) {
-        freezed.push(header as ITableVirtualHeaderColumn);
-      } else {
-        nonFreezed.push(header as ITableVirtualHeaderColumn);
+        if (header.freezed) {
+          acc.freezed.push(header);
+        } else {
+          acc.nonFreezed.push(header);
+        }
+
+        return acc;
+      },
+      { freezed: [], nonFreezed: [] } as {
+        freezed: ITableVirtualHeaderColumn[];
+        nonFreezed: ITableVirtualHeaderColumn[];
       }
-    });
-
-    return { freezedHeaders: freezed, nonFreezedHeaders: nonFreezed };
+    );
   }, [headers, columnWidth, stickyHeaderHeight, adjustedHeadWidth]);
 
   const handleResizeHeaderColumn = useCallback((caption: string, newWidth: number) => {
     setAdjustedHeadWidth((prev) => ({ ...prev, [caption]: { width: newWidth } }));
   }, []);
 
-  return { freezedHeaders, nonFreezedHeaders, handleResizeHeaderColumn };
+  return {
+    freezedHeaders: headerData?.freezed,
+    nonFreezedHeaders: headerData?.nonFreezed,
+    handleResizeHeaderColumn,
+  };
 }

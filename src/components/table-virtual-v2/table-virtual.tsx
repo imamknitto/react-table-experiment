@@ -1,6 +1,6 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useDeferredValue, useMemo, useRef, useState } from 'react';
 
 import { ITableVirtual } from './types';
 import TableVirtualProvider from './service/table-virtual-provider';
@@ -38,11 +38,12 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
 
   const gridRef = useRef<Grid>(null);
   const outerRef = useRef<HTMLElement>(null);
+  const defferedHeaders = useDeferredValue(headers);
 
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
 
   const { freezedHeaders, nonFreezedHeaders, handleResizeHeaderColumn } = useGenerateHeaders({
-    headers,
+    headers: defferedHeaders,
     columnWidth,
     stickyHeaderHeight,
   });
@@ -132,6 +133,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
       onResizeHeaderColumn: handleResizeHeaderColumn,
       renderRightClickRow,
       sort: { sortKey, sortBy, handleSort },
+      totalCountColumnAllHeaders: defferedHeaders?.filter(({ isHide }) => !isHide).length || 0,
       filter: {
         isFilterCardOpen,
         handleOpenFilter,
@@ -163,6 +165,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     [
       gridRef,
       columnWidth,
+      defferedHeaders,
       rowHeight,
       stickyHeaderHeight,
       stickyFooterHeight,

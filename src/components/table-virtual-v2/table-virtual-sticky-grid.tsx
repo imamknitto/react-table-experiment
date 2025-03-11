@@ -1,5 +1,5 @@
 import { VariableSizeGrid as Grid } from 'react-window';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualStickyGrid } from './types';
 import tableVirtualInnerElement from './table-virtual-inner-element';
@@ -12,7 +12,6 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
   const {
     rowHeight,
     adjustedColumnWidth,
-    freezedHeaders,
     nonFreezedHeaders,
     finalDataSource,
     setAdjustedColumnWidth,
@@ -27,10 +26,11 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     totalCountColumnNonFreezedHeaders,
     totalCountColumnNonFreezedHeadersExceptFixedWidth,
     totalCountFixedWidthNonFreezedHeaders,
+    totalCountColumnAllHeaders,
   } = useTableVirtual();
 
-  const gridColumnWidths = useMemo(() => {
-    return nonFreezedHeaders.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth);
+  const gridColumnWidths = useMemo((): number[] => {
+    return nonFreezedHeaders?.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth) || [];
   }, [nonFreezedHeaders, adjustedColumnWidth]);
 
   useEffect(() => {
@@ -50,13 +50,22 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     }
   }, [width, height, useAutoWidth]);
 
-  //  Masukan ke key grid agar ketika ada perubahan di header length maka grid di re render.
-  const allHeadersLength = [...freezedHeaders, ...nonFreezedHeaders].length;
+  //   //  Masukan ke key grid agar ketika ada perubahan di header length maka grid di re render.
+  //   const allHeadersLength = [...(freezedHeaders || []), ...(nonFreezedHeaders || [])].length;
+
+  const itemKey = useCallback(
+    ({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }) => {
+      const col = nonFreezedHeaders?.[columnIndex];
+      return `${rowIndex}-${col?.key || columnIndex}`;
+    },
+    [nonFreezedHeaders]
+  );
 
   return (
     <div className="size-max relative">
       <Grid
-        key={'table-virtual-grid' + adjustedColumnWidth + allHeadersLength}
+        key={'table-virtual-grid' + adjustedColumnWidth + totalCountColumnAllHeaders}
+        itemKey={itemKey}
         className="border border-gray-300"
         ref={gridRef}
         outerRef={outerRef}

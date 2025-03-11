@@ -60,8 +60,8 @@ export interface ITableVirtualContext {
   useAutoWidth?: boolean;
   adjustedColumnWidth: number;
   rowHeight: number;
-  freezedHeaders: ITableVirtualHeaderColumn[];
-  nonFreezedHeaders: ITableVirtualHeaderColumn[];
+  freezedHeaders?: ITableVirtualHeaderColumn[];
+  nonFreezedHeaders?: ITableVirtualHeaderColumn[];
   finalDataSource: Record<string, string | number>[];
   useFooter?: boolean;
   selectedRowIndex?: number;
@@ -72,7 +72,8 @@ export interface ITableVirtualContext {
   outerSize: { width: number; height: number };
   setOuterSize?: React.Dispatch<React.SetStateAction<{ width: number; height: number }>>;
   totalCountGridWidth: number;
-  totalCountFreezedHeadersWidth: number;
+  totalCountFreezedHeadersWidth?: number;
+  totalCountColumnAllHeaders?: number;
   totalCountColumnNonFreezedHeaders?: number;
   totalCountColumnNonFreezedHeadersExceptFixedWidth?: number;
   totalCountFixedWidthNonFreezedHeaders?: number;

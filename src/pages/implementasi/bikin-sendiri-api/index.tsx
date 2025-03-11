@@ -40,7 +40,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 10000, page: page || 1 };
+    const params = { limit: 5000, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -66,13 +66,14 @@ export default function ImplementasiBikinSendiriApi() {
         caption: '_ID',
         filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
         useSingleFilter: true,
-        freezed: true,
+        freezed: false,
         isHide: !arrSelectedHeader?.includes('_id') || false,
       },
       {
         key: 'tanggal',
         caption: 'Tanggal',
         useFilter: false,
+        freezed: true,
         isHide: !arrSelectedHeader?.includes('tanggal') || false,
       },
       {

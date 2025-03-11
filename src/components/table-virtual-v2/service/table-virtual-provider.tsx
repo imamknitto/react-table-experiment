@@ -30,8 +30,8 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
   } = useMemo(() => {
     const nonFreezedHeaders = value.nonFreezedHeaders || [];
 
-    const totalCountColumn = nonFreezedHeaders.length;
-    const totalCountExceptFixedWidth = nonFreezedHeaders.filter(({ fixedWidth }) => !fixedWidth).length;
+    const totalCountColumn = nonFreezedHeaders.length || 0;
+    const totalCountExceptFixedWidth = nonFreezedHeaders.filter(({ fixedWidth }) => !fixedWidth).length || 0;
     const totalFixedWidth = nonFreezedHeaders.reduce((prev, curr) => prev + (curr.fixedWidth || 0), 0);
 
     return {

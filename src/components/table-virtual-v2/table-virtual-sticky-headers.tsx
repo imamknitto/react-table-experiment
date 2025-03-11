@@ -139,7 +139,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                   ...style,
                   width: fixedWidth || adjustedColumnWidth,
                   //   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
-                  left: totalCountFreezedHeadersWidth + headerLeftPosition - (fixedWidth || adjustedColumnWidth),
+                  left: (totalCountFreezedHeadersWidth || 0) + headerLeftPosition - (fixedWidth || adjustedColumnWidth),
                 }}
                 columnIndex={colIndex}
                 useFilter={useFilter}
