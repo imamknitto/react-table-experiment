@@ -58,70 +58,74 @@ export default function ImplementasiBikinSendiriApi() {
   }, []);
 
   const headerData = useMemo((): ITableVirtual<IStreamApi>['headers'] => {
-    const arrSelectedHeader = selectedHeader?.map((item) => item.value);
+    if (!selectedHeader) return [];
+
+    const arrSelectedHeader = new Set(selectedHeader.map((item) => item.value));
+
+    const getFilterOptions = (key: string) => generateTableFilterOptions(dataSource || [], key as keyof IStreamApi);
 
     return [
       {
         key: '_id',
         caption: '_ID',
-        filterOptions: generateTableFilterOptions(dataSource || [], '_id'),
+        filterOptions: getFilterOptions('_id'),
         useSingleFilter: true,
         freezed: false,
-        isHide: !arrSelectedHeader?.includes('_id') || false,
+        isHide: !arrSelectedHeader.has('_id'),
       },
       {
         key: 'tanggal',
         caption: 'Tanggal',
         useFilter: false,
         freezed: true,
-        isHide: !arrSelectedHeader?.includes('tanggal') || false,
+        isHide: !arrSelectedHeader.has('tanggal'),
       },
       {
         key: 'pathUrl',
         caption: 'Path Url',
-        filterOptions: generateTableFilterOptions(dataSource || [], 'pathUrl'),
+        filterOptions: getFilterOptions('pathUrl'),
         freezed: true,
         useAdvanceFilter: true,
         renderSummary: () => (
           <div className="bg-blue-950 size-full text-white flex justify-center items-center">Footer</div>
         ),
-        isHide: !arrSelectedHeader?.includes('pathUrl') || false,
+        isHide: !arrSelectedHeader.has('pathUrl'),
       },
       {
         key: 'request',
         caption: 'Request',
         useAdvanceFilter: true,
         useSingleFilter: true,
-        filterOptions: generateTableFilterOptions(dataSource || [], 'request'),
+        filterOptions: getFilterOptions('request'),
         fixedWidth: 400,
-        isHide: !arrSelectedHeader?.includes('request') || false,
+        isHide: !arrSelectedHeader.has('request'),
       },
       {
         key: 'response',
         caption: 'Response',
         useFilter: false,
-        isHide: !arrSelectedHeader?.includes('response') || false,
+        isHide: !arrSelectedHeader.has('response'),
       },
       {
         key: 'status',
         caption: 'Status',
         className: '!text-end',
-        filterOptions: generateTableFilterOptions(dataSource || [], 'status'),
+        filterOptions: getFilterOptions('status'),
         useSingleFilter: true,
-        isHide: !arrSelectedHeader?.includes('status') || false,
+        isHide: !arrSelectedHeader.has('status'),
       },
       {
         key: 'level',
         caption: 'Level',
-        filterOptions: generateTableFilterOptions(dataSource || [], 'level'),
+        filterOptions: getFilterOptions('level'),
         useSingleFilter: true,
-        isHide: !arrSelectedHeader?.includes('level') || false,
+        isHide: !arrSelectedHeader.has('level'),
       },
       {
         key: 'tipe',
         caption: 'Tipe',
-        filterOptions: generateTableFilterOptions(dataSource || [], 'tipe'),
-        isHide: !arrSelectedHeader?.includes('tipe') || false,
+        filterOptions: getFilterOptions('tipe'),
+        isHide: !arrSelectedHeader.has('tipe'),
       },
       {
         key: 'ingest_date',
@@ -129,25 +133,24 @@ export default function ImplementasiBikinSendiriApi() {
         caption: 'Ingest Date',
         render: (value) => dayjs(value).format('DD MMM YYYY'),
         useFilter: false,
-        isHide: !arrSelectedHeader?.includes('ingest_date') || false,
+        isHide: !arrSelectedHeader.has('ingest_date'),
       },
       {
         key: 'response_time',
         filterOptions: [''],
         caption: 'Response Time',
         useFilter: false,
-        isHide: !arrSelectedHeader?.includes('response_time') || false,
+        isHide: !arrSelectedHeader.has('response_time'),
       },
       {
         key: 'request_id',
         filterOptions: [''],
         caption: 'Request ID',
         useFilter: false,
-        isHide: !arrSelectedHeader?.includes('request_id') || false,
+        isHide: !arrSelectedHeader.has('request_id'),
       },
     ];
   }, [dataSource, selectedHeader]);
-
   return (
     <div className="p-4 flex flex-col h-screen w-full space-y-2.5">
       <Header>
