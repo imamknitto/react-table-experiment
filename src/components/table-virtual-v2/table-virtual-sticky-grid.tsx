@@ -24,13 +24,12 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     setIsScrolling,
     useFooter,
     onRightClickCell,
+    totalCountColumnNonFreezedHeaders,
+    totalCountColumnNonFreezedHeadersExceptFixedWidth,
+    totalCountFixedWidthNonFreezedHeaders,
   } = useTableVirtual();
 
-  const totalColumn = nonFreezedHeaders?.length || 0;
-  const totalColumnExceptFixedWidth = nonFreezedHeaders?.filter(({ fixedWidth }) => !fixedWidth)?.length || 0;
-  const totalCountFixedColumnWidth = nonFreezedHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || 0), 0) || 0;
-
-  const columnWidths = useMemo(() => {
+  const gridColumnWidths = useMemo(() => {
     return nonFreezedHeaders.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth);
   }, [nonFreezedHeaders, adjustedColumnWidth]);
 
@@ -42,10 +41,11 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     setScrollbarWidth?.(scrollbarWidth);
 
     if (useAutoWidth) {
-      const calculatedOuterWidth = width - totalCountFixedColumnWidth;
+      const calculatedOuterWidth = width - (totalCountFixedWidthNonFreezedHeaders || 0);
 
       setAdjustedColumnWidth?.(
-        Math.ceil((calculatedOuterWidth - scrollbarWidth) / (totalColumnExceptFixedWidth || 1)) - 1
+        Math.ceil((calculatedOuterWidth - scrollbarWidth) / (totalCountColumnNonFreezedHeadersExceptFixedWidth || 1)) -
+          1
       );
     }
   }, [width, height, useAutoWidth]);
@@ -63,8 +63,8 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         width={width}
         height={height}
         rowHeight={() => rowHeight}
-        columnWidth={(index) => columnWidths[index]}
-        columnCount={totalColumn}
+        columnWidth={(index) => gridColumnWidths[index]}
+        columnCount={totalCountColumnNonFreezedHeaders || 0}
         rowCount={finalDataSource?.length || 0}
         innerElementType={tableVirtualInnerElement}
         onScroll={(props) => {

@@ -56,7 +56,7 @@ const TableVirtualCell = ({ rowIndex, columnIndex, style }: ITableVirtualCell) =
           '!border-r !border-r-blue-900':
             rowIndex === selectedRowIndex && columnIndex === nonFreezedHeaders?.length - 1,
         },
-        classNameCell?.(rowIndex, columnIndex)
+        classNameCell?.(finalDataSource[rowIndex], rowIndex, columnIndex, false)
       )}
     >
       <div className="truncate w-full">

@@ -20,6 +20,27 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
     return value.freezedHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || curr.width), 0);
   }, [value.freezedHeaders]);
 
+  // 1. Hitung total kolom headers yang non-freezed.
+  // 2. Hitung total kolom headers yang non-freezed, yang tidak memiliki width fixed.
+  // 3. Hitung total lebar kolom headers yang non-freezed.
+  const {
+    totalCountColumnNonFreezedHeaders,
+    totalCountColumnNonFreezedHeadersExceptFixedWidth,
+    totalCountFixedWidthNonFreezedHeaders,
+  } = useMemo(() => {
+    const nonFreezedHeaders = value.nonFreezedHeaders || [];
+
+    const totalCountColumn = nonFreezedHeaders.length;
+    const totalCountExceptFixedWidth = nonFreezedHeaders.filter(({ fixedWidth }) => !fixedWidth).length;
+    const totalFixedWidth = nonFreezedHeaders.reduce((prev, curr) => prev + (curr.fixedWidth || 0), 0);
+
+    return {
+      totalCountColumnNonFreezedHeaders: totalCountColumn,
+      totalCountColumnNonFreezedHeadersExceptFixedWidth: totalCountExceptFixedWidth,
+      totalCountFixedWidthNonFreezedHeaders: totalFixedWidth,
+    };
+  }, [value.nonFreezedHeaders]);
+
   const handleRightClickCell = useCallback((position: ICellPosition | null) => {
     setCellPosition(position);
   }, []);
@@ -38,6 +59,9 @@ const TableVirtualProvider = ({ children, value }: ITableVierualProvider) => {
         setIsScrolling,
         totalCountGridWidth,
         totalCountFreezedHeadersWidth,
+        totalCountColumnNonFreezedHeaders,
+        totalCountColumnNonFreezedHeadersExceptFixedWidth,
+        totalCountFixedWidthNonFreezedHeaders,
         cellPosition,
         onRightClickCell: handleRightClickCell,
       }}

@@ -22,6 +22,7 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
     onRightClickCell,
     cellPosition,
     renderRightClickRow,
+    classNameCell,
   } = useTableVirtual();
 
   useOnClickOutside(rightClickWrapperRef, () => onRightClickCell?.(null));
@@ -77,7 +78,8 @@ export default function TableVirtualStickyColumns({ minRow, maxRow }: ITableVirt
                       {
                         '!border-y !border-y-blue-900 !bg-blue-100': rowIndex === selectedRowIndex,
                         '!border-l !border-l-blue-900': rowIndex === selectedRowIndex && columnIndex === 0,
-                      }
+                      },
+                      classNameCell?.(finalDataSource[rowIndex], rowIndex, columnIndex, true)
                     )}
                     style={{
                       height: rowHeight,

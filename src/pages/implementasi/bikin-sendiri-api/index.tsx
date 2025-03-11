@@ -177,12 +177,15 @@ export default function ImplementasiBikinSendiriApi() {
           columnWidth={200}
           rowHeight={36}
           onScrollTouchBottom={() => fetchDataFromApi(pagination.currentPage + 1)}
-          //   onChangeSort={(sortKey, sortBy) => console.log('On Change Sort: ', { sortKey, sortBy })}
-          //   onChangeFilter={(data) => console.log('On Change Filter: ', data)}
-          //   onChangeAdvanceFilter={(data) => console.log('On Change Advance Filter: ', data)}
           renderRightClickRow={(data, value, callbackFn) => (
             <RightClickContent data={data} value={value} callbackFn={callbackFn} />
           )}
+          //   onChangeSort={(sortKey, sortBy) => console.log('On Change Sort: ', { sortKey, sortBy })}
+          //   onChangeFilter={(data) => console.log('On Change Filter: ', data)}
+          //   onChangeAdvanceFilter={(data) => console.log('On Change Advance Filter: ', data)}
+          //   classNameCell={(_data, rowIndex, _columnIndex, _isFreezed) => {
+          //     return rowIndex === 1 ? '!bg-red-200' : '';
+          //   }}
         />
       </div>
     </div>

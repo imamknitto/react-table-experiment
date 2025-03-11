@@ -21,7 +21,12 @@ export interface ITableVirtual<TDataSource> {
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onScrollTouchBottom?: () => void;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
-  classNameCell?: (rowIndex: number, columnIndex: number) => string;
+  classNameCell?: (
+    data: Record<string, string | number>,
+    rowIndex: number,
+    columnIndex: number,
+    isFreezed: boolean
+  ) => string;
   renderRightClickRow?: (
     data: Record<string, string | number> | null,
     value: string | number,
@@ -68,9 +73,17 @@ export interface ITableVirtualContext {
   setOuterSize?: React.Dispatch<React.SetStateAction<{ width: number; height: number }>>;
   totalCountGridWidth: number;
   totalCountFreezedHeadersWidth: number;
+  totalCountColumnNonFreezedHeaders?: number;
+  totalCountColumnNonFreezedHeadersExceptFixedWidth?: number;
+  totalCountFixedWidthNonFreezedHeaders?: number;
   setAdjustedColumnWidth?: React.Dispatch<React.SetStateAction<number>>;
   onClickRow?: (data: Record<string, string | number>, rowIndex: number) => void;
-  classNameCell?: (rowIndex: number, columnIndex: number) => string;
+  classNameCell?: (
+    data: Record<string, string | number>,
+    rowIndex: number,
+    columnIndex: number,
+    isFreezed: boolean
+  ) => string;
   onResizeHeaderColumn?: (caption: string, width: number) => void;
   cellPosition?: ICellPosition | null;
   onRightClickCell?: (cellPosition: ICellPosition | null) => void;
