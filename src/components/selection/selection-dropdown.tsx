@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ISelectionDropdownItem, ISelectionDropdown, ISelectionOption } from './types';
 import clsx from 'clsx';
 import { useOnClickOutside, useSensorKeyboard } from './hooks';
-import IcClose from './ic-close';
 import Checkbox from '../checkbox';
 
 const SelectionDropdown = (props: ISelectionDropdown) => {

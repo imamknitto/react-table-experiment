@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 export function useOnClickOutside(
-  ref: React.RefObject<HTMLDivElement | HTMLElement>,
+  ref: React.RefObject<HTMLDivElement | HTMLElement | null>,
   handler: (currentTarget?: HTMLElement | null, el?: HTMLDivElement | HTMLElement) => void
 ) {
   useEffect(() => {
