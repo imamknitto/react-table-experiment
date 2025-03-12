@@ -15,12 +15,21 @@ import useResizableHeader from './hooks/use-resizable-header';
 import { useHeaderContext } from './service/header-context';
 import { useDataContext } from './service/data-context';
 import { useUIContext } from './service/ui-context';
+import IcColumn from './icons/ic-column';
+import TableVirtualVisibilityColumnsCard from './table-virtual-visibility-columns-card';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
   const { adjustedColumnWidth } = useUIContext();
   const { sort, filter, search, filterAdvance } = useDataContext();
-  const { freezedHeaders, nonFreezedHeaders, totalCountFreezedHeadersWidth, totalCountGridWidth } =
-    useHeaderContext();
+  const {
+    freezedHeaders,
+    nonFreezedHeaders,
+    totalCountFreezedHeadersWidth,
+    totalCountGridWidth,
+    onOpenVisibilityColumnsCard,
+    isVisibilityColumnsCard,
+    visibilityColumnsCardRef,
+  } = useHeaderContext();
 
   const { sortBy, sortKey, handleSort } = sort || {};
 
@@ -93,7 +102,6 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
               style={{
                 ...style,
                 width: fixedWidth || adjustedColumnWidth,
-                // left: columnIndex * adjustedColumnWidth
                 left: headerLeftFreezedPosition - (fixedWidth || adjustedColumnWidth),
               }}
               columnIndex={columnIndex}
@@ -103,11 +111,12 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
               useSearch={useSearch}
               useSingleFilter={useSingleFilter}
               totalHeaders={freezedHeaders.length}
+              handleSort={() => handleSort?.(key)}
+              sortValue={sortKey === key ? sortBy : 'unset'}
               handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
               handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
               handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
-              handleSort={() => handleSort?.(key)}
-              sortValue={sortKey === key ? sortBy : 'unset'}
+              handleOpenVisibilityColumnsCard={(e) => onOpenVisibilityColumnsCard?.(e)}
             />
           );
         })}
@@ -135,7 +144,6 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                 style={{
                   ...style,
                   width: fixedWidth || adjustedColumnWidth,
-                  //   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
                   left:
                     (totalCountFreezedHeadersWidth || 0) +
                     headerLeftPosition -
@@ -148,11 +156,12 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                 useSearch={useSearch}
                 useSingleFilter={useSingleFilter}
                 totalHeaders={nonFreezedHeaders.length}
+                handleSort={() => handleSort?.(key)}
+                sortValue={sortKey === key ? sortBy : 'unset'}
                 handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
                 handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
                 handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
-                handleSort={() => handleSort?.(key)}
-                sortValue={sortKey === key ? sortBy : 'unset'}
+                handleOpenVisibilityColumnsCard={(e) => onOpenVisibilityColumnsCard?.(e)}
               />
             );
           })}
@@ -193,6 +202,13 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
           activeAdvanceFilters={activeAdvanceFilters?.[isFilterAdvanceCardOpen.key]}
         />
       )}
+
+      {isVisibilityColumnsCard?.show && (
+        <TableVirtualVisibilityColumnsCard
+          ref={visibilityColumnsCardRef}
+          position={isVisibilityColumnsCard?.position}
+        />
+      )}
     </>
   );
 };
@@ -210,6 +226,7 @@ interface IHeaderItem {
   handleOpenFilter?: (e: React.MouseEvent<HTMLElement>) => void;
   handleOpenAdvanceFilter?: (e: React.MouseEvent<HTMLElement>) => void;
   handleOpenSearch?: (e: React.MouseEvent<HTMLElement>) => void;
+  handleOpenVisibilityColumnsCard?: (e: React.MouseEvent<HTMLElement>) => void;
   handleSort?: () => void;
   sortValue?: TSortOrder;
   isFreezed?: boolean;
@@ -229,6 +246,7 @@ const HeaderItem = (props: IHeaderItem) => {
     handleOpenFilter,
     handleOpenAdvanceFilter,
     handleOpenSearch,
+    handleOpenVisibilityColumnsCard,
     handleSort,
     sortValue,
     isFreezed = false,
@@ -284,6 +302,14 @@ const HeaderItem = (props: IHeaderItem) => {
         <span>{caption}</span>
 
         <div className="flex flex-row space-x-1.5 shrink-0 -mr-0">
+          <button
+            key="btn-column-visibility"
+            className="shrink-0 cursor-pointer"
+            onClick={handleOpenVisibilityColumnsCard}
+          >
+            <IcColumn className="!h-5 !text-gray-700" />
+          </button>
+
           {actionButtons.map(
             ({ condition, icon, onClick }, index) =>
               condition && (

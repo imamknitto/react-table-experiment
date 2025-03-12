@@ -93,7 +93,6 @@ export interface IDataHeader<TDataSource> {
     columnIndex?: number
   ) => ReactNode | string;
   fixedWidth?: number;
-  isHide?: boolean;
 }
 
 export interface ITableVirtualCell {

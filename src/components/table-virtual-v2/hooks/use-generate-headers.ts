@@ -1,5 +1,7 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { IDataHeader, ITableVirtualHeaderColumn } from '../types';
+import { getFixedCardPosition } from '../utils';
+import useOnClickOutside from './use-click-outside';
 
 interface IGenerateHeaders<T> {
   headers?: IDataHeader<T>[];
@@ -7,56 +9,92 @@ interface IGenerateHeaders<T> {
   stickyHeaderHeight: number;
 }
 
-interface IAdjustedHeadWidth {
+interface IAdjustedHeaderWidth {
   [caption: string]: { width: number };
 }
 
-export function useGenerateHeaders<T>({ headers, columnWidth, stickyHeaderHeight }: IGenerateHeaders<T>) {
-  const [adjustedHeadWidth, setAdjustedHeadWidth] = useState<IAdjustedHeadWidth>({});
+export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
+  const { headers, columnWidth, stickyHeaderHeight } = props;
+
+  const visibilityColumnsCardRef = useRef<HTMLDivElement | null>(null);
+  const [adjustedHeaderWidth, setAdjustedHeaderWidth] = useState<IAdjustedHeaderWidth>({});
+  const [visibleColumns, setVisibleColumns] = useState([
+    ...(headers?.map(({ caption }) => caption) || []),
+  ]);
+
+  const [isVisibilityColumnsCard, setIsVisibilityColumnsCard] = useState({
+    show: false,
+    position: { top: 0, left: 0 },
+  });
+
+  useOnClickOutside(visibilityColumnsCardRef, () =>
+    setIsVisibilityColumnsCard({ show: false, position: { top: 0, left: 0 } })
+  );
 
   const headerData = useMemo(() => {
-    return headers?.reduce(
-      (acc, data, idx) => {
-        if (data.isHide) return acc;
+    return headers
+      ?.filter(({ caption }) => visibleColumns.includes(caption))
+      ?.reduce(
+        (acc, data, idx) => {
+          const width = adjustedHeaderWidth[data.caption]?.width || columnWidth;
+          const fixedWidth = adjustedHeaderWidth[data.caption]?.width || data.fixedWidth;
 
-        const width = adjustedHeadWidth[data.caption]?.width || columnWidth;
-        const fixedWidth = adjustedHeadWidth[data.caption]?.width || data.fixedWidth;
+          const header: ITableVirtualHeaderColumn = {
+            ...(data as ITableVirtualHeaderColumn),
+            filterOptions: data.filterOptions || [],
+            width,
+            fixedWidth,
+            height: stickyHeaderHeight,
+            left: idx * columnWidth,
+            useFilter: data.useFilter ?? true,
+            useSort: data.useSort ?? true,
+            useSearch: data.useSearch ?? true,
+            useSingleFilter: data.useSingleFilter ?? false,
+          };
 
-        const header: ITableVirtualHeaderColumn = {
-          ...(data as ITableVirtualHeaderColumn),
-          filterOptions: data.filterOptions || [],
-          width,
-          fixedWidth,
-          height: stickyHeaderHeight,
-          left: idx * columnWidth,
-          useFilter: data.useFilter ?? true,
-          useSort: data.useSort ?? true,
-          useSearch: data.useSearch ?? true,
-          useSingleFilter: data.useSingleFilter ?? false,
-        };
+          if (header.freezed) {
+            acc.freezed.push(header);
+          } else {
+            acc.nonFreezed.push(header);
+          }
 
-        if (header.freezed) {
-          acc.freezed.push(header);
-        } else {
-          acc.nonFreezed.push(header);
+          return acc;
+        },
+        { freezed: [], nonFreezed: [] } as {
+          freezed: ITableVirtualHeaderColumn[];
+          nonFreezed: ITableVirtualHeaderColumn[];
         }
-
-        return acc;
-      },
-      { freezed: [], nonFreezed: [] } as {
-        freezed: ITableVirtualHeaderColumn[];
-        nonFreezed: ITableVirtualHeaderColumn[];
-      }
-    );
-  }, [headers, columnWidth, stickyHeaderHeight, adjustedHeadWidth]);
+      );
+  }, [headers, columnWidth, stickyHeaderHeight, adjustedHeaderWidth, visibleColumns]);
 
   const handleResizeHeaderColumn = useCallback((caption: string, newWidth: number) => {
-    setAdjustedHeadWidth((prev) => ({ ...prev, [caption]: { width: newWidth } }));
+    setAdjustedHeaderWidth((prev) => ({ ...prev, [caption]: { width: newWidth } }));
+  }, []);
+
+  const handleOpenVisibilityColumnsCard = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const { calculatedTop, calculatedLeft } = getFixedCardPosition(rect);
+
+    setIsVisibilityColumnsCard({
+      show: true,
+      position: { top: calculatedTop, left: calculatedLeft },
+    });
+  }, []);
+
+  const handleSelectVisibilityColumnsCard = useCallback((option: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
+    );
   }, []);
 
   return {
     freezedHeaders: headerData?.freezed,
     nonFreezedHeaders: headerData?.nonFreezed,
     handleResizeHeaderColumn,
+    handleOpenVisibilityColumnsCard,
+    handleSelectVisibilityColumnsCard,
+    visibleColumns,
+    isVisibilityColumnsCard,
+    visibilityColumnsCardRef,
   };
 }

@@ -7,27 +7,11 @@ import { TableVirtualV2 } from '../../../components/table-virtual-v2';
 import { ITableVirtual } from '../../../components/table-virtual-v2/types';
 import IcDelete from '../../../components/table-virtual-v2/icons/ic-delete';
 import IcCopy from '../../../components/table-virtual-v2/icons/ic-copy';
-import { ISelectionOption, Selection } from '../../../components/selection';
-
-const headerOptions: ISelectionOption[] = [
-  { label: '_ID', value: '_id' },
-  { label: 'Tanggal', value: 'tanggal' },
-  { label: 'Path Url', value: 'pathUrl' },
-  { label: 'Request', value: 'request' },
-  { label: 'Response', value: 'response' },
-  { label: 'Status', value: 'status' },
-  { label: 'Level', value: 'level' },
-  { label: 'Tipe', value: 'tipe' },
-  { label: 'Ingest Date', value: 'ingest_date' },
-  { label: 'Response Time', value: 'response_time' },
-  { label: 'Request ID', value: 'request_id' },
-];
 
 export default function ImplementasiBikinSendiriApi() {
   const firstEntry = useRef<boolean>(true);
 
   const [dataSource, setDataSource] = useState<IStreamApi[]>([]);
-  const [selectedHeader, setSelectedHeader] = useState<ISelectionOption[] | null>(headerOptions);
 
   const [pagination, setPagination] = useState<IResponse<IStreamApi[]>['result']['pagination']>({
     currentPage: 1,
@@ -58,10 +42,6 @@ export default function ImplementasiBikinSendiriApi() {
   }, []);
 
   const headerData = useMemo((): ITableVirtual<IStreamApi>['headers'] => {
-    if (!selectedHeader) return [];
-
-    const arrSelectedHeader = new Set(selectedHeader.map((item) => item.value));
-
     const getFilterOptions = (key: string) =>
       generateTableFilterOptions(dataSource || [], key as keyof IStreamApi);
 
@@ -72,14 +52,12 @@ export default function ImplementasiBikinSendiriApi() {
         filterOptions: getFilterOptions('_id'),
         useSingleFilter: true,
         freezed: false,
-        isHide: !arrSelectedHeader.has('_id'),
       },
       {
         key: 'tanggal',
         caption: 'Tanggal',
         useFilter: false,
         freezed: true,
-        isHide: !arrSelectedHeader.has('tanggal'),
       },
       {
         key: 'pathUrl',
@@ -92,7 +70,6 @@ export default function ImplementasiBikinSendiriApi() {
             Footer
           </div>
         ),
-        isHide: !arrSelectedHeader.has('pathUrl'),
       },
       {
         key: 'request',
@@ -101,13 +78,11 @@ export default function ImplementasiBikinSendiriApi() {
         useSingleFilter: true,
         filterOptions: getFilterOptions('request'),
         fixedWidth: 400,
-        isHide: !arrSelectedHeader.has('request'),
       },
       {
         key: 'response',
         caption: 'Response',
         useFilter: false,
-        isHide: !arrSelectedHeader.has('response'),
       },
       {
         key: 'status',
@@ -115,20 +90,17 @@ export default function ImplementasiBikinSendiriApi() {
         className: '!text-end',
         filterOptions: getFilterOptions('status'),
         useSingleFilter: true,
-        isHide: !arrSelectedHeader.has('status'),
       },
       {
         key: 'level',
         caption: 'Level',
         filterOptions: getFilterOptions('level'),
         useSingleFilter: true,
-        isHide: !arrSelectedHeader.has('level'),
       },
       {
         key: 'tipe',
         caption: 'Tipe',
         filterOptions: getFilterOptions('tipe'),
-        isHide: !arrSelectedHeader.has('tipe'),
       },
       {
         key: 'ingest_date',
@@ -136,24 +108,21 @@ export default function ImplementasiBikinSendiriApi() {
         caption: 'Ingest Date',
         render: (value) => dayjs(value).format('DD MMM YYYY'),
         useFilter: false,
-        isHide: !arrSelectedHeader.has('ingest_date'),
       },
       {
         key: 'response_time',
         filterOptions: [''],
         caption: 'Response Time',
         useFilter: false,
-        isHide: !arrSelectedHeader.has('response_time'),
       },
       {
         key: 'request_id',
         filterOptions: [''],
         caption: 'Request ID',
         useFilter: false,
-        isHide: !arrSelectedHeader.has('request_id'),
       },
     ];
-  }, [dataSource, selectedHeader]);
+  }, [dataSource]);
 
   return (
     <div className="p-4 flex flex-col h-screen w-full space-y-2.5">
@@ -165,16 +134,6 @@ export default function ImplementasiBikinSendiriApi() {
         <div className="py-2 bg-yellow-400/20 w-max px-2 text-gray-900">
           <pre>{JSON.stringify({ ...pagination, showed: dataSource.length })}</pre>
         </div>
-
-        <Selection
-          className="!w-44"
-          placeHolder="Header Visibility"
-          disableSearch
-          options={headerOptions}
-          selectedOption={selectedHeader}
-          onSelectMultipleOption={setSelectedHeader}
-          isMultiple
-        />
       </div>
 
       <div className="flex-1 w-full">

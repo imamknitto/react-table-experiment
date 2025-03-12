@@ -10,15 +10,21 @@ interface IHeaderProvider<T> {
   stickyHeaderHeight: number;
 }
 
-const HeaderProvider = <T,>({
-  headers,
-  children,
-  columnWidth,
-  stickyHeaderHeight,
-}: IHeaderProvider<T>) => {
+const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
+  const { headers, children, columnWidth, stickyHeaderHeight } = props;
+
   const defferedHeaders = useDeferredValue(headers);
 
-  const { freezedHeaders, nonFreezedHeaders, handleResizeHeaderColumn } = useGenerateHeaders({
+  const {
+    freezedHeaders,
+    nonFreezedHeaders,
+    handleResizeHeaderColumn,
+    visibleColumns,
+    handleOpenVisibilityColumnsCard,
+    handleSelectVisibilityColumnsCard,
+    isVisibilityColumnsCard,
+    visibilityColumnsCardRef,
+  } = useGenerateHeaders({
     headers: defferedHeaders,
     columnWidth,
     stickyHeaderHeight,
@@ -56,6 +62,10 @@ const HeaderProvider = <T,>({
     };
   }, [nonFreezedHeaders]);
 
+  const visibilityColumnsCardOptions = useMemo(() => {
+    return defferedHeaders.map(({ caption }) => caption);
+  }, [defferedHeaders]);
+
   return (
     <HeaderContext.Provider
       value={{
@@ -66,9 +76,15 @@ const HeaderProvider = <T,>({
         totalCountColumnNonFreezedHeaders,
         totalCountColumnNonFreezedHeadersExceptFixedWidth,
         totalCountFixedWidthNonFreezedHeaders,
-        onResizeHeaderColumn: handleResizeHeaderColumn,
+        visibleColumns,
         totalCountColumnAllHeaders: [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]
           .length,
+        isVisibilityColumnsCard,
+        visibilityColumnsCardRef,
+        visibilityColumnsCardOptions,
+        onChangeVisibilityColumns: handleSelectVisibilityColumnsCard,
+        onResizeHeaderColumn: handleResizeHeaderColumn,
+        onOpenVisibilityColumnsCard: handleOpenVisibilityColumnsCard,
       }}
     >
       {children}
