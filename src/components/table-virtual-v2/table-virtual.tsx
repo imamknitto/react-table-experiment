@@ -1,6 +1,6 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 
 import { ITableVirtual } from './types';
 import TableVirtualStickyGrid from './table-virtual-sticky-grid';
@@ -35,15 +35,33 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
   const gridRef = useRef<Grid>(null);
   const outerRef = useRef<HTMLElement>(null);
 
+  const memoizedHeaders = useMemo(() => headers || [], [headers]);
+  const memoizedDataSource = useMemo(() => dataSource || [], [dataSource]);
+  const memoizedParentValue = useMemo(
+    () => ({
+      gridRef,
+      columnWidth,
+      rowHeight,
+      stickyHeaderHeight,
+      stickyFooterHeight,
+      isLoading,
+      useAutoWidth,
+      useFooter,
+      classNameCell,
+      renderRightClickRow,
+    }),
+    [props]
+  );
+
   return (
     <HeaderProvider
-      headers={headers || []}
+      headers={memoizedHeaders || []}
       columnWidth={columnWidth}
       stickyHeaderHeight={stickyHeaderHeight}
     >
       <DataProvider
         gridRef={gridRef}
-        dataSource={dataSource || []}
+        dataSource={memoizedDataSource || []}
         useServerSort={useServerSort}
         useServerFilter={useServerFilter}
         useServerAdvanceFilter={useServerAdvanceFilter}
@@ -54,18 +72,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
         <UIProvider
           columnWidth={columnWidth}
           onClickRow={onClickRow}
-          parentValue={{
-            gridRef,
-            columnWidth,
-            rowHeight,
-            stickyHeaderHeight,
-            stickyFooterHeight,
-            isLoading,
-            useAutoWidth,
-            useFooter,
-            classNameCell,
-            renderRightClickRow,
-          }}
+          parentValue={memoizedParentValue}
         >
           <div className="size-full relative">
             <AutoSizer>

@@ -23,7 +23,11 @@ interface IDataProvider<TDataSource>
   gridRef: React.RefObject<Grid | null>;
 }
 
-const DataProvider = <TDataSource,>({ children, dataSource, gridRef }: IDataProvider<TDataSource>) => {
+const DataProvider = <TDataSource,>({
+  children,
+  dataSource,
+  gridRef,
+}: IDataProvider<TDataSource>) => {
   const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
     onChangeSort: () => {},

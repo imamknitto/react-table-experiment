@@ -51,8 +51,10 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
       const calculatedOuterWidth = width - (totalCountFixedWidthNonFreezedHeaders || 0);
 
       setAdjustedColumnWidth?.(
-        Math.ceil((calculatedOuterWidth - scrollbarWidth) / (totalCountColumnNonFreezedHeadersExceptFixedWidth || 1)) -
-          1
+        Math.ceil(
+          (calculatedOuterWidth - scrollbarWidth) /
+            (totalCountColumnNonFreezedHeadersExceptFixedWidth || 1)
+        ) - 1
       );
     }
   }, [width, height, useAutoWidth]);
@@ -73,10 +75,14 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     onScrollTouchBottom,
   });
 
+  useEffect(() => {
+    gridRef.current?.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
+  }, [totalCountColumnAllHeaders]);
+
   return (
     <div className="size-max relative">
       <Grid
-        key={'table-virtual-grid' + adjustedColumnWidth + totalCountColumnAllHeaders}
+        key={'table-virtual-grid' + adjustedColumnWidth}
         itemKey={itemKey}
         className="border border-gray-300"
         ref={gridRef}
