@@ -1,19 +1,20 @@
 import { VariableSizeGrid as Grid } from 'react-window';
 import { memo, useCallback, useEffect, useMemo } from 'react';
-import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualStickyGrid } from './types';
 import tableVirtualInnerElement from './table-virtual-inner-element';
 import TableVirtualEmptyData from './table-virtual-empty-data';
 import TableVirtualCell from './table-virtual-cell';
+import { useHeaderContext } from './service/header-context';
+import { useDataContext } from './service/data-context';
+import useGridScrolling from './hooks/use-grid-scrolling';
+import { useUIContext } from './service/ui-context';
 
 const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
-  const { width, height, gridRef, outerRef, onGridScroll } = props;
+  const { width, height, gridRef, outerRef, onScrollTouchBottom } = props;
 
   const {
     rowHeight,
     adjustedColumnWidth,
-    nonFreezedHeaders,
-    finalDataSource,
     setAdjustedColumnWidth,
     useAutoWidth,
     setOuterSize,
@@ -23,11 +24,17 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     setIsScrolling,
     useFooter,
     onRightClickCell,
+  } = useUIContext();
+
+  const { finalDataSource } = useDataContext();
+
+  const {
+    nonFreezedHeaders,
     totalCountColumnNonFreezedHeaders,
     totalCountColumnNonFreezedHeadersExceptFixedWidth,
     totalCountFixedWidthNonFreezedHeaders,
     totalCountColumnAllHeaders,
-  } = useTableVirtual();
+  } = useHeaderContext();
 
   const gridColumnWidths = useMemo((): number[] => {
     return nonFreezedHeaders?.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth) || [];
@@ -58,6 +65,14 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     [nonFreezedHeaders]
   );
 
+  const { handleScroll } = useGridScrolling({
+    gridRef,
+    finalDataSource,
+    isLoading,
+    rowHeight,
+    onScrollTouchBottom,
+  });
+
   return (
     <div className="size-max relative">
       <Grid
@@ -74,7 +89,7 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         rowCount={finalDataSource?.length || 0}
         innerElementType={tableVirtualInnerElement}
         onScroll={(props) => {
-          onGridScroll?.(props);
+          handleScroll?.(props);
           onRightClickCell?.(null);
           const scrollTop = props.scrollTop;
 

@@ -109,7 +109,6 @@ export default function RebuildTableVirtual() {
           onChangeSort={(sortKey, sortBy) => console.log('CHANGE SORT', sortKey, sortBy)}
           onScrollTouchBottom={() => console.log('SCROLL TOUCH BOTTOM')}
           onClickRow={(data, rowIndex) => console.log('CLICK ROW', { data, rowIndex })}
-          classNameCell={(rowIndex, columnIndex) => (rowIndex === 0 && columnIndex === 0 ? '!bg-red-400' : '')}
         />
       </div>
     </div>

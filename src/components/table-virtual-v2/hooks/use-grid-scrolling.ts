@@ -25,27 +25,30 @@ export default function useGridScrolling({
     else setHasReachedBottom(false);
   }, [totalHeight, visibleHeight]);
 
-  const handleScroll = ({ scrollTop, scrollLeft }: GridOnScrollProps) => {
-    let lastScrollLeft = scrollLeft;
+  const handleScroll = useCallback(
+    ({ scrollTop, scrollLeft }: GridOnScrollProps) => {
+      let lastScrollLeft = scrollLeft;
 
-    const isHorizontalScroll = scrollLeft !== lastScrollLeft;
-    lastScrollLeft = scrollLeft;
+      const isHorizontalScroll = scrollLeft !== lastScrollLeft;
+      lastScrollLeft = scrollLeft;
 
-    if (isHorizontalScroll) return;
+      if (isHorizontalScroll) return;
 
-    const canScroll = totalHeight > visibleHeight;
+      const canScroll = totalHeight > visibleHeight;
 
-    if (canScroll && scrollTop + visibleHeight >= totalHeight - rowHeight && !isLoading) {
-      if (!hasReachedBottom && finalDataSource?.length > 0) {
-        setHasReachedBottom(true);
-        onScrollTouchBottom?.();
+      if (canScroll && scrollTop + visibleHeight >= totalHeight - rowHeight && !isLoading) {
+        if (!hasReachedBottom && finalDataSource?.length > 0) {
+          setHasReachedBottom(true);
+          onScrollTouchBottom?.();
+        }
       }
-    }
 
-    if (scrollTop + visibleHeight < totalHeight - rowHeight && hasReachedBottom) {
-      setHasReachedBottom(false);
-    }
-  };
+      if (scrollTop + visibleHeight < totalHeight - rowHeight && hasReachedBottom) {
+        setHasReachedBottom(false);
+      }
+    },
+    [visibleHeight, totalHeight, hasReachedBottom]
+  );
 
   const onScrollToTop = useCallback(() => {
     gridRef.current?.scrollTo({ scrollTop: 0 });
