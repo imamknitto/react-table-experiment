@@ -1,21 +1,16 @@
 import { Children, forwardRef, memo } from 'react';
-import { useTableVirtual } from './service/table-virtual-context';
 import { ITableVirtualInnerElement } from './types';
 import { getRenderedCursor } from './utils';
 import TableVirtualStickyHeaders from './table-virtual-sticky-headers';
 import TableVirtualStickyColumns from './table-virtual-sticky-columns';
 import TableVirtualStickyFooters from './table-virtual-sticky-footers';
+import { useHeaderContext } from './service/header-context';
+import { useUIContext } from './service/ui-context';
 
 const TableVirtualInnerElement = forwardRef<HTMLDivElement, ITableVirtualInnerElement>((props, ref) => {
-  const {
-    stickyHeaderHeight,
-    useFooter,
-    stickyFooterHeight,
-    freezedHeaders,
-    isScrolling,
-    totalCountGridWidth,
-    totalCountFreezedHeadersWidth,
-  } = useTableVirtual();
+  const { stickyHeaderHeight, useFooter, stickyFooterHeight, isScrolling } = useUIContext();
+  const { freezedHeaders, totalCountFreezedHeadersWidth, totalCountGridWidth } = useHeaderContext();
+
   const [minRow, maxRow, _minColumn, _maxColumn] = getRenderedCursor(Children.toArray(props.children));
 
   return (

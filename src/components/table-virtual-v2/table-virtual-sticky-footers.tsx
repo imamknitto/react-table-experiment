@@ -1,22 +1,22 @@
 import { CSSProperties, memo, ReactNode } from 'react';
 import clsx from 'clsx';
-import { useTableVirtual } from './service/table-virtual-context';
+import { useHeaderContext } from './service/header-context';
+import { useDataContext } from './service/data-context';
+import { useUIContext } from './service/ui-context';
 
 const TableVirtualStickyFooters = () => {
   const {
-    nonFreezedHeaders,
     adjustedColumnWidth,
     stickyFooterHeight,
-    freezedHeaders,
-    finalDataSource,
     rowHeight,
     useAutoWidth,
     outerSize,
     scrollbarWidth,
     columnWidth,
-    totalCountGridWidth,
-    totalCountFreezedHeadersWidth,
-  } = useTableVirtual();
+  } = useUIContext();
+  const { finalDataSource } = useDataContext();
+  const { freezedHeaders, nonFreezedHeaders, totalCountFreezedHeadersWidth, totalCountGridWidth } =
+    useHeaderContext();
 
   const useAbsolutePosition = finalDataSource?.length * rowHeight < outerSize.height;
 
@@ -35,7 +35,9 @@ const TableVirtualStickyFooters = () => {
           position: useAbsolutePosition ? 'absolute' : 'sticky',
           top: useAbsolutePosition
             ? outerSize.height - stickyFooterHeight - scrollbarWidth
-            : outerSize.height - stickyFooterHeight - (useAutoWidth || !hasScrollHorizontal ? 2 : scrollbarWidth),
+            : outerSize.height -
+              stickyFooterHeight -
+              (useAutoWidth || !hasScrollHorizontal ? 2 : scrollbarWidth),
           height: stickyFooterHeight,
           width: totalCountGridWidth,
           //   width: adjustedColumnWidth * [...freezedHeaders, ...nonFreezedHeaders].length,
@@ -50,7 +52,7 @@ const TableVirtualStickyFooters = () => {
               key={'table-footer-freezed-' + key + columnIndex}
               value={renderSummary?.() || ''}
               columnIndex={columnIndex}
-              totalHeaders={[...freezedHeaders, ...nonFreezedHeaders].length}
+              totalHeaders={[...freezedHeaders, ...(nonFreezedHeaders || [])].length}
               style={{
                 ...style,
                 width: fixedWidth || adjustedColumnWidth,
@@ -71,14 +73,17 @@ const TableVirtualStickyFooters = () => {
                 key={'table-footer' + key + colIndex}
                 columnIndex={colIndex}
                 value={renderSummary?.() || ''}
-                totalHeaders={[...freezedHeaders, ...nonFreezedHeaders].length}
+                totalHeaders={[...(freezedHeaders || []), ...nonFreezedHeaders].length}
                 style={{
                   ...style,
                   //   width: adjustedColumnWidth,
                   width: fixedWidth || adjustedColumnWidth,
                   height: stickyFooterHeight,
                   //   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
-                  left: totalCountFreezedHeadersWidth + footerLeftPosition - (fixedWidth || adjustedColumnWidth),
+                  left:
+                    totalCountFreezedHeadersWidth +
+                    footerLeftPosition -
+                    (fixedWidth || adjustedColumnWidth),
                 }}
               />
             );
@@ -97,7 +102,9 @@ interface IFooterItem {
   isFreezed?: boolean;
 }
 
-const FooterItem = ({ style, columnIndex, value, totalHeaders, isFreezed = false }: IFooterItem) => {
+const FooterItem = (props: IFooterItem) => {
+  const { style, columnIndex, value, totalHeaders, isFreezed = false } = props;
+
   return (
     <div
       className={clsx(

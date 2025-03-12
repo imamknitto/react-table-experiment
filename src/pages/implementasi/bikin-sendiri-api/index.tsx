@@ -40,7 +40,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 5000, page: page || 1 };
+    const params = { limit: 30000, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -62,7 +62,8 @@ export default function ImplementasiBikinSendiriApi() {
 
     const arrSelectedHeader = new Set(selectedHeader.map((item) => item.value));
 
-    const getFilterOptions = (key: string) => generateTableFilterOptions(dataSource || [], key as keyof IStreamApi);
+    const getFilterOptions = (key: string) =>
+      generateTableFilterOptions(dataSource || [], key as keyof IStreamApi);
 
     return [
       {
@@ -87,7 +88,9 @@ export default function ImplementasiBikinSendiriApi() {
         freezed: true,
         useAdvanceFilter: true,
         renderSummary: () => (
-          <div className="bg-blue-950 size-full text-white flex justify-center items-center">Footer</div>
+          <div className="bg-blue-950 size-full text-white flex justify-center items-center">
+            Footer
+          </div>
         ),
         isHide: !arrSelectedHeader.has('pathUrl'),
       },
@@ -151,6 +154,7 @@ export default function ImplementasiBikinSendiriApi() {
       },
     ];
   }, [dataSource, selectedHeader]);
+
   return (
     <div className="p-4 flex flex-col h-screen w-full space-y-2.5">
       <Header>

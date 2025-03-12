@@ -9,23 +9,18 @@ import IcFilterAdvance from './icons/ic-filter-advance';
 import IcSearch from './icons/ic-search';
 import IcFilter from './icons/ic-filter';
 import IcSort from './icons/ic-sort';
-import { useTableVirtual } from './service/table-virtual-context';
 import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
 import { ITableVirtualStickyHeaders } from './types';
 import useResizableHeader from './hooks/use-resizable-header';
+import { useHeaderContext } from './service/header-context';
+import { useDataContext } from './service/data-context';
+import { useUIContext } from './service/ui-context';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
-  const {
-    sort,
-    filter,
-    search,
-    freezedHeaders,
-    nonFreezedHeaders,
-    filterAdvance,
-    adjustedColumnWidth,
-    totalCountGridWidth,
-    totalCountFreezedHeadersWidth,
-  } = useTableVirtual();
+  const { adjustedColumnWidth } = useUIContext();
+  const { sort, filter, search, filterAdvance } = useDataContext();
+  const { freezedHeaders, nonFreezedHeaders, totalCountFreezedHeadersWidth, totalCountGridWidth } =
+    useHeaderContext();
 
   const { sortBy, sortKey, handleSort } = sort || {};
 
@@ -60,7 +55,9 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
   } = search || {};
 
   const selectedHeader = useMemo(() => {
-    return [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.find(({ key }) => key === isFilterCardOpen?.key);
+    return [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.find(
+      ({ key }) => key === isFilterCardOpen?.key
+    );
   }, [freezedHeaders, nonFreezedHeaders, isFilterCardOpen]);
 
   let headerLeftPosition = 0;
@@ -139,7 +136,10 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                   ...style,
                   width: fixedWidth || adjustedColumnWidth,
                   //   left: (colIndex + (freezedHeaders?.length || 0)) * adjustedColumnWidth,
-                  left: (totalCountFreezedHeadersWidth || 0) + headerLeftPosition - (fixedWidth || adjustedColumnWidth),
+                  left:
+                    (totalCountFreezedHeadersWidth || 0) +
+                    headerLeftPosition -
+                    (fixedWidth || adjustedColumnWidth),
                 }}
                 columnIndex={colIndex}
                 useFilter={useFilter}
@@ -215,27 +215,30 @@ interface IHeaderItem {
   isFreezed?: boolean;
 }
 
-const HeaderItem = ({
-  style,
-  columnIndex,
-  caption,
-  totalHeaders,
-  useFilter,
-  useAdvanceFilter,
-  useSort,
-  useSearch,
-  useSingleFilter,
-  handleOpenFilter,
-  handleOpenAdvanceFilter,
-  handleOpenSearch,
-  handleSort,
-  sortValue,
-  isFreezed = false,
-}: IHeaderItem) => {
+const HeaderItem = (props: IHeaderItem) => {
+  const {
+    style,
+    columnIndex,
+    caption,
+    totalHeaders,
+    useFilter,
+    useAdvanceFilter,
+    useSort,
+    useSearch,
+    useSingleFilter,
+    handleOpenFilter,
+    handleOpenAdvanceFilter,
+    handleOpenSearch,
+    handleSort,
+    sortValue,
+    isFreezed = false,
+  } = props;
+
   const { boxRef, handleMouseDown } = useResizableHeader({
     caption,
     columnIndex,
     currentWidth: Number(style.width || 180),
+    isFreezed,
   });
 
   const actionButtons = [
@@ -253,7 +256,11 @@ const HeaderItem = ({
       ),
       onClick: handleOpenFilter,
     },
-    { condition: useSearch, icon: <IcSearch className="!size-[0.85rem] text-gray-600" />, onClick: handleOpenSearch },
+    {
+      condition: useSearch,
+      icon: <IcSearch className="!size-[0.85rem] text-gray-600" />,
+      onClick: handleOpenSearch,
+    },
     { condition: useSort, icon: <IcSort sort={sortValue} />, onClick: handleSort },
   ];
 
@@ -280,7 +287,11 @@ const HeaderItem = ({
           {actionButtons.map(
             ({ condition, icon, onClick }, index) =>
               condition && (
-                <button key={index} className="shrink-0 cursor-pointer" onClick={(e) => onClick?.(e)}>
+                <button
+                  key={index}
+                  className="shrink-0 cursor-pointer"
+                  onClick={(e) => onClick?.(e)}
+                >
                   {icon}
                 </button>
               )
