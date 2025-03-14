@@ -7,3 +7,6 @@ export const ADVANCE_FILTER_NAMES = {
   contains: 'Contains',
   notContains: 'Not Contains',
 } as const;
+
+export const HEADER_FILTER_HEIGHT = 36;
+export const MINIMUM_ROW_HEIGHT = 36;

@@ -24,7 +24,7 @@ export default function ImplementasiBikinSendiriApi() {
 
   async function fetchDataFromApi(page?: number) {
     setLoading(true);
-    const params = { limit: 30000, page: page || 1 };
+    const params = { limit: 100, page: page || 1 };
     const res = await getDataStreamApi<IResponse<IStreamApi[]>>(params);
 
     if (res) {
@@ -57,7 +57,7 @@ export default function ImplementasiBikinSendiriApi() {
         key: 'tanggal',
         caption: 'Tanggal',
         useFilter: false,
-        freezed: true,
+        freezed: false,
       },
       {
         key: 'pathUrl',
@@ -65,6 +65,7 @@ export default function ImplementasiBikinSendiriApi() {
         filterOptions: getFilterOptions('pathUrl'),
         freezed: true,
         useAdvanceFilter: true,
+        fixedWidth: 500,
         renderSummary: () => (
           <div className="bg-blue-950 size-full text-white flex justify-center items-center">
             Footer
@@ -147,6 +148,7 @@ export default function ImplementasiBikinSendiriApi() {
           renderRightClickRow={(data, value, callbackFn) => (
             <RightClickContent data={data} value={value} callbackFn={callbackFn} />
           )}
+          //   useAutoWidth
           //   onChangeSort={(sortKey, sortBy) => console.log('On Change Sort: ', { sortKey, sortBy })}
           //   onChangeFilter={(data) => console.log('On Change Filter: ', data)}
           //   onChangeAdvanceFilter={(data) => console.log('On Change Advance Filter: ', data)}

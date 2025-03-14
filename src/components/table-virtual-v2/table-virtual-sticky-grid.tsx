@@ -36,10 +36,6 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     totalCountColumnAllHeaders,
   } = useHeaderContext();
 
-  const gridColumnWidths = useMemo((): number[] => {
-    return nonFreezedHeaders?.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth) || [];
-  }, [nonFreezedHeaders, adjustedColumnWidth]);
-
   useEffect(() => {
     if (!outerRef.current) return;
     const scrollbarWidth = outerRef.current.offsetWidth - outerRef.current.clientWidth;
@@ -57,7 +53,11 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         ) - 1
       );
     }
-  }, [width, height, useAutoWidth]);
+  }, [width, height, useAutoWidth, nonFreezedHeaders]);
+
+  useEffect(() => {
+    gridRef.current?.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
+  }, [totalCountColumnAllHeaders]);
 
   const itemKey = useCallback(
     ({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }) => {
@@ -75,9 +75,9 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
     onScrollTouchBottom,
   });
 
-  useEffect(() => {
-    gridRef.current?.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
-  }, [totalCountColumnAllHeaders]);
+  const gridColumnWidths = useMemo((): number[] => {
+    return nonFreezedHeaders?.map(({ fixedWidth }) => fixedWidth || adjustedColumnWidth) || [];
+  }, [nonFreezedHeaders, adjustedColumnWidth]);
 
   return (
     <div className="size-max relative">
@@ -94,6 +94,8 @@ const TableVirtualStickyGrid = (props: ITableVirtualStickyGrid) => {
         columnCount={totalCountColumnNonFreezedHeaders || 0}
         rowCount={finalDataSource?.length || 0}
         innerElementType={tableVirtualInnerElement}
+        overscanRowCount={5}
+        overscanColumnCount={2}
         onScroll={(props) => {
           handleScroll?.(props);
           onRightClickCell?.(null);

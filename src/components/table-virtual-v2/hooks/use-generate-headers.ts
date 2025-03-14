@@ -5,8 +5,8 @@ import useOnClickOutside from './use-click-outside';
 
 interface IGenerateHeaders<T> {
   headers?: IDataHeader<T>[];
-  columnWidth: number;
   stickyHeaderHeight: number;
+  adjustedColumnWidth: number;
 }
 
 interface IAdjustedHeaderWidth {
@@ -14,9 +14,10 @@ interface IAdjustedHeaderWidth {
 }
 
 export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
-  const { headers, columnWidth, stickyHeaderHeight } = props;
+  const { headers, stickyHeaderHeight, adjustedColumnWidth } = props;
 
   const visibilityColumnsCardRef = useRef<HTMLDivElement | null>(null);
+
   const [adjustedHeaderWidth, setAdjustedHeaderWidth] = useState<IAdjustedHeaderWidth>({});
   const [visibleColumns, setVisibleColumns] = useState([
     ...(headers?.map(({ caption }) => caption) || []),
@@ -36,7 +37,7 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
       ?.filter(({ caption }) => visibleColumns.includes(caption))
       ?.reduce(
         (acc, data, idx) => {
-          const width = adjustedHeaderWidth[data.caption]?.width || columnWidth;
+          const width = adjustedHeaderWidth[data.caption]?.width || adjustedColumnWidth;
           const fixedWidth = adjustedHeaderWidth[data.caption]?.width || data.fixedWidth;
 
           const header: ITableVirtualHeaderColumn = {
@@ -45,7 +46,7 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
             width,
             fixedWidth,
             height: stickyHeaderHeight,
-            left: idx * columnWidth,
+            left: idx * adjustedColumnWidth,
             useFilter: data.useFilter ?? true,
             useSort: data.useSort ?? true,
             useSearch: data.useSearch ?? true,
@@ -65,7 +66,7 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
           nonFreezed: ITableVirtualHeaderColumn[];
         }
       );
-  }, [headers, columnWidth, stickyHeaderHeight, adjustedHeaderWidth, visibleColumns]);
+  }, [headers, adjustedColumnWidth, stickyHeaderHeight, adjustedHeaderWidth, visibleColumns]);
 
   const handleResizeHeaderColumn = useCallback((caption: string, newWidth: number) => {
     setAdjustedHeaderWidth((prev) => ({ ...prev, [caption]: { width: newWidth } }));

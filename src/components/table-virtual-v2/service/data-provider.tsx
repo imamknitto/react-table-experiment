@@ -28,7 +28,7 @@ const DataProvider = <TDataSource,>({
   dataSource,
   gridRef,
 }: IDataProvider<TDataSource>) => {
-  const { sortedData, handleSort, sortKey, sortBy } = useSortTable({
+  const { sortedData, handleSort, handleSpecificSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
     onChangeSort: () => {},
     useServerSort: false,
@@ -84,7 +84,7 @@ const DataProvider = <TDataSource,>({
     () =>
       ({
         finalDataSource: (searchedData || []) as Record<string, string | number>[],
-        sort: { sortKey, sortBy, handleSort },
+        sort: { sortKey, sortBy, handleSort, handleSpecificSort },
         filter: {
           isFilterCardOpen,
           handleOpenFilter,

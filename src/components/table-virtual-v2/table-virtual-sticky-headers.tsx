@@ -1,22 +1,14 @@
-import { CSSProperties, memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import clsx from 'clsx';
 
-import { TSortOrder } from './hooks/use-sort-table';
 import TableVirtualFilterCard from './table-virtual-filter-card';
-import TableVirtualSearchCard from './table-virtual-search-card';
-import IcFilterMultiple from './icons/ic-filter-multiple';
-import IcFilterAdvance from './icons/ic-filter-advance';
-import IcSearch from './icons/ic-search';
-import IcFilter from './icons/ic-filter';
-import IcSort from './icons/ic-sort';
 import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
 import { ITableVirtualStickyHeaders } from './types';
-import useResizableHeader from './hooks/use-resizable-header';
 import { useHeaderContext } from './service/header-context';
 import { useDataContext } from './service/data-context';
 import { useUIContext } from './service/ui-context';
-import IcColumn from './icons/ic-column';
-import TableVirtualVisibilityColumnsCard from './table-virtual-visibility-columns-card';
+import TableVirtualStickyHeaderItem from './table-virtual-sticky-header-item';
+import TableVirtualMenuCard from './table-virtual-menu-card';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
   const { adjustedColumnWidth } = useUIContext();
@@ -26,12 +18,12 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
     nonFreezedHeaders,
     totalCountFreezedHeadersWidth,
     totalCountGridWidth,
-    onOpenVisibilityColumnsCard,
-    isVisibilityColumnsCard,
-    visibilityColumnsCardRef,
+    menuCard,
   } = useHeaderContext();
 
-  const { sortBy, sortKey, handleSort } = sort || {};
+  const { menuCardRef, isMenuCardOpen, onOpenMenuCard } = menuCard ?? {};
+
+  const { sortBy, sortKey, handleSort, handleSpecificSort } = sort || {};
 
   const {
     isFilterCardOpen,
@@ -53,15 +45,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
     activeAdvanceFilters,
   } = filterAdvance || {};
 
-  const {
-    isSearchCardOpen,
-    handleOpenSearch,
-    searchCardRef,
-    searchCardPosition,
-    activeSearch,
-    updateSearch,
-    resetSearch,
-  } = search || {};
+  const { updateSearch, resetSearch } = search || {};
 
   const selectedHeader = useMemo(() => {
     return [...(freezedHeaders || []), ...(nonFreezedHeaders || [])]?.find(
@@ -86,7 +70,6 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
             useAdvanceFilter,
             useFilter,
             useSort,
-            useSearch,
             useSingleFilter,
             fixedWidth,
             ...style
@@ -95,28 +78,29 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
           headerLeftFreezedPosition += fixedWidth || adjustedColumnWidth;
 
           return (
-            <HeaderItem
+            <TableVirtualStickyHeaderItem
               isFreezed
               key={'table-header-freezed-' + key + columnIndex}
+              keyName={key}
               caption={caption}
-              style={{
-                ...style,
-                width: fixedWidth || adjustedColumnWidth,
-                left: headerLeftFreezedPosition - (fixedWidth || adjustedColumnWidth),
-              }}
               columnIndex={columnIndex}
               useFilter={useFilter}
               useAdvanceFilter={useAdvanceFilter}
               useSort={useSort}
-              useSearch={useSearch}
               useSingleFilter={useSingleFilter}
               totalHeaders={freezedHeaders.length}
               handleSort={() => handleSort?.(key)}
               sortValue={sortKey === key ? sortBy : 'unset'}
               handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
-              handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
               handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
-              handleOpenVisibilityColumnsCard={(e) => onOpenVisibilityColumnsCard?.(e)}
+              handleOpenMenuCard={(e) => onOpenMenuCard?.(e, key)}
+              handleApplySearch={updateSearch}
+              handleResetSearch={resetSearch}
+              style={{
+                ...style,
+                width: fixedWidth || adjustedColumnWidth,
+                left: headerLeftFreezedPosition - (fixedWidth || adjustedColumnWidth),
+              }}
             />
           );
         })}
@@ -129,7 +113,6 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
               useAdvanceFilter,
               useFilter,
               useSort,
-              useSearch,
               useSingleFilter,
               fixedWidth,
               ...style
@@ -138,9 +121,23 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
             headerLeftPosition += fixedWidth || adjustedColumnWidth;
 
             return (
-              <HeaderItem
-                key={'table-header' + key + colIndex}
+              <TableVirtualStickyHeaderItem
+                key={'table-header-non-freezed-' + key + colIndex}
+                keyName={key}
                 caption={caption}
+                columnIndex={colIndex}
+                useFilter={useFilter}
+                useAdvanceFilter={useAdvanceFilter}
+                useSort={useSort}
+                useSingleFilter={useSingleFilter}
+                totalHeaders={nonFreezedHeaders.length}
+                handleSort={() => handleSort?.(key)}
+                sortValue={sortKey === key ? sortBy : 'unset'}
+                handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
+                handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
+                handleOpenMenuCard={(e) => onOpenMenuCard?.(e, key)}
+                handleApplySearch={updateSearch}
+                handleResetSearch={resetSearch}
                 style={{
                   ...style,
                   width: fixedWidth || adjustedColumnWidth,
@@ -149,35 +146,11 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                     headerLeftPosition -
                     (fixedWidth || adjustedColumnWidth),
                 }}
-                columnIndex={colIndex}
-                useFilter={useFilter}
-                useAdvanceFilter={useAdvanceFilter}
-                useSort={useSort}
-                useSearch={useSearch}
-                useSingleFilter={useSingleFilter}
-                totalHeaders={nonFreezedHeaders.length}
-                handleSort={() => handleSort?.(key)}
-                sortValue={sortKey === key ? sortBy : 'unset'}
-                handleOpenFilter={(e) => handleOpenFilter?.(e, key)}
-                handleOpenSearch={(e) => handleOpenSearch?.(e, key)}
-                handleOpenAdvanceFilter={(e) => handleOpenAdvanceFilter?.(e, key)}
-                handleOpenVisibilityColumnsCard={(e) => onOpenVisibilityColumnsCard?.(e)}
               />
             );
           })}
         </div>
       </div>
-
-      {isSearchCardOpen?.show && searchCardRef && searchCardPosition && (
-        <TableVirtualSearchCard
-          searchCardRef={searchCardRef}
-          searchCardPosition={searchCardPosition}
-          searchDataKey={isSearchCardOpen.key}
-          onApplySearch={updateSearch}
-          onResetSearch={resetSearch}
-          activeSearch={activeSearch?.[isSearchCardOpen.key] || ''}
-        />
-      )}
 
       {isFilterCardOpen?.show && filterCardRef && filterCardPosition && (
         <TableVirtualFilterCard
@@ -203,133 +176,14 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
         />
       )}
 
-      {isVisibilityColumnsCard?.show && (
-        <TableVirtualVisibilityColumnsCard
-          ref={visibilityColumnsCardRef}
-          position={isVisibilityColumnsCard?.position}
+      {isMenuCardOpen?.show && (
+        <TableVirtualMenuCard
+          ref={menuCardRef}
+          position={isMenuCardOpen.position}
+          onSort={(order) => handleSpecificSort?.(isMenuCardOpen.dataKey as string, order)}
         />
       )}
     </>
-  );
-};
-
-interface IHeaderItem {
-  style: CSSProperties;
-  columnIndex: number;
-  caption: string;
-  totalHeaders: number;
-  useFilter?: boolean;
-  useAdvanceFilter?: boolean;
-  useSort?: boolean;
-  useSearch?: boolean;
-  useSingleFilter?: boolean;
-  handleOpenFilter?: (e: React.MouseEvent<HTMLElement>) => void;
-  handleOpenAdvanceFilter?: (e: React.MouseEvent<HTMLElement>) => void;
-  handleOpenSearch?: (e: React.MouseEvent<HTMLElement>) => void;
-  handleOpenVisibilityColumnsCard?: (e: React.MouseEvent<HTMLElement>) => void;
-  handleSort?: () => void;
-  sortValue?: TSortOrder;
-  isFreezed?: boolean;
-}
-
-const HeaderItem = (props: IHeaderItem) => {
-  const {
-    style,
-    columnIndex,
-    caption,
-    totalHeaders,
-    useFilter,
-    useAdvanceFilter,
-    useSort,
-    useSearch,
-    useSingleFilter,
-    handleOpenFilter,
-    handleOpenAdvanceFilter,
-    handleOpenSearch,
-    handleOpenVisibilityColumnsCard,
-    handleSort,
-    sortValue,
-    isFreezed = false,
-  } = props;
-
-  const { boxRef, handleMouseDown } = useResizableHeader({
-    caption,
-    columnIndex,
-    currentWidth: Number(style.width || 180),
-    isFreezed,
-  });
-
-  const actionButtons = [
-    {
-      condition: useAdvanceFilter,
-      icon: <IcFilterAdvance className="!size-5 text-gray-600" />,
-      onClick: handleOpenAdvanceFilter,
-    },
-    {
-      condition: useFilter,
-      icon: !useSingleFilter ? (
-        <IcFilterMultiple className="!size-[0.85rem] text-gray-600" />
-      ) : (
-        <IcFilter className="!size-[1rem] text-gray-600 stroke-0" />
-      ),
-      onClick: handleOpenFilter,
-    },
-    {
-      condition: useSearch,
-      icon: <IcSearch className="!size-[0.85rem] text-gray-600" />,
-      onClick: handleOpenSearch,
-    },
-    { condition: useSort, icon: <IcSort sort={sortValue} />, onClick: handleSort },
-  ];
-
-  return (
-    <div
-      ref={boxRef}
-      className={clsx(isFreezed ? 'sticky' : 'absolute')}
-      style={{
-        ...style,
-        zIndex: isFreezed ? 99999999 - columnIndex : 9999999 - columnIndex,
-      }}
-    >
-      <div
-        className={clsx(
-          'bg-gray-100 relative flex flex-row justify-between space-x-3 items-center text-xs font-bold h-full group',
-          'px-1.5 border-b border-b-gray-300',
-          columnIndex !== totalHeaders - 1 && 'border-r border-r-gray-300',
-          isFreezed && '!border-r !border-r-gray-300'
-        )}
-      >
-        <span>{caption}</span>
-
-        <div className="flex flex-row space-x-1.5 shrink-0 -mr-0">
-          <button
-            key="btn-column-visibility"
-            className="shrink-0 cursor-pointer"
-            onClick={handleOpenVisibilityColumnsCard}
-          >
-            <IcColumn className="!h-5 !text-gray-700" />
-          </button>
-
-          {actionButtons.map(
-            ({ condition, icon, onClick }, index) =>
-              condition && (
-                <button
-                  key={index}
-                  className="shrink-0 cursor-pointer"
-                  onClick={(e) => onClick?.(e)}
-                >
-                  {icon}
-                </button>
-              )
-          )}
-        </div>
-
-        <div
-          className="w-1 h-full absolute right-0 cursor-col-resize top-1/2 -translate-y-1/2 group-hover:bg-blue-300/20 z-[9999]"
-          onMouseDown={handleMouseDown}
-        />
-      </div>
-    </div>
   );
 };
 

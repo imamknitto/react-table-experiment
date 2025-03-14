@@ -101,6 +101,26 @@ export interface ITableVirtualCell {
   style: CSSProperties;
 }
 
+export interface ITableVirtualHeaderItem {
+  style: CSSProperties;
+  columnIndex: number;
+  keyName: string;
+  caption: string;
+  totalHeaders: number;
+  useFilter?: boolean;
+  useAdvanceFilter?: boolean;
+  useSort?: boolean;
+  useSingleFilter?: boolean;
+  handleOpenFilter?: (e: React.MouseEvent<HTMLElement>) => void;
+  handleOpenAdvanceFilter?: (e: React.MouseEvent<HTMLElement>) => void;
+  handleOpenMenuCard?: (e: React.MouseEvent<HTMLElement>) => void;
+  handleSort?: () => void;
+  handleApplySearch?: (dataKey: string, searchValue: string) => void;
+  handleResetSearch?: (dataKey: string) => void;
+  sortValue?: TSortOrder;
+  isFreezed?: boolean;
+}
+
 export interface ITableVirtualFilterCard extends HTMLAttributes<HTMLDivElement> {
   filterDataKey: string;
   filterOptions?: string[];

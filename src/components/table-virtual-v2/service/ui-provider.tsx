@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { IUIContext, UIContext } from './ui-context';
 import { ICellPosition } from '../types';
+import { HEADER_FILTER_HEIGHT, MINIMUM_ROW_HEIGHT } from '../constants';
 
 interface IUIProvider {
   children: ReactNode;
@@ -30,6 +31,8 @@ const UIProvider = (props: IUIProvider) => {
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [cellPosition, setCellPosition] = useState<ICellPosition | null>(null);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
+  const [showHeaderFilter, setShowHeaderFilter] = useState<boolean>(true);
+  const [headerFilterHeight, setHeaderFilterHeight] = useState<number>(HEADER_FILTER_HEIGHT);
 
   const handleRightClickCell = useCallback((position: ICellPosition | null) => {
     setCellPosition(position);
@@ -44,8 +47,19 @@ const UIProvider = (props: IUIProvider) => {
     []
   );
 
+  const handleToggleHeaderFilter = useCallback(() => {
+    setShowHeaderFilter((prev) => !prev);
+    setHeaderFilterHeight((prev) => (prev === 0 ? HEADER_FILTER_HEIGHT : 0));
+  }, []);
+
+  const finalStickyHeaderHeight =
+    (parentValue.stickyHeaderHeight < MINIMUM_ROW_HEIGHT
+      ? MINIMUM_ROW_HEIGHT
+      : parentValue.stickyHeaderHeight) + headerFilterHeight;
+
   const contextValue = useMemo(
     (): IUIContext => ({
+      headerFilterHeight,
       adjustedColumnWidth,
       setAdjustedColumnWidth,
       outerSize,
@@ -56,11 +70,16 @@ const UIProvider = (props: IUIProvider) => {
       setIsScrolling,
       cellPosition,
       selectedRowIndex,
+      showHeaderFilter,
       onRightClickCell: handleRightClickCell,
       onClickGridRow: handleClickGridRow,
+      onToggleHeaderFilter: handleToggleHeaderFilter,
       ...parentValue,
+      stickyHeaderHeight: finalStickyHeaderHeight,
     }),
     [
+      headerFilterHeight,
+      showHeaderFilter,
       adjustedColumnWidth,
       outerSize,
       scrollbarWidth,

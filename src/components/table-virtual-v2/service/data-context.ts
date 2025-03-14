@@ -8,6 +8,7 @@ export interface IDataContext {
     sortKey: string | null;
     sortBy: TSortOrder;
     handleSort: (key: string) => void;
+    handleSpecificSort: (key: string, sortBy: TSortOrder) => void;
   };
   filter?: {
     isFilterCardOpen: { show: boolean; key: string };
@@ -23,7 +24,11 @@ export interface IDataContext {
     filterAdvanceCardRef: React.LegacyRef<HTMLDivElement>;
     filterAdvanceCardPosition: { top: number; left: number };
     handleOpenAdvanceFilter: (e: React.MouseEvent<HTMLElement>, activeFilterKey: string) => void;
-    applyAdvanceFilter: (dataKey: string, filterName: TAdvanceFilterName, filterValue: string) => void;
+    applyAdvanceFilter: (
+      dataKey: string,
+      filterName: TAdvanceFilterName,
+      filterValue: string
+    ) => void;
     resetAdvanceFilter: (dataKey: string) => void;
     activeAdvanceFilters: Record<string, { filterName: TAdvanceFilterName; value: string }>;
   };

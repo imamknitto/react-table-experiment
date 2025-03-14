@@ -8,13 +8,14 @@ import TableVirtualLoading from './table-virtual-loading';
 import HeaderProvider from './service/header-provider';
 import DataProvider from './service/data-provider';
 import UIProvider from './service/ui-provider';
+import { MINIMUM_ROW_HEIGHT } from './constants';
 
 const TableVirtual = <T,>(props: ITableVirtual<T>) => {
   const {
     dataSource,
     headers,
     columnWidth = 180,
-    rowHeight = 36,
+    rowHeight = MINIMUM_ROW_HEIGHT,
     stickyHeaderHeight = 50,
     stickyFooterHeight = 40,
     useAutoWidth = false,
@@ -54,25 +55,17 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
   );
 
   return (
-    <HeaderProvider
-      headers={memoizedHeaders || []}
-      columnWidth={columnWidth}
-      stickyHeaderHeight={stickyHeaderHeight}
-    >
-      <DataProvider
-        gridRef={gridRef}
-        dataSource={memoizedDataSource || []}
-        useServerSort={useServerSort}
-        useServerFilter={useServerFilter}
-        useServerAdvanceFilter={useServerAdvanceFilter}
-        onChangeSort={onChangeSort}
-        onChangeFilter={onChangeFilter}
-        onChangeAdvanceFilter={onChangeAdvanceFilter}
-      >
-        <UIProvider
-          columnWidth={columnWidth}
-          onClickRow={onClickRow}
-          parentValue={memoizedParentValue}
+    <UIProvider columnWidth={columnWidth} onClickRow={onClickRow} parentValue={memoizedParentValue}>
+      <HeaderProvider headers={memoizedHeaders || []} stickyHeaderHeight={stickyHeaderHeight}>
+        <DataProvider
+          gridRef={gridRef}
+          dataSource={memoizedDataSource || []}
+          useServerSort={useServerSort}
+          useServerFilter={useServerFilter}
+          useServerAdvanceFilter={useServerAdvanceFilter}
+          onChangeSort={onChangeSort}
+          onChangeFilter={onChangeFilter}
+          onChangeAdvanceFilter={onChangeAdvanceFilter}
         >
           <div className="size-full relative">
             <AutoSizer>
@@ -91,9 +84,9 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
 
             {isLoading && <TableVirtualLoading />}
           </div>
-        </UIProvider>
-      </DataProvider>
-    </HeaderProvider>
+        </DataProvider>
+      </HeaderProvider>
+    </UIProvider>
   );
 };
 

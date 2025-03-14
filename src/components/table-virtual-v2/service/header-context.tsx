@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import { ITableVirtualHeaderColumn } from '../types';
 
-interface IHeaderContext {
+export interface IHeaderContext {
   freezedHeaders?: ITableVirtualHeaderColumn[];
   nonFreezedHeaders?: ITableVirtualHeaderColumn[];
   totalCountFreezedHeadersWidth: number;
@@ -17,6 +17,15 @@ interface IHeaderContext {
   onResizeHeaderColumn?: (caption: string, width: number) => void;
   onOpenVisibilityColumnsCard?: (e: React.MouseEvent<HTMLElement>) => void;
   onChangeVisibilityColumns?: (value: string) => void;
+  menuCard: {
+    menuCardRef: React.RefObject<HTMLDivElement | null> | null;
+    isMenuCardOpen: {
+      dataKey: string | null;
+      show: boolean;
+      position: { top: number; left: number };
+    };
+    onOpenMenuCard?: (e: React.MouseEvent<HTMLElement>, dataKey: string | null) => void;
+  };
 }
 
 export const HeaderContext = createContext<IHeaderContext>({
@@ -31,6 +40,11 @@ export const HeaderContext = createContext<IHeaderContext>({
   totalCountColumnAllHeaders: 0,
   visibleColumns: [],
   visibilityColumnsCardOptions: [],
+  menuCard: {
+    menuCardRef: null,
+    isMenuCardOpen: { show: false, dataKey: null, position: { top: 0, left: 0 } },
+    onOpenMenuCard: () => {},
+  },
 });
 
 export const useHeaderContext = () => useContext(HeaderContext);

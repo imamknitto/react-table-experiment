@@ -35,7 +35,9 @@ const TableVirtualStickyColumns = ({ minRow, maxRow }: ITableVirtualStickyColumn
 
   return (
     <div
-      style={{ marginTop: isScrolling && useFooter ? -stickyHeaderHeight - stickyFooterHeight : 0 }}
+      style={{
+        marginTop: isScrolling && useFooter ? -stickyHeaderHeight - stickyFooterHeight : 0,
+      }}
     >
       {freezedHeaders.map(({ key: columnKeyName, render, fixedWidth }, idx) => {
         const columnIndex = idx;
