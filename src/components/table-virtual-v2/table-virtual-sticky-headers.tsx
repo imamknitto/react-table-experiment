@@ -6,12 +6,10 @@ import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
 import { ITableVirtualStickyHeaders } from './types';
 import { useHeaderContext } from './service/header-context';
 import { useDataContext } from './service/data-context';
-import { useUIContext } from './service/ui-context';
 import TableVirtualStickyHeaderItem from './table-virtual-sticky-header-item';
 import TableVirtualMenuCard from './table-virtual-menu-card';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {
-  const { adjustedColumnWidth } = useUIContext();
   const { sort, filter, search, filterAdvance } = useDataContext();
   const {
     freezedHeaders,
@@ -72,10 +70,11 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
             useSort,
             useSingleFilter,
             fixedWidth,
+            width,
             ...style
           } = freezedHeader;
 
-          headerLeftFreezedPosition += fixedWidth || adjustedColumnWidth;
+          headerLeftFreezedPosition += fixedWidth || width;
 
           return (
             <TableVirtualStickyHeaderItem
@@ -98,8 +97,8 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
               handleResetSearch={resetSearch}
               style={{
                 ...style,
-                width: fixedWidth || adjustedColumnWidth,
-                left: headerLeftFreezedPosition - (fixedWidth || adjustedColumnWidth),
+                width: fixedWidth || width,
+                left: headerLeftFreezedPosition - (fixedWidth || width),
               }}
             />
           );
@@ -115,10 +114,11 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
               useSort,
               useSingleFilter,
               fixedWidth,
+              width,
               ...style
             } = nonFreezedHeader;
 
-            headerLeftPosition += fixedWidth || adjustedColumnWidth;
+            headerLeftPosition += fixedWidth || width;
 
             return (
               <TableVirtualStickyHeaderItem
@@ -140,11 +140,11 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                 handleResetSearch={resetSearch}
                 style={{
                   ...style,
-                  width: fixedWidth || adjustedColumnWidth,
+                  width: fixedWidth || width,
                   left:
                     (totalCountFreezedHeadersWidth || 0) +
                     headerLeftPosition -
-                    (fixedWidth || adjustedColumnWidth),
+                    (fixedWidth || width),
                 }}
               />
             );

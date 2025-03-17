@@ -50,12 +50,6 @@ const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
     adjustedColumnWidth,
   });
 
-  //   // Hitung total maksimal lebar grid berdasarkan total lebar tiap kolom headers.
-  //   const totalCountGridWidth = useMemo(() => {
-  //     const allHeaders = [...(freezedHeaders || []), ...(nonFreezedHeaders || [])];
-  //     return allHeaders?.reduce((prev, curr) => prev + (curr.fixedWidth || curr.width), 0);
-  //   }, [freezedHeaders, nonFreezedHeaders]);
-
   // Hitung total maksimal lebar grid berdasarkan total lebar tiap kolom headers.
   const totalCountGridWidth = useMemo(() => {
     const allHeaders = [...(freezedHeaders || []), ...(nonFreezedHeaders || [])];
