@@ -23,15 +23,23 @@ interface IDataProvider<TDataSource>
   gridRef: React.RefObject<Grid | null>;
 }
 
-const DataProvider = <TDataSource,>({
-  children,
-  dataSource,
-  gridRef,
-}: IDataProvider<TDataSource>) => {
+const DataProvider = <TDataSource,>(props: IDataProvider<TDataSource>) => {
+  const {
+    children,
+    dataSource,
+    gridRef,
+    useServerSort,
+    useServerFilter,
+    useServerAdvanceFilter,
+    onChangeSort,
+    onChangeFilter,
+    onChangeAdvanceFilter,
+  } = props;
+
   const { sortedData, handleSort, handleSpecificSort, sortKey, sortBy } = useSortTable({
     data: dataSource || [],
-    onChangeSort: () => {},
-    useServerSort: false,
+    onChangeSort,
+    useServerSort,
   });
 
   const {
@@ -46,8 +54,8 @@ const DataProvider = <TDataSource,>({
   } = useFilterTable({
     gridRef,
     data: sortedData || [],
-    onChangeFilter: () => {},
-    useServerFilter: false,
+    onChangeFilter,
+    useServerFilter,
   });
 
   const {
@@ -62,8 +70,8 @@ const DataProvider = <TDataSource,>({
   } = useFilterAdvanceTable({
     gridRef,
     data: filteredData || [],
-    onChangeAdvanceFilter: () => {},
-    useServerAdvanceFilter: false,
+    onChangeAdvanceFilter,
+    useServerAdvanceFilter,
   });
 
   const {
