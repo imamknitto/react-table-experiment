@@ -1,10 +1,12 @@
 import Header from '../../../components/header';
-import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
 import TableVirtual from '../../../components/table-virtual-v2/table-virtual';
+import { generateTableFilterOptions } from '../../../components/table-virtual-v2/utils';
 
 const randomString = (length: number): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from({ length }, () => characters.charAt(Math.floor(Math.random() * characters.length))).join('');
+  return Array.from({ length }, () =>
+    characters.charAt(Math.floor(Math.random() * characters.length))
+  ).join('');
 };
 
 const randomNumber = (min: number, max: number): number => {
@@ -82,7 +84,9 @@ export default function RebuildTableVirtual() {
     fixedWidth,
     renderSummary: () =>
       key === 'nama_produk' ? (
-        <div className="size-full flex justify-center items-center bg-blue-950 text-white">TOTAL: </div>
+        <div className="size-full flex justify-center items-center bg-blue-950 text-white">
+          TOTAL:{' '}
+        </div>
       ) : (
         <div className="size-full flex justify-center items-center bg-blue-950/20 text-white" />
       ),

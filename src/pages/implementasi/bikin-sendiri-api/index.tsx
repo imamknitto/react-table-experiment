@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import Header from '../../../components/header';
 import { getDataStreamApi, IResponse, IStreamApi } from './data';
-import { generateTableFilterOptions } from '../../../components/table-virtual-v1/utils';
 import { TableVirtualV2 } from '../../../components/table-virtual-v2';
 import { ITableVirtual } from '../../../components/table-virtual-v2/types';
 import IcDelete from '../../../components/table-virtual-v2/icons/ic-delete';
 import IcCopy from '../../../components/table-virtual-v2/icons/ic-copy';
+import { generateTableFilterOptions } from '../../../components/table-virtual-v2/utils';
 
 export default function ImplementasiBikinSendiriApi() {
   const firstEntry = useRef<boolean>(true);

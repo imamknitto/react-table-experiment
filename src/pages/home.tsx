@@ -13,10 +13,12 @@ const menu = [
   {
     section: 'Implementasi',
     data: [
-      { url: 'implementasi/bikin-sendiri', title: 'Bikin Sendiri' },
       { url: 'implementasi/rebuild-table-virtual', title: 'Rebuild Table Virtual' },
       { url: 'implementasi/bikin-sendiri-api', title: 'Bikin Sendiri [API]' },
-      { url: 'implementasi/bikin-sendiri-api-multi-tab', title: 'Bikin Sendiri [API] - Multi Tabs' },
+      {
+        url: 'implementasi/bikin-sendiri-api-multi-tab',
+        title: 'Bikin Sendiri [API] - Multi Tabs',
+      },
     ],
   },
 ];
