@@ -1,12 +1,12 @@
 import { memo, useEffect, useState } from 'react';
 import clsx from 'clsx';
 
-import { ITableVirtualFilterAdvanceCard, TAdvanceFilterName } from './types';
-import { ADVANCE_FILTER_NAMES } from './constants';
-import { getKeyByValue } from './utils';
-import TableVirtualDropdown from './components/table-virtual-dropdown';
-import TableVirtualInput from './components/table-virtual-input';
-import Portal from './components/portal';
+import { ITableVirtualFilterAdvanceCard, TAdvanceFilterName } from '../types';
+import { ADVANCE_FILTER_NAMES } from '../constants';
+import { getKeyByValue } from '../utils';
+import TableVirtualDropdown from './table-virtual-dropdown';
+import TableVirtualInput from './table-virtual-input';
+import Portal from './portal';
 
 const TableVirtualAdvanceFilterCard = ({
   filterDataKey,
@@ -88,7 +88,10 @@ const TableVirtualAdvanceFilterCard = ({
             <button className="cursor-pointer" onClick={handleClickReset}>
               Reset
             </button>
-            <button className="cursor-pointer px-2 py-1 bg-blue-950 text-white rounded" onClick={handleClickApply}>
+            <button
+              className="cursor-pointer px-2 py-1 bg-blue-950 text-white rounded"
+              onClick={handleClickApply}
+            >
               Apply
             </button>
           </div>

@@ -3,10 +3,10 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 
 import clsx from 'clsx';
-import Portal from './components/portal';
-import { ITableVirtualFilterCard } from './types';
-import TableVirtualInput from './components/table-virtual-input';
-import TableVirtualCheckbox from './components/table-virtual-checkbox';
+import Portal from './portal';
+import { ITableVirtualFilterCard } from '../types';
+import TableVirtualInput from './table-virtual-input';
+import TableVirtualCheckbox from './table-virtual-checkbox';
 
 const TableVirtualFilterCard = ({
   filterDataKey,
@@ -26,11 +26,15 @@ const TableVirtualFilterCard = ({
 
   const handleChangeSearch = (searchValue: string) => {
     setSearchValue(searchValue);
-    setFilteredOptions(filterOptions?.filter((option) => option.toLowerCase().includes(searchValue.toLowerCase())));
+    setFilteredOptions(
+      filterOptions?.filter((option) => option.toLowerCase().includes(searchValue.toLowerCase()))
+    );
   };
 
   const handleChangeActiveFilter = (filter: string) => {
-    setActiveFilter((prev) => (prev.includes(filter) ? prev.filter((item) => item !== filter) : [...prev, filter]));
+    setActiveFilter((prev) =>
+      prev.includes(filter) ? prev.filter((item) => item !== filter) : [...prev, filter]
+    );
   };
 
   const handleSelectSingleOption = (filter: string) => {
@@ -73,7 +77,12 @@ const TableVirtualFilterCard = ({
                 ) : !filteredOptions?.length ? (
                   <EmptyFilter searchVal={searchValue} height={height} width={width} />
                 ) : (
-                  <List height={height} itemCount={filteredOptions?.length || 0} itemSize={23} width={width}>
+                  <List
+                    height={height}
+                    itemCount={filteredOptions?.length || 0}
+                    itemSize={23}
+                    width={width}
+                  >
                     {({ style, index }) => {
                       const filterValue = filteredOptions?.[index] || '';
 
@@ -103,7 +112,10 @@ const TableVirtualFilterCard = ({
           </button>
 
           {!useSingleFilter && (
-            <button className="cursor-pointer px-1.5 py-1 bg-blue-950 text-white rounded" onClick={handleClickApply}>
+            <button
+              className="cursor-pointer px-1.5 py-1 bg-blue-950 text-white rounded"
+              onClick={handleClickApply}
+            >
               Filter
             </button>
           )}

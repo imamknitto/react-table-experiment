@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import clsx from 'clsx';
-import Checkbox from '../checkbox';
-import { useHeaderContext } from './service/header-context';
+import { useHeaderContext } from '../service/header-context';
+import TableVirtualCheckbox from './table-virtual-checkbox';
 
 const TableVirtualVisibilityColumnsCard = () => {
   const { visibilityColumnsCardOptions, visibleColumns, onChangeVisibilityColumns } =
@@ -25,7 +25,7 @@ const TableVirtualVisibilityColumnsCard = () => {
               )}
               onClick={() => onChangeVisibilityColumns?.(name)}
             >
-              <Checkbox readOnly checked={visibleColumns.includes(name)} />
+              <TableVirtualCheckbox readOnly checked={visibleColumns.includes(name)} />
               <p className="text-sm">{name}</p>
             </div>
           );

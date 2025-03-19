@@ -1,13 +1,13 @@
 import { memo, useMemo } from 'react';
 import clsx from 'clsx';
 
-import TableVirtualFilterCard from './table-virtual-filter-card';
-import TableVirtualAdvanceFilterCard from './table-virtual-advance-filter-card';
+import TableVirtualFilterCard from './components/table-virtual-filter-card';
+import TableVirtualAdvanceFilterCard from './components/table-virtual-advance-filter-card';
 import { ITableVirtualStickyHeaders } from './types';
 import { useHeaderContext } from './service/header-context';
 import { useDataContext } from './service/data-context';
 import TableVirtualStickyHeaderItem from './table-virtual-sticky-header-item';
-import TableVirtualMenuCard from './table-virtual-menu-card';
+import TableVirtualMenuCard from './components/table-virtual-menu-card';
 import { HEADER_GROUP_HEIGHT } from './constants';
 
 const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHeaders) => {

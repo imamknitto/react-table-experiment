@@ -1,8 +1,8 @@
 import { HTMLAttributes, memo, useState } from 'react';
 import clsx from 'clsx';
-import Portal from './components/portal';
+import Portal from './portal';
+import { useUIContext } from '../service/ui-context';
 import TableVirtualVisibilityColumnsCard from './table-virtual-visibility-columns-card';
-import { useUIContext } from './service/ui-context';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   ref: React.LegacyRef<HTMLDivElement>;
