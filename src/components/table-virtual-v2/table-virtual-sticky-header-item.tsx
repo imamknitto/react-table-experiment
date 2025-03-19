@@ -36,7 +36,13 @@ const TableVirtualStickyHeaderItem = (props: ITableVirtualHeaderItem) => {
     isFreezed = false,
   } = props;
 
-  const { showHeaderFilter, headerFilterHeight, outerSize, scrollbarWidth } = useUIContext();
+  const {
+    showHeaderFilter,
+    headerFilterHeight,
+    outerSize,
+    scrollbarWidth,
+    useColumnHiddenIndicator,
+  } = useUIContext();
   const { filter, filterAdvance } = useDataContext();
   const { visibilityColumnsCardOptions, visibleColumns, headersHasChildren } = useHeaderContext();
 
@@ -125,7 +131,9 @@ const TableVirtualStickyHeaderItem = (props: ITableVirtualHeaderItem) => {
         >
           <IcMenu className="!h-4 !text-gray-700" />
 
-          {isHiddenColumn && <NodeActiveFilter className="!-top-[.2rem] !-right-[.1rem]" />}
+          {useColumnHiddenIndicator && isHiddenColumn && (
+            <NodeActiveFilter className="!-top-[.2rem] !-right-[.1rem]" />
+          )}
         </button>
       </div>
 

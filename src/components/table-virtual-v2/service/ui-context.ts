@@ -10,6 +10,7 @@ export interface IUIContext {
   stickyFooterHeight: number;
   columnWidth: number;
   useAutoWidth?: boolean;
+  useColumnHiddenIndicator?: boolean;
   adjustedColumnWidth: number;
   rowHeight: number;
   useFooter?: boolean;

@@ -24,6 +24,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     useServerFilter,
     useServerAdvanceFilter,
     useServerSearch,
+    useColumnHiddenIndicator,
     isLoading,
     onChangeSearch,
     onChangeAdvanceFilter,
@@ -52,6 +53,7 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
       useFooter,
       classNameCell,
       renderRightClickRow,
+      useColumnHiddenIndicator,
     }),
     [props]
   );

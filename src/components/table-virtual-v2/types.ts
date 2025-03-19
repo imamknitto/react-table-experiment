@@ -17,6 +17,7 @@ export interface ITableVirtual<TDataSource> {
   useServerSort?: boolean;
   useServerFilter?: boolean;
   useServerAdvanceFilter?: boolean;
+  useColumnHiddenIndicator?: boolean;
   onChangeAdvanceFilter?: (
     data: Record<string, { filterName: TAdvanceFilterName; value: string }>
   ) => void;

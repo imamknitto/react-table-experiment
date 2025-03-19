@@ -19,6 +19,7 @@ interface IUIProvider {
     | 'isLoading'
     | 'classNameCell'
     | 'renderRightClickRow'
+    | 'useColumnHiddenIndicator'
   >;
 }
 

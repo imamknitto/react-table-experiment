@@ -175,6 +175,7 @@ export default function ImplementasiBikinSendiriApi() {
           renderRightClickRow={(data, value, callbackFn) => (
             <RightClickContent data={data} value={value} callbackFn={callbackFn} />
           )}
+          //   useColumnHiddenIndicator
           //   useAutoWidth
           //   useServerFilter
           //   useServerSort
