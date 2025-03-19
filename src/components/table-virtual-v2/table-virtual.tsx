@@ -23,7 +23,9 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
     useServerSort,
     useServerFilter,
     useServerAdvanceFilter,
+    useServerSearch,
     isLoading,
+    onChangeSearch,
     onChangeAdvanceFilter,
     onChangeFilter,
     onChangeSort,
@@ -63,9 +65,11 @@ const TableVirtual = <T,>(props: ITableVirtual<T>) => {
           useServerSort={useServerSort}
           useServerFilter={useServerFilter}
           useServerAdvanceFilter={useServerAdvanceFilter}
+          useServerSearch={useServerSearch}
           onChangeSort={onChangeSort}
           onChangeFilter={onChangeFilter}
           onChangeAdvanceFilter={onChangeAdvanceFilter}
+          onChangeSearch={onChangeSearch}
         >
           <div className="size-full relative">
             <AutoSizer>

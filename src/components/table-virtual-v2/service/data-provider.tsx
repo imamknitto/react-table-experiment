@@ -17,6 +17,8 @@ interface IDataProvider<TDataSource>
     | 'onChangeSort'
     | 'onChangeFilter'
     | 'onChangeAdvanceFilter'
+    | 'useServerSearch'
+    | 'onChangeSearch'
   > {
   children: ReactNode;
   dataSource: TDataSource[];
@@ -34,6 +36,8 @@ const DataProvider = <TDataSource,>(props: IDataProvider<TDataSource>) => {
     onChangeSort,
     onChangeFilter,
     onChangeAdvanceFilter,
+    useServerSearch,
+    onChangeSearch,
   } = props;
 
   const { sortedData, handleSort, handleSpecificSort, sortKey, sortBy } = useSortTable({
@@ -86,6 +90,8 @@ const DataProvider = <TDataSource,>(props: IDataProvider<TDataSource>) => {
   } = useSearchTable({
     gridRef,
     data: filteredAdvanceData || [],
+    useServerSearch,
+    onChangeSearch,
   });
 
   const contextValue = useMemo(
