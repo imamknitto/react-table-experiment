@@ -77,6 +77,13 @@ export interface ITableVirtualHeaderColumn extends Omit<IDataHeader<unknown>, 'c
   left: number;
 }
 
+export interface ITableVirtualHeaderParentColumn {
+  caption: string;
+  width: number;
+  fixedWidth: number;
+  hasChildren: boolean;
+}
+
 export interface IDataHeader<TDataSource> {
   key: keyof TDataSource;
   caption: string;

@@ -1,11 +1,11 @@
 import { createContext, useContext } from 'react';
-import { ITableVirtualHeaderColumn } from '../types';
+import { ITableVirtualHeaderColumn, ITableVirtualHeaderParentColumn } from '../types';
 
 export interface IHeaderContext {
   freezedHeaders?: ITableVirtualHeaderColumn[];
   nonFreezedHeaders?: ITableVirtualHeaderColumn[];
-  freezedGroupHeaders?: ITableVirtualHeaderColumn[];
-  nonFreezedGroupHeaders?: ITableVirtualHeaderColumn[];
+  freezedGroupHeaders?: ITableVirtualHeaderParentColumn[];
+  nonFreezedGroupHeaders?: ITableVirtualHeaderParentColumn[];
   totalCountFreezedHeadersWidth: number;
   totalCountGridWidth: number;
   totalCountColumnNonFreezedHeaders: number;

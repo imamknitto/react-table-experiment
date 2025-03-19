@@ -99,8 +99,8 @@ const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
 
   const headersHasChildren = useMemo(() => {
     return (
-      freezedGroupHeaders?.some((header) => header.children && header.children.length > 0) ||
-      nonFreezedGroupHeaders?.some((header) => header.children && header.children.length > 0)
+      freezedGroupHeaders?.some((header) => header.hasChildren) ||
+      nonFreezedGroupHeaders?.some((header) => header.hasChildren)
     );
   }, [freezedGroupHeaders, nonFreezedGroupHeaders]);
 

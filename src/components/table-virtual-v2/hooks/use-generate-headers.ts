@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { IDataHeader, ITableVirtualHeaderColumn } from '../types';
+import { IDataHeader, ITableVirtualHeaderColumn, ITableVirtualHeaderParentColumn } from '../types';
 import { getFixedCardPosition } from '../utils';
 import useOnClickOutside from './use-click-outside';
 
@@ -40,6 +40,7 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
           const width = adjustedHeaderWidth[data.caption]?.width || adjustedColumnWidth;
           const fixedWidth = adjustedHeaderWidth[data.caption]?.width || data.fixedWidth || 0;
 
+          // ======== Define data header dari data yang tetap maupun yang adjustable ========
           const header: ITableVirtualHeaderColumn = {
             ...(data as ITableVirtualHeaderColumn),
             filterOptions: data.filterOptions || [],
@@ -69,9 +70,17 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
             useSingleFilter: data.useSingleFilter ?? false,
           };
 
+          //  ======== Jika header freezed. ========
           if (header.freezed) {
-            acc.freezedGroup.push(header);
+            // ======== Push data header ke arr freezed parent headers ========
+            acc.freezedGroup.push({
+              width: header.width,
+              fixedWidth: header.fixedWidth || 0,
+              caption: header.caption,
+              hasChildren: !!data?.children?.length || false,
+            });
 
+            // ======== Push data header ke arr freezed headers ========
             if (data.children) {
               acc.freezed.push(
                 ...data.children.map((child, childIdx) => ({
@@ -84,15 +93,25 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
                   useSort: child.useSort ?? true,
                   useSearch: child.useSearch ?? true,
                   useSingleFilter: child.useSingleFilter ?? false,
-                  freezed: true
+                  freezed: true,
                 }))
               );
             } else {
               acc.freezed.push(header);
             }
-          } else {
-            acc.nonFreezedGroup.push(header);
+          }
 
+          // ======== Jika header bukan yang freezed. ========
+          else {
+            // ======== Push data header ke arr non freezed parent headers ========
+            acc.nonFreezedGroup.push({
+              width: header.width,
+              fixedWidth: header.fixedWidth || 0,
+              caption: header.caption,
+              hasChildren: !!data?.children?.length || false,
+            });
+
+            // ======== Push data header ke arr non freezed headers ========
             if (data.children) {
               acc.nonFreezed.push(
                 ...data.children.map((child, childIdx) => ({
@@ -117,8 +136,8 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
         { freezed: [], nonFreezed: [], freezedGroup: [], nonFreezedGroup: [] } as {
           freezed: ITableVirtualHeaderColumn[];
           nonFreezed: ITableVirtualHeaderColumn[];
-          freezedGroup: ITableVirtualHeaderColumn[];
-          nonFreezedGroup: ITableVirtualHeaderColumn[];
+          freezedGroup: ITableVirtualHeaderParentColumn[];
+          nonFreezedGroup: ITableVirtualHeaderParentColumn[];
         }
       );
   }, [headers, adjustedColumnWidth, stickyHeaderHeight, adjustedHeaderWidth, visibleColumns]);

@@ -71,7 +71,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
           {headersHasChildren && (
             <div className="relative w-full h-[36px] flex">
               {freezedGroupHeaders?.map((groupHeader, groupIdx) => {
-                const { children, caption, fixedWidth, width } = groupHeader ?? {};
+                const { hasChildren, caption, fixedWidth, width } = groupHeader ?? {};
 
                 headerGroupLeftFreezedPosition += fixedWidth || width;
 
@@ -85,7 +85,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                       left: headerGroupLeftFreezedPosition - (fixedWidth || width),
                     }}
                   >
-                    {children?.length ? caption : ''}
+                    {hasChildren ? caption : ''}
                   </div>
                 );
               })}
@@ -141,7 +141,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
         <div className="absolute">
           {headersHasChildren &&
             nonFreezedGroupHeaders?.map((groupHeader, colIndex) => {
-              const { children, caption, fixedWidth, width } = groupHeader ?? {};
+              const { hasChildren, caption, fixedWidth, width } = groupHeader ?? {};
 
               headerGroupLeftPosition += fixedWidth || width;
 
@@ -159,7 +159,7 @@ const TableVirtualStickyHeaders = ({ className, style }: ITableVirtualStickyHead
                       (fixedWidth || width),
                   }}
                 >
-                  {children?.length ? caption : ''}
+                  {hasChildren ? caption : ''}
                 </div>
               );
             })}
