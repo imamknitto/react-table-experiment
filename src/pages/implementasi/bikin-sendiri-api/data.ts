@@ -26,9 +26,17 @@ export interface IStreamApi {
   ingest_date: string;
   response_time: string;
   request_id: string;
+  sub1: string;
+  sub2: string;
+  sub3: string;
+  level1: string;
+  level2: string;
+  level3: string;
 }
 
-export const getDataStreamApi = async <T>(params: Record<string, string | number> = {}): Promise<T | null> => {
+export const getDataStreamApi = async <T>(
+  params: Record<string, string | number> = {}
+): Promise<T | null> => {
   const url = new URL(`${BASE_URL}/monitor/meili/api/knitto-api`);
   Object.keys(params).forEach((key) => url.searchParams.append(key, params[key].toString()));
   const headers = {

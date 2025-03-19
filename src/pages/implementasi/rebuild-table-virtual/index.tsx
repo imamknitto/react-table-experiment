@@ -22,11 +22,28 @@ interface IDummyData {
 
 const dummyHeaders = [
   { key: 'nama_produk', caption: 'Nama Produk', fixedWidth: 500, freezed: true },
-  { key: 'kategori', caption: 'Kategori', freezed: false },
-  { key: 'harga', caption: 'Harga (Rp)', fixedWidth: 350, freezed: false },
+  {
+    key: 'kategori',
+    caption: 'Kategori',
+    freezed: true,
+    children: [
+      { caption: 'Sub 1', key: 'sub1' },
+      { caption: 'Sub 2', key: 'sub2' },
+    ],
+  },
+  {
+    key: 'harga',
+    caption: 'Harga (Rp)',
+    fixedWidth: 350,
+    freezed: false,
+    children: [
+      { caption: 'Harga 1', key: 'harga 1' },
+      { caption: 'Harga 2', key: 'harga 2' },
+    ],
+  },
   { key: 'stok', caption: 'Stok (pcs)' },
   { key: 'terjual', caption: 'Terjual (pcs)' },
-  { key: 'rating', caption: 'Rating', freezed: true },
+  { key: 'rating', caption: 'Rating', freezed: false },
   { key: 'supplier', caption: 'Supplier' },
   { key: 'lokasi_gudang', caption: 'Lokasi Gudang' },
   { key: 'tanggal_update', caption: 'Tanggal Update' },
@@ -40,12 +57,12 @@ const dummyHeaders = [
   { key: 'minimal_pemesanan', caption: 'Minimal Pemesanan' },
 ];
 
-const dataSourceV2: IDummyData[] = Array(10000)
+const dataSourceV2: IDummyData[] = Array(100)
   .fill(true)
   .map((_, idx) => ({
     nama_produk:
       idx >= 0 && idx <= 5
-        ? 'Laptop Lenovo Thinkpad'
+        ? 'Laptop Lenovo Thinkpad ' + idx
         : idx > 5 && idx <= 10
         ? 'Laptop HP'
         : idx > 10 && idx <= 40
@@ -73,24 +90,27 @@ const dataSourceV2: IDummyData[] = Array(10000)
   }));
 
 export default function RebuildTableVirtual() {
-  const modifiedHeaders = dummyHeaders?.map(({ key, caption, freezed, fixedWidth }, idx) => ({
-    key,
-    caption,
-    className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
-    filterOptions: generateTableFilterOptions(dataSourceV2, key),
-    useSingleFilter: idx === 3 ? true : false,
-    useAdvanceFilter: idx !== -1,
-    freezed,
-    fixedWidth,
-    renderSummary: () =>
-      key === 'nama_produk' ? (
-        <div className="size-full flex justify-center items-center bg-blue-950 text-white">
-          TOTAL:{' '}
-        </div>
-      ) : (
-        <div className="size-full flex justify-center items-center bg-blue-950/20 text-white" />
-      ),
-  }));
+  const modifiedHeaders = dummyHeaders?.map(
+    ({ key, caption, freezed, fixedWidth, children }, idx) => ({
+      key,
+      caption,
+      className: `!w-[180px] ${key === 'rating' && '!text-end'}`,
+      filterOptions: generateTableFilterOptions(dataSourceV2, key),
+      useSingleFilter: idx === 3 ? true : false,
+      useAdvanceFilter: idx !== -1,
+      freezed,
+      fixedWidth,
+      children,
+      renderSummary: () =>
+        key === 'nama_produk' ? (
+          <div className="size-full flex justify-center items-center bg-blue-950 text-white">
+            TOTAL:{' '}
+          </div>
+        ) : (
+          <div className="size-full flex justify-center items-center bg-blue-950/20 text-white" />
+        ),
+    })
+  );
 
   return (
     <div className="p-4 flex flex-col h-screen w-full space-y-2.5">
@@ -102,7 +122,7 @@ export default function RebuildTableVirtual() {
 
       <div className="flex-1 w-full">
         <TableVirtual
-          //   useFooter
+          useFooter
           //   useAutoWidth
           isLoading={false}
           headers={modifiedHeaders || []}

@@ -13,12 +13,14 @@ export interface ITableVirtual<TDataSource> {
   isLoading?: boolean;
   useAutoWidth?: boolean;
   useFooter?: boolean;
+  useServerSearch?: boolean;
   useServerSort?: boolean;
   useServerFilter?: boolean;
   useServerAdvanceFilter?: boolean;
   onChangeAdvanceFilter?: (
     data: Record<string, { filterName: TAdvanceFilterName; value: string }>
   ) => void;
+  onChangeSearch?: (data: Record<string, string>) => void;
   onChangeFilter?: (data: Record<string, string[]>) => void;
   onChangeSort?: (sortKey: string, sortBy: TSortOrder) => void;
   onScrollTouchBottom?: () => void;
@@ -93,6 +95,7 @@ export interface IDataHeader<TDataSource> {
     columnIndex?: number
   ) => ReactNode | string;
   fixedWidth?: number;
+  children?: Omit<IDataHeader<TDataSource>, 'freezed'>[];
 }
 
 export interface ITableVirtualCell {
@@ -119,6 +122,7 @@ export interface ITableVirtualHeaderItem {
   handleResetSearch?: (dataKey: string) => void;
   sortValue?: TSortOrder;
   isFreezed?: boolean;
+  children?: ITableVirtualHeaderColumn[];
 }
 
 export interface ITableVirtualFilterCard extends HTMLAttributes<HTMLDivElement> {

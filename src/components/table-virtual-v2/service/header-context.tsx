@@ -4,6 +4,8 @@ import { ITableVirtualHeaderColumn } from '../types';
 export interface IHeaderContext {
   freezedHeaders?: ITableVirtualHeaderColumn[];
   nonFreezedHeaders?: ITableVirtualHeaderColumn[];
+  freezedGroupHeaders?: ITableVirtualHeaderColumn[];
+  nonFreezedGroupHeaders?: ITableVirtualHeaderColumn[];
   totalCountFreezedHeadersWidth: number;
   totalCountGridWidth: number;
   totalCountColumnNonFreezedHeaders: number;
@@ -26,6 +28,7 @@ export interface IHeaderContext {
     };
     onOpenMenuCard?: (e: React.MouseEvent<HTMLElement>, dataKey: string | null) => void;
   };
+  headersHasChildren?: boolean;
 }
 
 export const HeaderContext = createContext<IHeaderContext>({

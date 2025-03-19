@@ -13,6 +13,7 @@ import IcMenu from './icons/ic-menu';
 import { useUIContext } from './service/ui-context';
 import { useDataContext } from './service/data-context';
 import { useHeaderContext } from './service/header-context';
+import { HEADER_GROUP_HEIGHT } from './constants';
 
 const TableVirtualStickyHeaderItem = (props: ITableVirtualHeaderItem) => {
   const {
@@ -34,9 +35,10 @@ const TableVirtualStickyHeaderItem = (props: ITableVirtualHeaderItem) => {
     sortValue,
     isFreezed = false,
   } = props;
+
   const { showHeaderFilter, headerFilterHeight, outerSize, scrollbarWidth } = useUIContext();
   const { filter, filterAdvance } = useDataContext();
-  const { visibilityColumnsCardOptions, visibleColumns } = useHeaderContext();
+  const { visibilityColumnsCardOptions, visibleColumns, headersHasChildren } = useHeaderContext();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -78,7 +80,7 @@ const TableVirtualStickyHeaderItem = (props: ITableVirtualHeaderItem) => {
     <div
       ref={boxRef}
       className={clsx('group/outer', isFreezed ? 'sticky' : 'absolute')}
-      style={wrapperStyle}
+      style={{ ...wrapperStyle, top: headersHasChildren ? HEADER_GROUP_HEIGHT : 0 }}
     >
       <ResizeIndicator onMouseDown={handleMouseDown} />
 

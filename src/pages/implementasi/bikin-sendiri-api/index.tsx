@@ -51,7 +51,7 @@ export default function ImplementasiBikinSendiriApi() {
         caption: '_ID',
         filterOptions: getFilterOptions('_id'),
         useSingleFilter: true,
-        freezed: false,
+        freezed: true,
       },
       {
         key: 'tanggal',
@@ -65,12 +65,26 @@ export default function ImplementasiBikinSendiriApi() {
         filterOptions: getFilterOptions('pathUrl'),
         freezed: true,
         useAdvanceFilter: true,
-        fixedWidth: 500,
         renderSummary: () => (
           <div className="bg-blue-950 size-full text-white flex justify-center items-center">
             Footer
           </div>
         ),
+        children: [
+          {
+            caption: 'Sub 1',
+            key: 'pathUrl',
+            renderSummary: () => (
+              <div className="size-full text-black flex justify-center items-center">
+                Footer Path Url Sub 1
+              </div>
+            ),
+          },
+          {
+            caption: 'Sub 2',
+            key: 'sub2',
+          },
+        ],
       },
       {
         key: 'request',
@@ -97,6 +111,12 @@ export default function ImplementasiBikinSendiriApi() {
         caption: 'Level',
         filterOptions: getFilterOptions('level'),
         useSingleFilter: true,
+        // children: [
+        //   { key: 'level', caption: 'Sub Level 1' },
+        //   { key: 'level1', caption: 'Sub Level 2' },
+        //   { key: 'level2', caption: 'Sub Level 3' },
+        //   { key: 'level3', caption: 'Sub Level 4' },
+        // ],
       },
       {
         key: 'tipe',
@@ -147,9 +167,10 @@ export default function ImplementasiBikinSendiriApi() {
           //   classNameCell={(_data, rowIndex, _columnIndex, _isFreezed) => {
           //     return rowIndex === 1 ? '!bg-red-200' : '';
           //   }}
-          onChangeSort={(sortKey, sortBy) => console.log('On Change Sort: ', { sortKey, sortBy })}
-          onChangeFilter={(data) => console.log('On Change Filter: ', data)}
-          onChangeAdvanceFilter={(data) => console.log('On Change Advance Filter: ', data)}
+          //   onChangeSort={(sortKey, sortBy) => console.log('On Change Sort: ', { sortKey, sortBy })}
+          //   onChangeFilter={(data) => console.log('On Change Filter: ', data)}
+          //   onChangeAdvanceFilter={(data) => console.log('On Change Advance Filter: ', data)}
+          onChangeSearch={(data) => console.log('On Change Search: ', data)}
           onScrollTouchBottom={() => fetchDataFromApi(pagination.currentPage + 1)}
           renderRightClickRow={(data, value, callbackFn) => (
             <RightClickContent data={data} value={value} callbackFn={callbackFn} />
@@ -158,6 +179,8 @@ export default function ImplementasiBikinSendiriApi() {
           //   useServerFilter
           //   useServerSort
           //   useServerAdvanceFilter
+          //   useServerSearch
+          useFooter
         />
       </div>
     </div>

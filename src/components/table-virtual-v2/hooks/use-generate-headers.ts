@@ -38,13 +38,29 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
       ?.reduce(
         (acc, data, idx) => {
           const width = adjustedHeaderWidth[data.caption]?.width || adjustedColumnWidth;
-          const fixedWidth = adjustedHeaderWidth[data.caption]?.width || data.fixedWidth;
+          const fixedWidth = adjustedHeaderWidth[data.caption]?.width || data.fixedWidth || 0;
 
           const header: ITableVirtualHeaderColumn = {
             ...(data as ITableVirtualHeaderColumn),
             filterOptions: data.filterOptions || [],
-            width,
-            fixedWidth,
+            width: data.children?.length
+              ? data.children.reduce(
+                  (total, child) =>
+                    total + (adjustedHeaderWidth[child.caption]?.width || adjustedColumnWidth),
+                  0
+                )
+              : width,
+            fixedWidth: data.children?.length
+              ? data.children.reduce(
+                  (total, child) =>
+                    total +
+                    (adjustedHeaderWidth[child.caption]?.width ||
+                      child.fixedWidth ||
+                      adjustedColumnWidth ||
+                      0),
+                  0
+                )
+              : fixedWidth,
             height: stickyHeaderHeight,
             left: idx * adjustedColumnWidth,
             useFilter: data.useFilter ?? true,
@@ -54,16 +70,55 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
           };
 
           if (header.freezed) {
-            acc.freezed.push(header);
+            acc.freezedGroup.push(header);
+
+            if (data.children) {
+              acc.freezed.push(
+                ...data.children.map((child, childIdx) => ({
+                  ...(child as ITableVirtualHeaderColumn),
+                  height: stickyHeaderHeight,
+                  width: adjustedHeaderWidth[child.caption]?.width || adjustedColumnWidth,
+                  fixedWidth: adjustedHeaderWidth[child.caption]?.width || child.fixedWidth,
+                  left: childIdx * adjustedColumnWidth,
+                  useFilter: child.useFilter ?? true,
+                  useSort: child.useSort ?? true,
+                  useSearch: child.useSearch ?? true,
+                  useSingleFilter: child.useSingleFilter ?? false,
+                  freezed: true
+                }))
+              );
+            } else {
+              acc.freezed.push(header);
+            }
           } else {
-            acc.nonFreezed.push(header);
+            acc.nonFreezedGroup.push(header);
+
+            if (data.children) {
+              acc.nonFreezed.push(
+                ...data.children.map((child, childIdx) => ({
+                  ...(child as ITableVirtualHeaderColumn),
+                  height: stickyHeaderHeight,
+                  width: adjustedHeaderWidth[child.caption]?.width || adjustedColumnWidth,
+                  fixedWidth: adjustedHeaderWidth[child.caption]?.width || child.fixedWidth,
+                  left: childIdx * adjustedColumnWidth,
+                  useFilter: child.useFilter ?? true,
+                  useSort: child.useSort ?? true,
+                  useSearch: child.useSearch ?? true,
+                  useSingleFilter: child.useSingleFilter ?? false,
+                }))
+              );
+            } else {
+              acc.nonFreezed.push(header);
+            }
           }
 
           return acc;
         },
-        { freezed: [], nonFreezed: [] } as {
+        { freezed: [], nonFreezed: [], freezedGroup: [], nonFreezedGroup: [] } as {
           freezed: ITableVirtualHeaderColumn[];
           nonFreezed: ITableVirtualHeaderColumn[];
+          freezedGroup: ITableVirtualHeaderColumn[];
+          nonFreezedGroup: ITableVirtualHeaderColumn[];
         }
       );
   }, [headers, adjustedColumnWidth, stickyHeaderHeight, adjustedHeaderWidth, visibleColumns]);
@@ -90,7 +145,9 @@ export function useGenerateHeaders<T>(props: IGenerateHeaders<T>) {
 
   return {
     freezedHeaders: headerData?.freezed,
+    freezedGroupHeaders: headerData?.freezedGroup,
     nonFreezedHeaders: headerData?.nonFreezed,
+    nonFreezedGroupHeaders: headerData?.nonFreezedGroup,
     handleResizeHeaderColumn,
     handleOpenVisibilityColumnsCard,
     handleSelectVisibilityColumnsCard,

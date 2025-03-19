@@ -10,3 +10,4 @@ export const ADVANCE_FILTER_NAMES = {
 
 export const HEADER_FILTER_HEIGHT = 36;
 export const MINIMUM_ROW_HEIGHT = 36;
+export const HEADER_GROUP_HEIGHT = 36;

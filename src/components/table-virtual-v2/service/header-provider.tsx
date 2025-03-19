@@ -37,7 +37,9 @@ const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
 
   const {
     freezedHeaders,
+    freezedGroupHeaders,
     nonFreezedHeaders,
+    nonFreezedGroupHeaders,
     handleResizeHeaderColumn,
     visibleColumns,
     handleOpenVisibilityColumnsCard,
@@ -95,6 +97,13 @@ const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
     return defferedHeaders.map(({ caption }) => caption);
   }, [defferedHeaders]);
 
+  const headersHasChildren = useMemo(() => {
+    return (
+      freezedGroupHeaders?.some((header) => header.children && header.children.length > 0) ||
+      nonFreezedGroupHeaders?.some((header) => header.children && header.children.length > 0)
+    );
+  }, [freezedGroupHeaders, nonFreezedGroupHeaders]);
+
   const handleOpenMenuCard = useCallback(
     (e: React.MouseEvent<HTMLElement>, dataKey: string | null) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -111,8 +120,11 @@ const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
 
   const contextValue = useMemo(
     (): IHeaderContext => ({
+      headersHasChildren,
       freezedHeaders,
+      freezedGroupHeaders,
       nonFreezedHeaders,
+      nonFreezedGroupHeaders,
       totalCountFreezedHeadersWidth,
       totalCountGridWidth,
       totalCountColumnNonFreezedHeaders,
@@ -134,7 +146,9 @@ const HeaderProvider = <T,>(props: IHeaderProvider<T>) => {
     }),
     [
       freezedHeaders,
+      freezedGroupHeaders,
       nonFreezedHeaders,
+      nonFreezedGroupHeaders,
       totalCountFreezedHeadersWidth,
       totalCountGridWidth,
       totalCountColumnNonFreezedHeaders,
